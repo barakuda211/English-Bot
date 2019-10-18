@@ -1,12 +1,14 @@
 ﻿using System;
+using VkBotFramework;
+using VkNet;
 
 namespace English_Bot
 {
-    class Program
+    class EngBot
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }
