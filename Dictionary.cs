@@ -7,12 +7,17 @@ namespace Project
     public class Dictionary
     {
         private Dictionary<long, Word> dict;
-
+      
+        
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
         }
-
+        /// <summary>
+        /// индексация с 1
+        /// </summary>
+        /// <param name="idex"></param>
+        /// <returns></returns>
         public Word this[long idex]
         {
 
@@ -28,25 +33,37 @@ namespace Project
                 return null;
 
         }
-
+        /// <summary>
+        /// получаем английские слова  по нашему запросу  
+        /// </summary>
         public Word[] GetWordEng(string word)
         {
+            //работает ,но вроде как такие запросы выполняются медленнее чем обычный цикл
+            // var lst = dict.Select(t=>t.Value).Where(d => d.eng.Contains(word));
+
             List<Word> lst = new List<Word>();
             
             foreach (var t in dict)
             {
-                if (t.Value.GetEnginlishWord().Contains(word.ToLower()))
+                if (t.Value.eng.Contains(word.ToLower()))
                     lst.Add(t.Value);
             }
+            
             return lst.ToArray();
         }
+        /// <summary>
+        /// получаем русские слова  по нашему запросу  
+        /// </summary>
         public Word[] GetWordRus(string word)
         {
+
+            ////работает ,но вроде как такие запросы выполняются медленнее чем обычный цикл
+            //var lst = dict.Select(t => t.Value).Where(d => d.rus.Contains(word));
             List<Word> lst = new List<Word>();
 
             foreach (var t in dict)
             {
-                if (t.Value.GetRussianWord().Contains(word.ToLower()))
+                if (t.Value.rus.Contains(word.ToLower()))
                     lst.Add(t.Value);
             }
             return lst.ToArray();

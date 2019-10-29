@@ -6,7 +6,7 @@ namespace Project {
     public class Users
     {
        private  Dictionary<long,User>  Dbase;
-
+        //индексатор
         public User this[long idex]
         {
 

@@ -4,11 +4,17 @@ using System.Collections.Generic;
 namespace Project {
     public class User
     {
-       public long userId;
-        static int userLevel;
-        HashSet<string> userTags;
-        HashSet<long> learnedWords;
-        HashSet<long> unLearnedWords;
+       public long userId { get; set; }
+        public static int userLevel { get; set; }
+         public HashSet<string> userTags { get; set; }
+        /// <summary>
+        /// индексы слов , введенных юзером ,которые он запомнил
+        /// </summary>
+        public HashSet<long> learnedWords { get; set; }
+        /// <summary>
+        /// индексы слов ,введенных юзером ,которые он не запомнил  
+        /// </summary>
+        public HashSet<long> unLearnedWords { get; set; }
 
         public User(long Userid, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {
@@ -32,43 +38,41 @@ namespace Project {
             return (temp != userLevel);
         }
 
-        public int GetUserLevel()
-        {
-            return userLevel;
-        }
+       
 
         public bool AddTags(string[] s)
         {
             bool TagIsAdded = false;
-            for (int i = 0; i < s.Length; i++)
-                if (!userTags.Contains(s[i]))
-                {
-                    TagIsAdded = true;
-                    userTags.Add(s[i]);
-                }
 
+            foreach (var t in s)
+            { 
+                    if (!userTags.Contains(t))
+                    {
+                        TagIsAdded = true;
+                        userTags.Add(t);
+                    }
+            }
+           
             return TagIsAdded;
         }
 
         public bool DeleteTags(string[] s)
         {
             bool TagIsDeleted = false;
-            for (int i = 0; i < s.Length; i++)
-                if (userTags.Contains(s[i]))
+
+            foreach (var t in s)
+            {
+                if (!userTags.Contains(t))
                 {
                     TagIsDeleted = true;
-                    userTags.Remove(s[i]);
+                    userTags.Remove(t);
                 }
+            }
 
             return TagIsDeleted;
         }
 
-        public long GerUserId()
-        {
-            return userId;
-        }
-
-
+       
 
     }
 }
