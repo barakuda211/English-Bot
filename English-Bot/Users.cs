@@ -5,9 +5,10 @@ namespace English_Bot
 {
     public class Users
     {
-       private  Dictionary<long,User>  Dbase;
+       private  Dictionary<long?,User>  Dbase;
+
         //индексатор
-        public User this[long idex]
+        public User this[long? idex]
         {
 
             set { Dbase[idex] = value; }
@@ -16,11 +17,11 @@ namespace English_Bot
 
         public Users()
         {
-            Dbase = new Dictionary<long, User>(); 
+            Dbase = new Dictionary<long?, User>(); 
         }
 
-
-       public User GetUser(long id)
+        //Пользователь по id
+       public User GetUser(long? id)
         {
             if (Dbase.ContainsKey(id))
                 return Dbase[id];
@@ -28,6 +29,7 @@ namespace English_Bot
                 return null;
         }
 
+        //Добавление пользователя
       public  bool AddUser(User sr)
         {
             if (Dbase.ContainsValue(sr))
@@ -39,7 +41,8 @@ namespace English_Bot
             }
         }
 
-        public bool DeleteUser(long id)
+        //Удаление пользователя
+        public bool DeleteUser(long? id)
         {
             if (!Dbase.ContainsKey(id))
                 return false;
@@ -50,5 +53,7 @@ namespace English_Bot
             }
         }
 
+        //Проверка наличия пользователя
+        public bool HasUser(long? id) => Dbase.ContainsKey(id);
     }
 }

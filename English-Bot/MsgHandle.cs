@@ -5,7 +5,7 @@ using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
 using VkNet.Model;
-using English_Bot.Properties;
+using English_Bot;
 using static System.Console;
 
 namespace English_Bot
@@ -20,9 +20,11 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
+            //if (!UsersDictionary.HasUser(fromId))
+                //answer = 
             switch (text)
             {
-                default: answer = SendInfo(eventArgs.Message);
+                default: answer = WriteInfo(eventArgs.Message);
                         break;
             }
             instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
@@ -34,6 +36,6 @@ namespace English_Bot
             });
         }
 
-        static string SendInfo(Message msg) => $"{msg.PeerId.Value}, i have captured your message: '{msg.Text}'. its length is {msg.Text.Length}. number of spaces: {msg.Text.Count(x => x == ' ')}";
+        static string WriteInfo(Message msg) => $"{msg.PeerId.Value}, i have captured your message: '{msg.Text}'. its length is {msg.Text.Length}. number of spaces: {msg.Text.Count(x => x == ' ')}";
     }
 }

@@ -5,7 +5,7 @@ namespace English_Bot
 {
     public class User
     {
-       public long userId { get; set; }
+       public long? userId { get; set; }
         public static int userLevel { get; set; }
          public HashSet<string> userTags { get; set; }
         /// <summary>
