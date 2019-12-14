@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Project {
+namespace English_Bot 
+{
     public class User
     {
        public long userId { get; set; }

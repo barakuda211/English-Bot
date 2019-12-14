@@ -10,40 +10,19 @@ using static System.Console;
 
 namespace English_Bot
 {
-    class EngBot
+    partial class EngBot
     {
         static void Main(string[] args)
         {
-            //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
-            //ILogger<VkBot> logger = loggerFactory.CreateLogger<VkBot>();
-
-            //ExampleSettings settings = ExampleSettings.TryToLoad(logger);
-
             VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
 
             bot.OnMessageReceived += NewMessageHandler;
-
+            WriteLine("Bot started!");
             bot.Start();
 
-            WriteLine("Bot started!");
+            
             ReadLine();
         }
-        static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
-        {
-
-            VkBot instanse = sender as VkBot;
-            var peerId = eventArgs.Message.PeerId;
-            var fromId = eventArgs.Message.FromId;
-            var text = eventArgs.Message.Text;
-
-            instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
-            instanse.Api.Messages.Send(new MessagesSendParams()
-            {
-                RandomId = Environment.TickCount,
-                PeerId = eventArgs.Message.PeerId,
-                Message =
-                    $"{fromId.Value}, i have captured your message: '{text}'. its length is {text.Length}. number of spaces: {text.Count(x => x == ' ')}"
-            });
-        }
+        
     }
 }

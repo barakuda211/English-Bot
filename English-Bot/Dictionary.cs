@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Project_Word;
 using System.Linq;
-namespace Project
+
+
+namespace English_Bot
 {
     public class Dictionary
     {

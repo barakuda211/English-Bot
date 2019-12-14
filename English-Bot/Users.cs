@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using Project;
 
-namespace Project {
+namespace English_Bot 
+{
     public class Users
     {
        private  Dictionary<long,User>  Dbase;
