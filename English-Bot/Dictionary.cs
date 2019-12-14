@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Project_Word;
-using System.Linq;
-
+﻿using System.Collections.Generic;
+//using Project_Word;
 
 namespace English_Bot
 {
