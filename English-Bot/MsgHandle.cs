@@ -20,13 +20,17 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
-            
+
             if (!UsersDictionary.HasUser(fromId))
                 answer = Registration(eventArgs.Message);
-            switch (text)
+            else
             {
-                default: answer = WriteInfo(eventArgs.Message);
+                switch (text)
+                {
+                    default:
+                        answer = WriteInfo(eventArgs.Message);
                         break;
+                }
             }
             instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
             instanse.Api.Messages.Send(new MessagesSendParams()

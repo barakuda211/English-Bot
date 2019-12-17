@@ -31,6 +31,10 @@ namespace VkApi
         public bool is_closed { get; set; }
 
         [DataMember]
+        // можем ли мы видеть профиль 
+        public bool can_access_closed { get; set; }
+
+        [DataMember]
         // Интересы 
         public string interests { get; set; }
 

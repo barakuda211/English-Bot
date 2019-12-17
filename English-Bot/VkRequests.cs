@@ -36,11 +36,14 @@ namespace VkApi
         /// </summary>
         public static T ObjectFromStr<T>(string str) => JsonConvert.DeserializeObject<T>(str);
 
-        public static VkUser VkRequestUser(long id)
+        public static VkUser VkRequestUser(long? id)
         {
-            string url = $"https://api.vk.com/method/users.get?user_id="+id+ $"&v = 5.52";
-            string response = Request(url);
-            return ObjectFromStr<VkUser>(url);
+            if (id == null)
+                throw new NullReferenceException();
+            string url = $"https://api.vk.com/method/users.get?user_id="+id+ $"&v=5.89&access_token="+English_Bot.Properties.Resources.AccessToken;
+            //string response = Request(url);
+            //return ObjectFromStr<VkUser>(url);
+            return ObjectFromStr<VkUser>(Request(url));
         }
     }
 }

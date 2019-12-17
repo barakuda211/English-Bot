@@ -4,6 +4,7 @@ using System.Text;
 using VkBotFramework;
 using English_Bot.Properties;
 using VkNet.Model;
+using VkApi;
 
 namespace English_Bot
 {
@@ -13,7 +14,7 @@ namespace English_Bot
         static string Registration(Message msg)
         {
             UsersDictionary.AddUser(new User(msg.FromId));
-
+            VkUser us = VkRequests.VkRequestUser(msg.FromId);
             return "Registration Error";
         }
     }
