@@ -5,7 +5,10 @@ namespace English_Bot
 {
     public class User
     {
-       public long? userId { get; set; }
+        //Vk id юзера
+        public long? userId { get; set; }
+        //Для адекватной регистрации пользователя
+        public int regId { get; set; }
         public static int userLevel { get; set; }
          public HashSet<string> userTags { get; set; }
         /// <summary>
@@ -17,9 +20,10 @@ namespace English_Bot
         /// </summary>
         public HashSet<long> unLearnedWords { get; set; }
 
-        public User(long Userid, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
+        public User(long? Userid=null, int regId=0, int Uslev=0, HashSet<string> UsTags=null, HashSet<long> learWrds=null, HashSet<long> UnlearWrds=null)
         {
             userId = Userid;
+            this.regId = regId;
             userLevel = Uslev;
             userTags = UsTags;
             learnedWords = learWrds;

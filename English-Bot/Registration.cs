@@ -12,7 +12,7 @@ namespace English_Bot
 
         static string Registration(Message msg)
         {
-
+            UsersDictionary.AddUser()
             return "Registration Error";
         }
     }

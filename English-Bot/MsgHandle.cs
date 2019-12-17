@@ -20,8 +20,8 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
-            //if (!UsersDictionary.HasUser(fromId))
-                //answer = 
+            if (!UsersDictionary.HasUser(fromId))
+                answer = Registration(eventArgs.Message);
             switch (text)
             {
                 default: answer = WriteInfo(eventArgs.Message);
