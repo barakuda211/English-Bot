@@ -13,8 +13,9 @@ namespace English_Bot
 
         static string Registration(Message msg)
         {
-            UsersDictionary.AddUser(new User(msg.FromId));
-            VkUser us = VkRequests.VkRequestUser(msg.FromId);
+            //UsersDictionary.AddUser(new User(msg.FromId));
+            User user = new User(VkRequests.VkRequestUser(msg.FromId));
+            
             return "Registration Error";
         }
     }
