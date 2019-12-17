@@ -4,10 +4,16 @@ using System.Runtime.Serialization;
 
 namespace VkApi
 {
+    [DataContract]
+    public class VkUsers
+    {
+        [DataMember]
+        public VkUser[] response { get; set; }
+    }
     /// <summary>
-	/// Профиль вк
-	/// </summary>
-	[DataContract]
+    /// Профиль вк
+    /// </summary>
+    [DataContract]
     public class VkUser
     {
         [DataMember]

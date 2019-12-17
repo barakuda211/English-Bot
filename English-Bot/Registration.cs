@@ -13,10 +13,10 @@ namespace English_Bot
 
         static string Registration(Message msg)
         {
-            //UsersDictionary.AddUser(new User(msg.FromId));
-            User user = new User(VkRequests.VkRequestUser(msg.FromId));
-            
-            return "Registration Error";
+            VkUser vk = VkRequests.VkRequestUser(msg.FromId);
+            User user = new User(vk);
+            UsersDictionary.AddUser(user);
+            return "Привет, "+user.name+"! Твой id = "+user.userId+". Теперь я тебя знаю!";
         }
     }
 }

@@ -25,6 +25,7 @@ namespace English_Bot
 
         public User(VkUser vk_user)
         {
+            regId = 0;
             userId = vk_user.id;
             name = vk_user.first_name;
             //TODO: распарсить поля для заполнения списков слов
