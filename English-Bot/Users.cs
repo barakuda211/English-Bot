@@ -32,7 +32,7 @@ namespace English_Bot
         //Добавление пользователя
       public  bool AddUser(User sr)
         {
-            if (Dbase.ContainsValue(sr))
+            if (Dbase.ContainsKey(sr.userId))
                 return false;
             else
             {

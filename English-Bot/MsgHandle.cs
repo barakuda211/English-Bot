@@ -21,7 +21,7 @@ namespace English_Bot
             var answer = "Sorry, there is a empty answer :-(";
 
 
-            if (!UsersDictionary.HasUser(fromId))
+            if (!UsersDictionary.HasUser(fromId) || UsersDictionary[fromId].regId!=3)
                 answer = Registration(eventArgs.Message);
             else
             {

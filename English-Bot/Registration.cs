@@ -15,8 +15,18 @@ namespace English_Bot
         {
             VkUser vk = VkRequests.VkRequestUser(msg.FromId);
             User user = new User(vk);
-            UsersDictionary.AddUser(user);
-            return "Привет, "+user.name+"! Твой id = "+user.userId+". Теперь я тебя знаю!";
+            if (UsersDictionary.AddUser(user))
+                return "Привет, " + user.name + "! Твой id = " + user.userId + ". Теперь я тебя знаю!";
+            switch (UsersDictionary[msg.FromId].regId)
+            {
+                case 0: return "redId ="+UsersDictionary[msg.FromId].regId++;
+                    break;
+                case 1:
+                    return "redId =" + UsersDictionary[msg.FromId].regId++;
+                    break;
+                default: return "end!"; 
+                    break;
+            }
         }
     }
 }
