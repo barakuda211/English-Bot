@@ -1,30 +1,40 @@
 ﻿using System.Collections.Generic;
-//using Project_Word;
+using System.IO;
 
 namespace English_Bot
 {
-    public class Dictionary
+    public class WordsDictionary
     {
-        private Dictionary<long, Word> dict;
-      
-        
-        public Dictionary()
-        {
-            dict = new Dictionary<long, Word>();
-        }
-        /// <summary>
-        /// индексация с 1
-        /// </summary>
-        /// <param name="idex"></param>
-        /// <returns></returns>
-        public Word this[long idex]
-        {
+        private Dictionary<int, Word> dict = new Dictionary<int, Word>();
 
-            set { dict[idex] = value; }
-            get { return dict[idex]; }
+        private Word WordFromLine(string line)
+        {
+            string[] x = line.Split("  ");
+            return new Word(int.Parse(x[0]),x[1],x[2],x[3]);
         }
 
-        public Word GetWord(long id)
+        public void Init_dict(string fname="..//5000.txt")
+        {
+            var lines = File.ReadAllLines(fname);
+            foreach (string line in lines)
+            {
+                Word x = WordFromLine(line);
+                dict.Add(x.id, x);
+            }
+            System.Console.WriteLine("wordsDictionary Inited");
+        }
+
+        public WordsDictionary() { }
+
+        /*
+        public Word this[long index]
+        {
+
+            set { dict[index] = value; }
+            get { return dict[index]; }
+        }
+        */
+        public Word GetWord(int id)
         {
             if (dict.ContainsKey(id))
                 return dict[id];
@@ -55,9 +65,6 @@ namespace English_Bot
         /// </summary>
         public Word[] GetWordRus(string word)
         {
-
-            ////работает ,но вроде как такие запросы выполняются медленнее чем обычный цикл
-            //var lst = dict.Select(t => t.Value).Where(d => d.rus.Contains(word));
             List<Word> lst = new List<Word>();
 
             foreach (var t in dict)
@@ -68,19 +75,19 @@ namespace English_Bot
             return lst.ToArray();
         }
 
+        //
         public bool AddWord(Word w)
         {
-            if (dict.ContainsValue(w) == false)
+            if (!dict.ContainsKey(w.id))
             {
-                dict.Add(dict.Count + 1, w);
+                dict.Add(w.id, w);
                 return true;
             }
-
             return false;
-
         }
 
-        public bool DeleteWord(long id)
+        //Удалить слово
+        public bool DeleteWord(int id)
         {
             if (dict.ContainsKey(id) == true)
             {

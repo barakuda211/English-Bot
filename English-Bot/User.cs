@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using VkApi;
 
 namespace English_Bot 
@@ -29,6 +30,13 @@ namespace English_Bot
             userId = vk_user.id;
             name = vk_user.first_name;
             //TODO: распарсить поля для заполнения списков слов
+        }
+
+        private void parseWordsFields(VkUser vk_user)
+        {
+            var fields = string.Join(' ', vk_user.interests, vk_user.music, vk_user.movies, vk_user.quotes, vk_user.status, vk_user.games, vk_user.books);
+            var newFields = Regex.Split(fields, @"\b\w{2,}\b");
+            
         }
 
         public User(long? Userid=null, int regId=0, int Uslev=0, HashSet<string> UsTags=null, HashSet<long> learWrds=null, HashSet<long> UnlearWrds=null)
