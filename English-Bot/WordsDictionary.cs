@@ -26,14 +26,14 @@ namespace English_Bot
 
         public WordsDictionary() { }
 
-        /*
-        public Word this[long index]
+        
+        public Word this[int index]
         {
 
             set { dict[index] = value; }
             get { return dict[index]; }
         }
-        */
+        
         public Word GetWord(int id)
         {
             if (dict.ContainsKey(id))
@@ -96,6 +96,33 @@ namespace English_Bot
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Возвращает множество слов от английского
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public HashSet<int> GetEngId(string str)
+        {
+            var set = new HashSet<int>();
+            foreach (var x in dict)
+                if (x.Value.eng == str)
+                    set.Add(x.Key);
+            return set;
+        }
+        /// <summary>
+        /// Возвращает множество слов от русского
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public HashSet<int> GetRusId(string str)
+        {
+            var set = new HashSet<int>();
+            foreach (var x in dict)
+                if (x.Value.rus.Contains(str))
+                    set.Add(x.Key);
+            return set;
         }
     }
 

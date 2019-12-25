@@ -1,7 +1,8 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using VkApi;
+using System;
 
 namespace English_Bot 
 {
@@ -18,28 +19,39 @@ namespace English_Bot
         /// <summary>
         /// индексы слов , введенных юзером ,которые он запомнил
         /// </summary>
-        public HashSet<long> learnedWords { get; set; }
+        public HashSet<int> learnedWords { get; set; }
         /// <summary>
         /// индексы слов ,введенных юзером ,которые он не запомнил  
         /// </summary>
-        public HashSet<long> unLearnedWords { get; set; }
+        public HashSet<int> unLearnedWords { get; set; }
 
-        public User(VkUser vk_user)
+        public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;
             userId = vk_user.id;
             name = vk_user.first_name;
-            //TODO: распарсить поля для заполнения списков слов
+            unLearnedWords = new HashSet<int>();
+            parseWordsFields(vk_user, dict);//TODO: распарсить поля для заполнения списков слов
         }
 
-        private void parseWordsFields(VkUser vk_user)
+        private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
         {
-            var fields = string.Join(' ', vk_user.interests, vk_user.music, vk_user.movies, vk_user.quotes, vk_user.status, vk_user.games, vk_user.books);
-            var newFields = Regex.Split(fields, @"\b\w{2,}\b");
-            
+            var fields = string.Join(' ', vk_user.interests, vk_user.music, vk_user.movies, vk_user.quotes, vk_user.status, vk_user.games, vk_user.books).ToLower();
+            var newFields = Regex.Split(fields, @"\b\W+\b").Where(x=>x.Length>1).ToArray();
+            foreach (var x in newFields)
+            {
+                foreach (var y in dict.GetEngId(x))
+                    unLearnedWords.Add(y);
+                foreach (var y in dict.GetRusId(x))
+                    unLearnedWords.Add(y);
+            }
+            foreach (var x in unLearnedWords)
+            {
+                Console.WriteLine(dict[x]);
+            }
         }
 
-        public User(long? Userid=null, int regId=0, int Uslev=0, HashSet<string> UsTags=null, HashSet<long> learWrds=null, HashSet<long> UnlearWrds=null)
+        public User(int Userid=0, int regId=0, int Uslev=0, HashSet<string> UsTags=null, HashSet<int> learWrds=null, HashSet<int> UnlearWrds=null)
         {
             userId = Userid;
             this.regId = regId;

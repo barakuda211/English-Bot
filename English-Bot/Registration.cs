@@ -13,16 +13,20 @@ namespace English_Bot
 
         static string Registration(Message msg)
         {
-            VkUser vk = VkRequests.VkRequestUser(msg.FromId);
-            User user = new User(vk);
-            if (UsersDictionary.AddUser(user))
-                return "Привет, " + user.name + "! Твой id = " + user.userId + ". Теперь я тебя знаю!";
-            switch (UsersDictionary[msg.FromId].regId)
+            if (!UsersDictionary.HasUser(msg.FromId))
             {
-                case 0: return "redId ="+UsersDictionary[msg.FromId].regId++;
+                VkUser vk = VkRequests.VkRequestUser(msg.FromId);  //получаем юзера из вк
+                User user = new User(vk, wordsDictionary);
+                UsersDictionary.AddUser(user);  //создаём нового юзера
+            }
+            switch (UsersDictionary[msg.FromId].regId++)
+            {
+                case 0:
+                    
+                    return "redId ="+UsersDictionary[msg.FromId].regId;
                     break;
                 case 1:
-                    return "redId =" + UsersDictionary[msg.FromId].regId++;
+                    return "redId =" + UsersDictionary[msg.FromId].regId;
                     break;
                 default: return "end!"; 
                     break;
