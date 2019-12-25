@@ -31,7 +31,7 @@ namespace English_Bot
             userId = vk_user.id;
             name = vk_user.first_name;
             unLearnedWords = new HashSet<int>();
-            parseWordsFields(vk_user, dict);//TODO: распарсить поля для заполнения списков слов
+            parseWordsFields(vk_user, dict);
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
@@ -63,7 +63,7 @@ namespace English_Bot
 
         public override string ToString()
         {
-            return "your level " + userLevel.ToString();
+            return userId+" "+name;
         }
 
         public bool ChangeLevel(int level)

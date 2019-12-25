@@ -13,6 +13,7 @@ namespace English_Bot
 
         static string Registration(Message msg)
         {
+            var id = msg.FromId;
             if (!UsersDictionary.HasUser(msg.FromId))
             {
                 VkUser vk = VkRequests.VkRequestUser(msg.FromId);  //получаем юзера из вк
@@ -22,7 +23,7 @@ namespace English_Bot
             switch (UsersDictionary[msg.FromId].regId++)
             {
                 case 0:
-                    
+                    Console.WriteLine("Registered: "+UsersDictionary[id]);
                     return "redId ="+UsersDictionary[msg.FromId].regId;
                     break;
                 case 1:
