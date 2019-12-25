@@ -15,7 +15,7 @@ namespace English_Bot
         /// <summary>
         /// слово на русском 
         /// </summary>
-        public string rus { get; set; }
+        public string[] rus { get; set; }
        public string transcript { get; set; }
         /// <summary>
         /// мб блок с идиомами слова ,примерами  
@@ -29,19 +29,19 @@ namespace English_Bot
         /// </summary>
         public HashSet<string> tags { get; set; }
 
-        public Word(int Id,string Eng,string Tran,string Rus)
+        public Word(int Id,string Eng,string Tran,string[] Rus)
         {
             id = Id;
-            eng = Eng;
+            eng = Eng.ToLower();
             transcript = Tran;
             rus = Rus;
         }
 
-        public Word(int Id, string Eng, string Rus, string Trans, string Add, HashSet<string> Tags)
+        public Word(int Id, string Eng, string[] Rus, string Trans, string Add, HashSet<string> Tags)
         {
             id = Id;
             eng = Eng.ToLower();
-            rus = Rus.ToLower();
+            rus = Rus;
             transcript = Trans;
             addition = Add;
             tags = Tags;

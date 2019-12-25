@@ -9,8 +9,12 @@ namespace English_Bot
 
         private Word WordFromLine(string line)
         {
-            string[] x = line.Split("  ");
-            return new Word(int.Parse(x[0]),x[1],x[2],x[3]);
+            int n = line.IndexOf(']');
+            string eng = line.Substring(0, n + 1);
+            string rus = line.Substring(n + 3,line.Length-n-4);
+            string[] x = eng.Split("  ");
+            string[] y = rus.Split(", ");
+            return new Word(int.Parse(x[0]),x[1],x[2],y);
         }
 
         public void Init_dict(string fname="..//5000.txt")
@@ -68,10 +72,12 @@ namespace English_Bot
             List<Word> lst = new List<Word>();
 
             foreach (var t in dict)
-            {
-                if (t.Value.rus.Contains(word.ToLower()))
-                    lst.Add(t.Value);
-            }
+                foreach (var y in t.Value.rus)
+                    if (word.ToLower() == y)
+                    {
+                        lst.Add(t.Value);
+                        break;
+                    }
             return lst.ToArray();
         }
 
@@ -120,8 +126,12 @@ namespace English_Bot
         {
             var set = new HashSet<int>();
             foreach (var x in dict)
-                if (x.Value.rus.Contains(str))
-                    set.Add(x.Key);
+                foreach (var y in x.Value.rus)
+                    if (str == y)
+                    {
+                        set.Add(x.Key);
+                        break;
+                    }
             return set;
         }
     }
