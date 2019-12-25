@@ -50,7 +50,10 @@ namespace English_Bot
   
         public override string ToString()
         {
-            return id+" "+eng + " " + transcript + " " + rus;
+            string res = id + " " + eng + " " + transcript + " ";
+            foreach (var x in rus)
+                res = res + x + " ";
+            return res;
         }
         
      
