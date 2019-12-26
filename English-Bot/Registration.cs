@@ -16,18 +16,23 @@ namespace English_Bot
             var id = msg.FromId;
             if (!UsersDictionary.HasUser(msg.FromId))
             {
-                VkUser vk = VkRequests.VkRequestUser(msg.FromId);  //получаем юзера из вк
-                User user = new User(vk, wordsDictionary);
-                UsersDictionary.AddUser(user);  //создаём нового юзера
+                VkUser vk = VkRequests.VkRequestUser(id);  //получаем юзера из вк
+                User us = new User(vk, wordsDictionary);
+                UsersDictionary.AddUser(us);  //создаём нового юзера
             }
-            switch (UsersDictionary[msg.FromId].regId++)
+            User user = UsersDictionary[id];
+            switch (user.regId++)
             {
                 case 0:
-                    Console.WriteLine("Registered: "+UsersDictionary[id]);
-                    return "redId ="+UsersDictionary[msg.FromId].regId;
+                    Console.WriteLine("Registered: "+ user.name+" "+user.userId);
+                    return "Приветствую, " + user.name+"!\n" +
+                        "Вам будет предложен тест на знание английских слов.\n" +
+                        "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения.\n" +
+                        "Жду вашей команды: \"Готов\".";
                     break;
                 case 1:
-                    return "redId =" + UsersDictionary[msg.FromId].regId;
+                    if(msg.Text.ToLower() == "готов")
+                    return "redId =" + user.regId;
                     break;
                 default: return "end!"; 
                     break;
