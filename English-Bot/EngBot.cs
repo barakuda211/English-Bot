@@ -12,6 +12,7 @@ using Project;
 using Project_Word;
 using System.Threading;
 
+
 namespace English_Bot
 {
     class EngBot
@@ -37,7 +38,13 @@ namespace English_Bot
             dictionary.AddWord(new Word(5, "five", "пять", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(6, "six", "шесть", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
-            
+            users.GetUser(1).learnedWords.Add(1);
+            users.GetUser(1).learnedWords.Add(2);
+            users.GetUser(1).learnedWords.Add(3);
+            users.GetUser(1).learnedWords.Add(4);
+            users.GetUser(1).learnedWords.Add(5);
+            users.GetUser(1).learnedWords.Add(6);
+            //users.GetUser(1).learnedWords.Add(7);
 
             long temp = 210036813;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
@@ -63,13 +70,13 @@ namespace English_Bot
             //instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
             
-            instanse.Api.Messages.Send(new MessagesSendParams()
+            /*instanse.Api.Messages.Send(new MessagesSendParams()
             {
                 RandomId = Environment.TickCount,
                 PeerId = eventArgs.Message.PeerId,
                 Message =
                     $"{fromId.Value}, i have captured your message: '{text}'. its length is {text.Length}. number of spaces: {text.Count(x => x == ' ')}"
-            });
+            });*/
         }
         //отправляет сообщение юзеру
         static void SendMessage(long userID, string message)
@@ -104,7 +111,7 @@ namespace English_Bot
             long userID = (long)userIDobj;
             SendMessage(userID, "Nu 4to, hlop4ik, sigraem v igru? Pishi \"Готов\"");
             WaitWordFromUser(userID, "готов", true);
-            //WriteLine("готов получен");
+            WriteLine("готов получен");
 
             
 
@@ -124,6 +131,7 @@ namespace English_Bot
                 right.Add(WaitWordFromUser(userID, (r == 1 ? word.eng : word.rus), false));
             }
 
+            WriteLine("Слова пройдены");
             SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. Good job!(no)");
             
 
