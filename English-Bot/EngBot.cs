@@ -12,6 +12,7 @@ namespace English_Bot
 {
     class EngBot
     {
+        static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
         static void Main(string[] args)
         {
             //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
@@ -19,7 +20,7 @@ namespace English_Bot
 
             //ExampleSettings settings = ExampleSettings.TryToLoad(logger);
 
-            VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
+            SendMessage(210036813, "hi");
 
             bot.OnMessageReceived += NewMessageHandler;
 
@@ -43,6 +44,15 @@ namespace English_Bot
                 PeerId = eventArgs.Message.PeerId,
                 Message =
                     $"{fromId.Value}, i have captured your message: '{text}'. its length is {text.Length}. number of spaces: {text.Count(x => x == ' ')}"
+            });
+        }
+        static void SendMessage(long userID, string message)
+        {
+            bot.Api.Messages.Send(new MessagesSendParams()
+            {
+                UserId = userID,
+                Message = message,
+                RandomId = Environment.TickCount
             });
         }
     }
