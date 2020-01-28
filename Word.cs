@@ -1,50 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Project_Word
 {
+    [DataContract]
     public class Word
     {
+        [DataMember]
         /// <summary>
         /// ID слова
         /// </summary>
         public long id { get; set; }
-        /// <summary>
-        /// Часть речи
-        /// </summary>
-        public string type { get; set; }
+        [DataMember]
         /// <summary>
         /// слово на eng 
         /// </summary>
         public string eng { get; set; }
+        [DataMember]
         /// <summary>
-        /// Синонимы на английском
+        /// Транскрипция
         /// </summary>
-        public List<string> synonyms { get; set; }
+        public string trans { get; set; }
+        [DataMember]
         /// <summary>
         /// слово на русском 
         /// </summary>
         public string rus { get; set; }
-        /// <summary>
-        /// значение слова на англе 
-        /// </summary>
-        public List<string> mean_eng { get; set; }
-        /// <summary>
-        /// значение слова на русском  
-        /// </summary>
-        public List<string> mean_rus { get; set; }
-        /// <summary>
-        /// Транскрипция с внешними скобочками "[transcription]"
-        /// </summary>
-        public string transcription { get; set; }
-        /// <summary>
-        /// мб блок с идиомами слова ,примерами  
-        /// </summary>
-        public List<string> eng_examples { get; set; }
+        [DataMember]
         /// <summary>
         /// Уровень слова
         /// </summary>
         public int level { get; set; }
+        [DataMember]
         /// <summary>
         /// теги слова 
         /// <example>
@@ -52,39 +44,58 @@ namespace Project_Word
         /// </example>
         /// </summary>
         public HashSet<string> tags { get; set; }
+        [DataMember]
+        /// <summary>
+        /// Описание на английском
+        /// </summary>
+        public SpaceYandexEnEn.YandexEnEn mean_eng { get; set; }
+        [DataMember]
+        /// <summary>
+        /// Описание на русском
+        /// </summary>
+        public SpaceYandexEnRu.YandexEnRu mean_rus { get; set; }
+        [DataMember]
+        /// <summary>
+        /// Описание русского перевода на аглийском
+        /// </summary>
+        public SpaceYandexRuEn.YandexRuEn mean_rus_eng { get; set; }
+        [DataMember]
+        /// <summary>
+        /// Описание русского перевода на русском
+        /// </summary>
+        public SpaceYandexRuRu.YandexRuRu mean_rus_rus { get; set; }
 
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="Id">ID</param>
-        /// <param name="ty">Часть речи</param>
         /// <param name="Eng">Слово на английском</param>
-        /// <param name="syn">Синонимы слова на английском</param>
         /// <param name="Rus">Слово на русском</param>
         /// <param name="MeanE">Значение слова на английском</param>
         /// <param name="MeanR">Значение слова на русском</param>
+        /// <param name="MeanRE">Значение русского перевода на аглийском</param>
+        /// <param name="MeanRR">Значение русского перевода на русском</param>
         /// <param name="Trans">Транскрипция</param>
-        /// <param name="eng_ex">Примерв на английском</param>
         /// <param name="lev">Уровень слова</param>
         /// <param name="Tags">Тэги</param>
-        public Word(long Id, string ty, string Eng, List<string> syn, string Rus, List<string> MeanE, List<string> MeanR, string Trans, List<string> eng_ex, int lev, HashSet<string> Tags)
+        public Word(long Id, string Eng, string tr, string Rus, SpaceYandexEnEn.YandexEnEn MeanE, SpaceYandexEnRu.YandexEnRu MeanR, 
+            SpaceYandexRuEn.YandexRuEn MeanRE, SpaceYandexRuRu.YandexRuRu MeanRR, int lev, HashSet<string> Tags)
         {
             id = Id;
-            type = ty;
             eng = Eng.ToLower();
-            synonyms = syn; 
+            trans = tr;
             rus = Rus.ToLower();
             mean_eng = MeanE;
             mean_rus = MeanR;
-            transcription = Trans;
-            eng_examples = eng_ex;
+            mean_rus_eng = MeanRE;
+            mean_rus_rus = MeanRR;
             level = lev;
             tags = Tags;
         }
   
         public override string ToString()
         {
-            return eng + "---" + mean_eng + "перевод и значение " + rus + mean_rus;
+            return eng + ": " + mean_rus.def[0].text;
         }
     }
 }
