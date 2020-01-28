@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization.Json;
 using Project_Word;
 using System.IO;
+using System.Text; 
 using System.Text.RegularExpressions;
 using Classes;
 using static System.Threading.Thread;
 using static System.Random;
+using SpaceYandexEnEn;
+using SpaceYandexEnRu;
+using SpaceYandexRuRu;
+using SpaceYandexRuEn;
 
 /// <summary>
 /// Необходимо доработать запись всех данных из слова формата YanWordEn
@@ -44,127 +49,179 @@ namespace Dictionary
         }
 
         /// <summary>
-        /// Переводим слово Яндекса в наш формат Word (Необходимо дописать)
+        /// Переводим слово Яндекса в наш формат Word 
         /// </summary>
         /// <param name="word"></param>
-        /// <param name="en"></param>
-        /// <param name="ru"></param>
-        /// <param name="w"></param>
-        /// <param name="all"></param>
-        /// <param name="trans"></param>
-        /// <param name="err"></param>
-        static void DescriptEngFromYandex(string word, ref YanWordEng en, ref YanWordEng ru, ref List<Word> w, ref List<Word> all, string trans, out bool err)
+        /// <param name="enen"></param>
+        /// <param name="enru"></param>
+        /// <param name="ruen"></param>
+        /// <param name="ruru"></param>
+        /// <param name="rus">Значение на русском</param>
+        static void DescriptYandexEn(string word, ref YandexEnEn enen, ref YandexEnRu enru, ref YandexRuEn ruen, ref YandexRuRu ruru, out string rus)
         {
-            err = false;
-            try
-            {
-                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=en-en&text=" + word;
-                //string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=en-ru&text=" + word;
-                string response1 = Methods.Request(request1);
-                //string response2 = Methods.Request(request2);
-                en = Methods.DeSerializationObjFromStr<YanWordEng>(response1);
-                //ru = Methods.DeSerializationObjFromStr<YanWordEng>(response2);
-                /*foreach (var def in ru.GetDef())
-                {
-                    long id = GenID(ref all); 
-                    var type = def.GetPos(); 
-                    var syn = en.GetDef().First().GetTr().First().GetSyn().Select(x => x.GetText()).ToList();
-                    var rus = def.GetText();
-                    var meanE = en.GetDef().First().GetTr().Select(x => x.GetText()).ToList();
-                    var meanR = def.GetTr().Select(e => e.GetText()).ToList();
-                    var tr = en.GetDef().First().GetTs();
-                    if (tr == null)
-                        tr = trans;
-                    var eng_ex = en.GetDef().First().GetTr().First().GetEx().Select(ex => ex.GetText()).ToList();
-                    w.Add(new Word(id, type, word, syn, rus, meanE, meanR, tr, eng_ex, -1, new HashSet<string>()));
-                }*/
-            }
-            catch { err = true; }
+            string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=en-en&text=" + word;
+            string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=en-ru&text=" + word;
+            string request3 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=ru-en&text=";
+            string request4 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + key + @"&lang=ru-ru&text=";
+            string response1 = Methods.Request(request1);
+            Console.WriteLine("Length of response1 = " + response1.Length);
+            string response2 = Methods.Request(request2);
+            enen = Methods.DeSerializationObjFromStr<YandexEnEn>(response1);
+            Console.WriteLine("Defenitions count = " + enen.def.Count);
+            enru = Methods.DeSerializationObjFromStr<YandexEnRu>(response2);
+            rus = enru.def[0].tr[0].text;
+            request3 += rus;
+            request4 += rus;
+            string response3 = Methods.Request(request3);
+            string response4 = Methods.Request(request4);
+            ruen = Methods.DeSerializationObjFromStr<YandexRuEn>(response3);
+            ruru = Methods.DeSerializationObjFromStr<YandexRuRu>(response4);
         }
 
         static void Main(string[] args)
         {
             // Создаём сериализаторы
             var jf_word = new DataContractJsonSerializer(typeof(List<Word>));
-            var jf_yan = new DataContractJsonSerializer(typeof(List<YanWordEng>));
+            var jf_yan_enen = new DataContractJsonSerializer(typeof(List<YandexEnEn>));
+            var jf_yan_enru = new DataContractJsonSerializer(typeof(List<YandexEnRu>));
+            var jf_yan_ruen = new DataContractJsonSerializer(typeof(List<YandexRuEn>));
+            var jf_yan_ruru = new DataContractJsonSerializer(typeof(List<YandexRuRu>));
 
             // Файл for Word
-            //var writeAsWord = File.CreateText("our_dict.json");
+            var writeAsWord = File.CreateText("eng_words.json");
 
             // Файл for Yandex (english to english)
-            var writeAsYan = File.CreateText("yan_dict_en-en.json");
+            var writeAsYandexEnEn = File.CreateText("yan_dict_en-en.json");
             // Файл for Yandex (english to russian)
-            //var writeAsRus = File.CreateText("yan_dict_en-ru.json");
+            var writeAsYandexEnRu = File.CreateText("yan_dict_en-ru.json");
+            // Файл for Yandex (russian to english)
+            var writeAsYandexRuEn = File.CreateText("yan_dict_ru-en.json");
+            // Файл for Yandex (russian to russian)
+            var writeAsYandexRuRu = File.CreateText("yan_dict_ru-ru.json");
+
             // Исходный список слов
-            string[] base_words = File.ReadAllLines("5000.txt");
+            var base_words = File.ReadLines("5000.txt");
             // Список слов в формате Word
             List<Word> list = new List<Word>();
-            // Список слов в формате YanWordEng для англйских слов
-            List<YanWordEng> yan_list_en = new List<YanWordEng>();
-            // Список в формате YanWordEng для русских слов
-            //List<YanWordEng> yan_list_ru = new List<YanWordEng>(); 
+            // Список слов в формате YandexEnEn
+            List<YandexEnEn> yan_list_en_en = new List<YandexEnEn>();
+            // Список в формате YandexEnRu
+            List<YandexEnRu> yan_list_en_ru = new List<YandexEnRu>();
+            // Список в формате YandexRuEn
+            List<YandexRuEn> yan_list_ru_en = new List<YandexRuEn>();
+            // Список в формате YandexRuRu
+            List<YandexRuRu> yan_list_ru_ru = new List<YandexRuRu>();
+
             Console.WriteLine("Serializers, files and lists were created!");
-            int i = 1;
+            int step = 1;
+            int id = 1;
             foreach (var line in base_words)
             {
+                // Выделяем слово
+                string word = Regex.Match(line, @"\b[a-z]+\b").Value;
+                //string word = line.Trim().ToLower();
                 try
                 {
-                    // Выделяем слово
-                    string word = Regex.Match(line, @"\b[a-z]+\b").Value;
-                    // Выводим сообщение о записи
-                    Console.WriteLine("We try to get english def of '" + word + "'");
-                    // Номер слова (не путать с ID)
-                    long id;
-                    // Получаем номер слова
-                    bool f = long.TryParse(Regex.Match(line, @"^\d+\b").Value, out id);
-                    if (!f)
-                        Console.WriteLine("Bad word in: '" + line + "'");
-                    // Берём транскрипцию
-                    string trans = Regex.Match(line, @"\[\w*\]").Value;
-                    // Взяди транскрипцию
-                    trans = trans.Substring(1, trans.Length - 2);
-                    // Заводим слова в формате Word и YanWordEng и список слов Word
-                    YanWordEng en = null;
-                    YanWordEng ru = null;
-                    List<Word> w = new List<Word>();
-                    // Ошибка, передаётся в функцию ниже для определения того, была ли ошибка
-                    bool err;
-                    // В ru и en записались слова в нужных форматах
-                    DescriptEngFromYandex(word, ref en, ref ru, ref w, ref list, trans, out err);
-                    if (!err && en != null)
+                    if (!word.All(c => char.IsLetter(c)))
                     {
-                        // Добавляем слова в списки, если ошибки не было
-                        list.AddRange(w);
-                        yan_list_en.Add(en);
-                        //yan_list_ru.Add(ru); 
-                        Console.WriteLine("Wrote word #" + i);
+                        throw new ArgumentException("Bad word in line " + step);
                     }
-                    else
-                    {
-                        continue;
-                    }
-                    ++i;
-                    Sleep(1);
                 }
-                catch { }
+                catch (ArgumentException ar) { Console.WriteLine(ar.Message); }
+
+                // Выводим сообщение о записи
+                Console.WriteLine("Reading '" + word + "'" + " - " + step);
+
+                // Номер слова (не путать с ID)
+                //long id;
+                // Получаем номер слова
+                /*bool f = long.TryParse(Regex.Match(line, @"^\d+\b").Value, out id);
+                if (!f)
+                    Console.WriteLine("Bad word in: '" + line + "'");*/
+
+
+                // Берём транскрипцию
+                string trans = Regex.Match(line, @"\[\w*\]").Value;
+
+                // Заводим слова в формате Yandex
+                YandexEnEn en_en = new YandexEnEn();
+                YandexEnRu en_ru = new YandexEnRu();
+                YandexRuEn ru_en = new YandexRuEn();
+                YandexRuRu ru_ru = new YandexRuRu();
+
+                bool err = false;
+                string rus = "";
+
+                // В ru и en записались слова в нужных форматах
+                try
+                {
+                    DescriptYandexEn(word, ref en_en, ref en_ru, ref ru_en, ref ru_ru, out rus);
+                }
+                catch { Console.WriteLine("Error in description"); err = true; }
+
+                if (!err)
+                {
+                    // Добавляем слова в списки, если ошибки не было
+                    try
+                    {
+                        Word add = new Word(id, word, trans, rus, en_en, en_ru, ru_en, ru_ru, 0, new HashSet<string>());
+                        ++id;
+                        list.Add(add);
+                        yan_list_en_en.Add(en_en);
+                        yan_list_en_ru.Add(en_ru);
+                        yan_list_ru_en.Add(ru_en);
+                        yan_list_ru_ru.Add(ru_ru);
+                        Console.WriteLine("Count -------------> " + list.Count);
+                    }
+                    catch { Console.WriteLine("Error in step " + step); }
+                }
+                else
+                {
+                    Console.WriteLine("Error in step #" + step);
+                    continue;
+                }
+
+                Console.WriteLine("Wrote word #" + step);
+                Console.WriteLine(); 
+                Sleep(1);
+                ++step;
             }
-            /*try
-            {
-                jf_word.WriteObject(writeAsWord.BaseStream, list);
-            }
-            catch { Console.WriteLine("Error in writing our words"); }*/
+
             try
             {
-                // Записываем итоговый список в файл
-                jf_yan.WriteObject(writeAsYan.BaseStream, yan_list_en);
+                // Word
+                jf_word.WriteObject(writeAsWord.BaseStream, list);
+            }
+            catch (Exception e){ Console.WriteLine("Error in writing our words");
+                Console.WriteLine(e.Message);
+            }
+            try
+            {
+                // YandexEnEn
+                jf_yan_enen.WriteObject(writeAsYandexEnEn.BaseStream, yan_list_en_en);
             }
             catch { Console.WriteLine("Error in writein english words from yandex"); }
-            /*try
+            try
             {
-                jf_yan.WriteObject(writeAsRus.BaseStream, yan_list_ru);
+                // YandexEnRu
+                jf_yan_enru.WriteObject(writeAsYandexEnRu.BaseStream, yan_list_en_ru);
             }
-            catch { Console.WriteLine("Error in writing russian words from yandex"); }*/
+            catch { Console.WriteLine("Error in writing russian words from yandex"); }
+            try
+            {
+                // YandexRuEn
+                jf_yan_ruen.WriteObject(writeAsYandexRuEn.BaseStream, yan_list_ru_en);
+            }
+            catch { Console.WriteLine("Error in writing russian defenitions"); }
+            try
+            {
+                // YandexRuRu
+                jf_yan_ruru.WriteObject(writeAsYandexRuRu.BaseStream, yan_list_ru_ru);
+            }
+            catch { Console.WriteLine("Error in writing english definitions"); }
+
             Console.WriteLine("Our lists were written down into files!");
+            Console.WriteLine("Steps = " + (step - 1) + " | Good = " + (id - 1));
             Console.ReadLine();
         }
     }
