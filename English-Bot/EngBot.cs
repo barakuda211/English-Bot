@@ -20,7 +20,6 @@ namespace English_Bot
         static Dictionary dictionary = new Dictionary();//подгрузку из файла нужно сделать
         static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
-        static (long, string, bool) userMessage = (0, "", false);//переменная хранит последнее сообщение от всех пользователей(необходимо в user создать такое, чтобы хранилось последнее сообщение для каждого пользователя)
         static void Main(string[] args)
         {
             //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
@@ -65,7 +64,7 @@ namespace English_Bot
             var fromId = eventArgs.Message.FromId;
             var text = eventArgs.Message.Text;
 
-            userMessage = (fromId.Value, text.ToLower(), false);
+            users.GetUserVKID(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
 
             //instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
@@ -83,9 +82,9 @@ namespace English_Bot
         {
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
-                RandomId = Environment.TickCount,
-                UserId = userID,
-                Message = message
+                RandomId = Environment.TickCount64,
+                PeerId = userID,
+                Message = message,
             });
             WriteLine("слово отправлено");
         }
@@ -93,18 +92,19 @@ namespace English_Bot
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
         static bool WaitWordFromUser(long userID, string word, bool always)
         {
+            var user = users.GetUserVKID(userID);
             if (always)
             {
-                while (userMessage != (userID, word, false)) Thread.Sleep(100);  //ожидание согласия
+                while (user.lastMsg.Item1 != word || user.lastMsg.Item2 != false) Thread.Sleep(100);  //ожидание согласия
                 WriteLine("готов получен");
-                userMessage.Item3 = true;
+                user.lastMsg.Item2 = true;
             }
             if (!always)
             { 
-                while (userMessage.Item1 != userID || userMessage.Item3 != false) Thread.Sleep(100);
-                WriteLine(userMessage.Item1 + " " + userMessage.Item2 + " " + userMessage.Item3);
-                userMessage.Item3 = true;
-                return userMessage.Item2 == word;
+                while (user.lastMsg.Item2 != false) Thread.Sleep(100);
+                WriteLine("слово получено");
+                user.lastMsg.Item2 = true;
+                return user.lastMsg.Item1 == word;
             }
             return true;//заглушка
         }

@@ -18,8 +18,9 @@ namespace Project {
         /// <summary>
         /// последнее слово(текст), написанное пользователем
         /// bool избавляет от повторного считывания слова(текста)
+        /// 3-ий параметр - это индификатор сообщения
         /// </summary>
-        public (string, bool) lastMsg;
+        public (string, bool, long) lastMsg;
         public User(long Userid, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {
             userId = Userid;
@@ -27,7 +28,7 @@ namespace Project {
             userTags = UsTags;
             learnedWords = learWrds;
             unLearnedWords = UnlearWrds;
-            lastMsg = ("", true);
+            lastMsg = ("", true, 0);
         }
 
         public override string ToString()
