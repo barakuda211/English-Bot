@@ -134,7 +134,7 @@ namespace English_Bot
             }
 
             WriteLine("Слова пройдены");
-            SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. Good job!(no)");
+            SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. ");
 
             //исправление ошибок юзера
 
