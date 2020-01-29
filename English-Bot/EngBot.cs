@@ -28,7 +28,7 @@ namespace English_Bot
             //ExampleSettings settings = ExampleSettings.TryToLoad(logger);
 
             
-            users.AddUser(new User(210036813, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>())); 
+            users.AddUser(new User(223707460, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>())); 
              
             dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null)) ;
             dictionary.AddWord(new Word(2, "two", "два", "", "", "", "", 1, null));
@@ -54,7 +54,7 @@ namespace English_Bot
 
 
             WriteLine("Bot has started!");
-            ReadLine();
+            //ReadLine();
         }
         static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
         {
@@ -64,6 +64,7 @@ namespace English_Bot
             var fromId = eventArgs.Message.FromId;
             var text = eventArgs.Message.Text;
 
+            if (users.GetUserVKID(fromId.Value) == null) users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
             users.GetUserVKID(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
 
             //instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
@@ -78,19 +79,20 @@ namespace English_Bot
             });*/
         }
         //отправляет сообщение юзеру
-        static void SendMessage(long userID, string message)
+        static void SendMessage(long userID, string message, long[] msgIDs = null)
         {
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
                 RandomId = Environment.TickCount64,
-                PeerId = userID,
+                UserId = userID,
                 Message = message,
+                ForwardMessages = msgIDs
             });
             WriteLine("слово отправлено");
         }
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
-        static bool WaitWordFromUser(long userID, string word, bool always)
+        static long WaitWordFromUser(long userID, string word, bool always)
         {
             var user = users.GetUserVKID(userID);
             if (always)
@@ -103,10 +105,11 @@ namespace English_Bot
             { 
                 while (user.lastMsg.Item2 != false) Thread.Sleep(100);
                 WriteLine("слово получено");
+                WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
-                return user.lastMsg.Item1 == word;
+                return (user.lastMsg.Item1 == word ? 0 : user.lastMsg.Item3);
             }
-            return true;//заглушка
+            return 0;//заглушка
         }
         //тестирование пользователя по !6! последним изученным словам
         static void Testing(object IDobj)
@@ -123,34 +126,36 @@ namespace English_Bot
             var rand = new Random();
 
             //лист для проверки ответов
-            List<bool> right = new List<bool>();
+            List<long> msgIDs = new List<long>();
 
             foreach (long idx in lastLW)
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
                 SendMessage(userID, (r == 0 ? word.eng : word.rus)); 
-                right.Add(WaitWordFromUser(userID, (r == 1 ? word.eng : word.rus), false));
+                msgIDs.Add(WaitWordFromUser(userID, (r == 1 ? word.eng : word.rus), false));
             }
 
             WriteLine("Слова пройдены");
-            SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. ");
+            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastLW.Count()}. ");
 
             //исправление ошибок юзера
 
-            if (right.FindAll(x => x).Count() < lastLW.Count())
+            if (msgIDs.FindAll(x => x == 0).Count() < lastLW.Count())
             {
-                string fixAnswer = "Вы ошиблись в следующем:";
+                SendMessage(userID, "Вы ошиблись в следующем:");
 
-                foreach (var pnt in right.Zip(lastLW, (x, y) => new { A = x, B = y }))
+                long[] aError = new long[1];
+                foreach (var pnt in msgIDs.Zip(lastLW, (x, y) => new { A = x, B = y }))
                 {
-                    if (!pnt.A)
+                    if (pnt.A > 0)
                     {
                         var temp = dictionary.GetWord(pnt.B);
-                        fixAnswer += $"\n{temp.eng} - {temp.rus}";
+                        aError[0] = pnt.A;
+                        SendMessage(userID, $"\n{temp.eng} - {temp.rus}", aError);
                     }
                 }
-                SendMessage(userID, fixAnswer);
+                
             }
         }
     }
