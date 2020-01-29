@@ -20,7 +20,7 @@ namespace English_Bot
         static Dictionary dictionary = new Dictionary();//подгрузку из файла нужно сделать
         static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
-        static (long, string, bool) userMessage = (0, "", false);
+        static (long, string, bool) userMessage = (0, "", false);//переменная хранит последнее сообщение от всех пользователей(необходимо в user создать такое, чтобы хранилось последнее сообщение для каждого пользователя)
         static void Main(string[] args)
         {
             //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
@@ -40,13 +40,13 @@ namespace English_Bot
             dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
             users.GetUser(1).learnedWords.Add(1);
             users.GetUser(1).learnedWords.Add(2);
-            users.GetUser(1).learnedWords.Add(3);
-            users.GetUser(1).learnedWords.Add(4);
-            users.GetUser(1).learnedWords.Add(5);
-            users.GetUser(1).learnedWords.Add(6);
+            //users.GetUser(1).learnedWords.Add(3);
+            //users.GetUser(1).learnedWords.Add(4);
+            //users.GetUser(1).learnedWords.Add(5);
+            //users.GetUser(1).learnedWords.Add(6);
             //users.GetUser(1).learnedWords.Add(7);
 
-            long temp = 210036813;
+            long temp = 1;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(temp);
 
@@ -83,10 +83,11 @@ namespace English_Bot
         {
             bot.Api.Messages.Send(new MessagesSendParams()
             {
+                RandomId = Environment.TickCount,
                 UserId = userID,
-                Message = message,
-                RandomId = Environment.TickCount
+                Message = message
             });
+            WriteLine("слово отправлено");
         }
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
@@ -95,28 +96,29 @@ namespace English_Bot
             if (always)
             {
                 while (userMessage != (userID, word, false)) ;  //ожидание согласия
+                WriteLine("готов получен");
                 userMessage.Item3 = true;
             }
             if (!always)
             { 
                 while (userMessage.Item1 != userID || userMessage.Item3 != false) ;
+                WriteLine("слово получено");
                 userMessage.Item3 = true;
                 return userMessage.Item2 == word;
             }
             return true;//заглушка
         }
         //тестирование пользователя по !6! последним изученным словам
-        static void Testing(object userIDobj)
+        static void Testing(object IDobj)
         {
-            long userID = (long)userIDobj;
+            long userID = users.GetUser((long)IDobj).userId; ;
             SendMessage(userID, "Nu 4to, hlop4ik, sigraem v igru? Pishi \"Готов\"");
             WaitWordFromUser(userID, "готов", true);
-            WriteLine("готов получен");
 
             
 
             //если слов меньше, то так тому и быть
-            var lastLW = users.GetUser(1).learnedWords.TakeLast(6);
+            var lastLW = users.GetUser((long)IDobj).learnedWords.TakeLast(6);
 
             var rand = new Random();
 
@@ -127,13 +129,12 @@ namespace English_Bot
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
-                SendMessage(userID, (r == 0 ? word.eng : word.rus));
+                SendMessage(userID, (r == 0 ? word.eng : word.rus)); 
                 right.Add(WaitWordFromUser(userID, (r == 1 ? word.eng : word.rus), false));
             }
 
             WriteLine("Слова пройдены");
             SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. Good job!(no)");
-            
 
             //исправление ошибок юзера
         }
