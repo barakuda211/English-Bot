@@ -64,7 +64,7 @@ namespace English_Bot
             var fromId = eventArgs.Message.FromId;
             var text = eventArgs.Message.Text;
 
-            if (users.GetUserVKID(fromId.Value) == null) users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
+            if (users.GetUserVKID(fromId.Value) == null) users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
             users.GetUserVKID(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
 
             //instanse.Logger.LogInformation($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
@@ -128,7 +128,7 @@ namespace English_Bot
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();
 
-            foreach (long idx in lastLW)
+            foreach (long idx in lastLW)//присылает и ждет ответ на последние изученные слова
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
@@ -141,17 +141,17 @@ namespace English_Bot
 
             //исправление ошибок юзера
 
-            if (msgIDs.FindAll(x => x == 0).Count() < lastLW.Count())
+            if (msgIDs.FindAll(x => x == 0).Count() < lastLW.Count())//если есть ошибки
             {
                 SendMessage(userID, "Вы ошиблись в следующем:");
 
                 long[] aError = new long[1];
                 foreach (var pnt in msgIDs.Zip(lastLW, (x, y) => new { A = x, B = y }))
                 {
-                    if (pnt.A > 0)
+                    if (pnt.A > 0)//идет по ошибкам
                     {
                         var temp = dictionary.GetWord(pnt.B);
-                        aError[0] = pnt.A;
+                        aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
                         SendMessage(userID, $"\n{temp.eng} - {temp.rus}", aError);
                     }
                 }
