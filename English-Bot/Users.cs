@@ -28,6 +28,16 @@ namespace Project {
                 return null;
         }
 
+        public User GetUserVKID(long id)
+        {
+            foreach(var k in Dbase)
+            {
+                if (k.Value.userId == id)
+                    return GetUser(k.Key);
+            }
+            return null;
+        }
+
       public  bool AddUser(User sr)
         {
             if (Dbase.ContainsValue(sr))
