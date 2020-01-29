@@ -15,7 +15,11 @@ namespace Project {
         /// индексы слов ,введенных юзером ,которые он не запомнил  
         /// </summary>
         public HashSet<long> unLearnedWords { get; set; }
-
+        /// <summary>
+        /// последнее слово(текст), написанное пользователем
+        /// bool избавляет от повторного считывания слова(текста)
+        /// </summary>
+        public (string, bool) lastMsg;
         public User(long Userid, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {
             userId = Userid;
@@ -23,6 +27,7 @@ namespace Project {
             userTags = UsTags;
             learnedWords = learWrds;
             unLearnedWords = UnlearWrds;
+            lastMsg = ("", true);
         }
 
         public override string ToString()
