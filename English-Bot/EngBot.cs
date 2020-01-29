@@ -1,14 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
 //using VkBotFramework.Examples;
 using VkNet.Model.RequestParams;
 using English_Bot.Properties;
 using static System.Console;
+using Project;
+using Project_Word;
+using System.Threading;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace English_Bot
 {
