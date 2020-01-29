@@ -81,7 +81,7 @@ namespace English_Bot
         //отправляет сообщение юзеру
         static void SendMessage(long userID, string message)
         {
-            bot.Api.Messages.Send(new MessagesSendParams()
+            bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
                 RandomId = Environment.TickCount,
                 UserId = userID,
@@ -95,14 +95,14 @@ namespace English_Bot
         {
             if (always)
             {
-                while (userMessage != (userID, word, false)) ;  //ожидание согласия
+                while (userMessage != (userID, word, false)) Thread.Sleep(100);  //ожидание согласия
                 WriteLine("готов получен");
                 userMessage.Item3 = true;
             }
             if (!always)
             { 
-                while (userMessage.Item1 != userID || userMessage.Item3 != false) ;
-                WriteLine("слово получено");
+                while (userMessage.Item1 != userID || userMessage.Item3 != false) Thread.Sleep(100);
+                WriteLine(userMessage.Item1 + " " + userMessage.Item2 + " " + userMessage.Item3);
                 userMessage.Item3 = true;
                 return userMessage.Item2 == word;
             }
@@ -112,10 +112,10 @@ namespace English_Bot
         static void Testing(object IDobj)
         {
             long userID = users.GetUser((long)IDobj).userId; ;
-            SendMessage(userID, "Nu 4to, hlop4ik, sigraem v igru? Pishi \"Готов\"");
+            SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
+                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
+                                "Жду вашей команды: \"Готов\". ");
             WaitWordFromUser(userID, "готов", true);
-
-            
 
             //если слов меньше, то так тому и быть
             var lastLW = users.GetUser((long)IDobj).learnedWords.TakeLast(6);
@@ -125,7 +125,7 @@ namespace English_Bot
             //лист для проверки ответов
             List<bool> right = new List<bool>();
 
-            foreach(long idx in lastLW)
+            foreach (long idx in lastLW)
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
@@ -137,6 +137,21 @@ namespace English_Bot
             SendMessage(userID, $"Вы ответили на {right.FindAll(x => x).Count()} из {lastLW.Count()}. Good job!(no)");
 
             //исправление ошибок юзера
+
+            if (right.FindAll(x => x).Count() < lastLW.Count())
+            {
+                string fixAnswer = "Вы ошиблись в следующем:";
+
+                foreach (var pnt in right.Zip(lastLW, (x, y) => new { A = x, B = y }))
+                {
+                    if (!pnt.A)
+                    {
+                        var temp = dictionary.GetWord(pnt.B);
+                        fixAnswer += $"\n{temp.eng} - {temp.rus}";
+                    }
+                }
+                SendMessage(userID, fixAnswer);
+            }
         }
     }
 }
