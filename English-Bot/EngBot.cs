@@ -8,17 +8,17 @@ using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
 using English_Bot.Properties;
 using static System.Console;
-using Project;
-using Project_Word;
 using System.Threading;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace English_Bot
 {
-    partial class EngBot
+    public partial class EngBot
     {
+        static Dictionary dictionary = new Dictionary();//подгрузку из файла нужно сделать
+        static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
+        static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
+
         ///<summary>
         ///вспомогатаельный метод ,который проверяет текущее время 
         /// и вызывает основной метод
@@ -51,11 +51,10 @@ namespace English_Bot
             }
         }
 
-
         static void Main(string[] args)
         {
-            VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
 
+            initDict_Testing();
             bot.OnMessageReceived += NewMessageHandler;
 
             bot.Start();
