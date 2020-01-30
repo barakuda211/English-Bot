@@ -111,7 +111,7 @@ namespace English_Bot
             }
         }
 
-        static void initDict_Testing()
+        static void Testing_Start()
         {
             users.AddUser(new User(122402184, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
