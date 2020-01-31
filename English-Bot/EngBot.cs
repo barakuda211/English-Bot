@@ -14,14 +14,14 @@ namespace English_Bot
     {
         static Dictionary dictionary = new Dictionary();//подгрузку из файла нужно сделать
         static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
-        static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl);
+        static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
 
         static void Main(string[] args)
         {
 
             Testing_Start();     //Запуск тестирования
 
-            bot.OnMessageReceived += NewMessageHandler;
+            bot.OnMessageReceived += NewMessageHandler; 
 
             bot.Start();
 

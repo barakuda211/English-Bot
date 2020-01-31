@@ -102,8 +102,8 @@ namespace English_Bot
                     if (pnt.A > 0)//идет по ошибкам
                     {
                         var temp = dictionary.GetWord(pnt.B);
-                        aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
-                        SendMessage(userID, $"\n{temp.eng} - {temp.rus}", aError);
+                        //aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
+                        SendMessage(userID, $"\n{temp.eng} - {temp.rus}"/*, aError*/);
                     }
                 }
             }
@@ -114,7 +114,7 @@ namespace English_Bot
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            users.AddUser(new User(210036813, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
+            users.AddUser(new User(223707460, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
             dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(2, "two", "два", "", "", "", "", 1, null));
