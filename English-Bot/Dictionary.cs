@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using Project_Word;
 using System.Linq;
+using System.Text.Json; 
+
 namespace Project
 {
     public class Dictionary
     {
-        private Dictionary<long, Word> dict;
-      
-        
+        private WordsDictionary<long, Word> dict;
+        private EngDictionary<string, long> eng_dict; 
+        private RusDictionary<string, long> rus_dict;
+
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
+            eng_dict = new Dictionary<string, long>(); 
+            rus_dict = new Dictionary<string, long>(); 
+
+            dict = JsonSerializer.Deserialize<Dictionary<long, Word>>(new FileStream("words_dict.json", FileMode.Open));
         }
         /// <summary>
         /// индексация с 1
