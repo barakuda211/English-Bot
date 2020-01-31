@@ -20,10 +20,8 @@ namespace English_Bot
 
             if (users.GetUserVKID(fromId.Value) == null)
                 users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
+            
             users.GetUserVKID(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
-
-            if (text == "Готов")
-                WaitWordFromUser(fromId.Value, "Готов", true);
 
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
         }
@@ -113,7 +111,10 @@ namespace English_Bot
 
         static void Testing_Start()
         {
-            users.AddUser(new User(122402184, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
+            //122402184 - Dima
+            //210036813 - Mike
+            //223707460 - Anton
+            users.AddUser(new User(210036813, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
             dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(2, "two", "два", "", "", "", "", 1, null));
