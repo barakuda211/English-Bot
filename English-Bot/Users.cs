@@ -44,7 +44,8 @@ namespace English_Bot
                 return false;
             else
             {
-                Dbase.Add(Dbase.Count + 1, sr);
+                //Dbase.Add(Dbase.Count + 1, sr);
+                Dbase.Add(sr.userId, sr);
                 return true;
             }
         }

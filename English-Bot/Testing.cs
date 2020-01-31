@@ -18,10 +18,10 @@ namespace English_Bot
             var peerId = eventArgs.Message.PeerId;
             VkBot instanse = sender as VkBot;
 
-            if (users.GetUserVKID(fromId.Value) == null)
+            if (users.GetUser(fromId.Value) == null)
                 users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
             
-            users.GetUserVKID(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
+            users.GetUser(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
 
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
         }
@@ -44,7 +44,7 @@ namespace English_Bot
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
         static long WaitWordFromUser(long userID, string word, bool always)
         {
-            var user = users.GetUserVKID(userID);
+            var user = users.GetUser(userID);
             if (always)
             {
                 while (user.lastMsg.Item1 != word || user.lastMsg.Item2 != false) Thread.Sleep(100);  //ожидание согласия
@@ -65,14 +65,14 @@ namespace English_Bot
         //тестирование пользователя по !6! последним изученным словам
         static void Testing(object IDobj)
         {
-            long userID = users.GetUser((long)IDobj).userId;
+            long userID = (long)IDobj;
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
                                 "Жду вашей команды: \"Готов\". ");
             WaitWordFromUser(userID, "готов", true);
 
             //если слов меньше, то так тому и быть
-            var lastLW = users.GetUser((long)IDobj).learnedWords.TakeLast(6);
+            var lastLW = users.GetUser(userID).learnedWords.TakeLast(6);
 
             var rand = new Random();
 
@@ -114,7 +114,8 @@ namespace English_Bot
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            users.AddUser(new User(223707460, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
+            long id = 210036813;
+            users.AddUser(new User(id, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
             dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(2, "two", "два", "", "", "", "", 1, null));
@@ -123,12 +124,11 @@ namespace English_Bot
             dictionary.AddWord(new Word(5, "five", "пять", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(6, "six", "шесть", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
-            users.GetUser(1).learnedWords.Add(1);
-            users.GetUser(1).learnedWords.Add(2);
+            users.GetUser(id).learnedWords.Add(1);
+            users.GetUser(id).learnedWords.Add(2);
 
-            long temp = 1;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
-            testingThread.Start(temp);
+            testingThread.Start(id);
         }
 
     }
