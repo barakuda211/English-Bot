@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace English_Bot 
 {
@@ -63,12 +65,23 @@ namespace English_Bot
 
         public void Load()
         {
-
+            JsonSerializer serializer = new JsonSerializer();
+            using (StreamReader sr = new StreamReader("usersJson.txt"))
+            using (JsonReader reader = new JsonTextReader(sr))
+            {
+                Dbase = (Dictionary<long, User>)serializer.Deserialize(reader);
+            }
         }
         
-        public void Save()
+        public async void Save()
         {
-
+            
+            JsonSerializer serializer = new JsonSerializer();
+            using(StreamWriter sw = new StreamWriter("usersJson.txt"))
+            using(JsonWriter writer = new JsonTextWriter(sw))
+            {
+                serializer.Serialize(writer, Dbase);
+            }
         }
 
     }
