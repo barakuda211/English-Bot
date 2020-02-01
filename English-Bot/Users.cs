@@ -2,12 +2,13 @@
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace English_Bot 
 {
     public class Users
     {
-       private  Dictionary<long,User>  Dbase;
+       public   Dictionary<long,User>  Dbase;
         //индексатор
         public User this[long idex]
         {
@@ -62,27 +63,46 @@ namespace English_Bot
                 return true;
             }
         }
-
-        public void Load()
+   
+      /*  public  void Load()
         {
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamReader sr = new StreamReader("usersJson.txt"))
-            using (JsonReader reader = new JsonTextReader(sr))
-            {
-                Dbase = (Dictionary<long, User>)serializer.Deserialize(reader);
-            }
+            // JsonSerializer serializer = new JsonSerializer();
+          // StreamReader sr = new StreamReader("UserData.json");
+                string s = File.ReadAllText("UserData.json");
+                Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(s);
+            
         }
-        
-        public async void Save()
+        */
+        public  void Save()
         {
+
+            string path =GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
+            
             
             JsonSerializer serializer = new JsonSerializer();
-            using(StreamWriter sw = new StreamWriter("usersJson.txt"))
-            using(JsonWriter writer = new JsonTextWriter(sw))
+            using (StreamWriter sw = new StreamWriter(path))
+            using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 serializer.Serialize(writer, Dbase);
             }
+            
+
+            /*  тоже рабочий варик 
+             *  
+            string path = Environment.CurrentDirectory+@"\UsersData.txt";
+           StreamWriter sw = new StreamWriter(path,false);
+                string s = JsonConvert.SerializeObject(Dbase);
+            sw.WriteLine(s);
+            sw.Close();
+            */
+               
         }
 
+        public string GetPathOfFile(string path)
+        {
+            return path.Substring(0, path.IndexOf("bin")); // костыль 
+        }
+
+        
     }
 }
