@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
+using System.Threading;
 using English_Bot.Properties;
 using static System.Console;
 
@@ -18,18 +19,21 @@ namespace English_Bot
 
         static void Main(string[] args)
         {
+            users.Load();
 
             Testing_Start();     //Запуск тестирования
 
-            bot.OnMessageReceived += NewMessageHandler; 
+            bot.OnMessageReceived += NewMessageHandler;
 
-            bot.Start();
+            Thread botStart = new Thread(new ThreadStart(bot.Start));
+            botStart.Start();
+            //bot.Start();
 
             DailyEvent_start();         //Старт ежедневных событий
 
             WriteLine("Bot started!");
             
-            ReadLine();
+            users.Save();
         }
         
     }

@@ -61,5 +61,15 @@ namespace English_Bot
             }
         }
 
+        public void Load()
+        {
+
+        }
+        
+        public void Save()
+        {
+
+        }
+
     }
 }
