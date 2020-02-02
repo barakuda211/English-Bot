@@ -1,1 +1,1 @@
-{"223707460":{"lastMsg":{"Item1":"","Item2":true,"Item3":0},"userId":223707460,"userTags":[],"learnedWords":[],"unLearnedWords":[]},"210036813":{"lastMsg":{"Item1":"","Item2":true,"Item3":0},"userId":210036813,"userTags":[],"learnedWords":[],"unLearnedWords":[]}}
+{"210036813":{"lastMsg":{"Item1":"дв","Item2":true,"Item3":931},"userId":210036813,"userTags":[],"learnedWords":[1,2],"unLearnedWords":[]}}
