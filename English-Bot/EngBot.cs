@@ -20,6 +20,7 @@ namespace English_Bot
         static void Main(string[] args)
         {
             users.Load();
+            LoadBotCounter();
 
             ///Выполняется после закрытия программы 
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
@@ -41,6 +42,7 @@ namespace English_Bot
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             users.Save();
+            SaveBotCounter();
         }
     }
 }

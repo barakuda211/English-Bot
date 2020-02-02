@@ -1,1 +1,1 @@
-{"210036813":{"lastMsg":{"Item1":"шесть","Item2":true,"Item3":958},"userId":210036813,"userTags":[],"learnedWords":[4,6],"unLearnedWords":[]}}
+{"210036813":{"lastMsg":{"Item1":"6","Item2":true,"Item3":2524},"userId":210036813,"userTags":[],"learnedWords":[4,6],"unLearnedWords":[]}}

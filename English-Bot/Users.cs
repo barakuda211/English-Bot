@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.IO;
 
 namespace English_Bot 
 {
@@ -99,7 +98,7 @@ namespace English_Bot
                
         }
 
-        public string GetPathOfFile(string path)
+        private string GetPathOfFile(string path)
         {
             return path.Substring(0, path.IndexOf("bin")); // костыль 
         }

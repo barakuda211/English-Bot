@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
@@ -10,6 +11,26 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        //для reply сообщений
+        static long botCounter;
+
+        static void LoadBotCounter()
+        {
+            string path = GetPathOfFile(Environment.CurrentDirectory) + "botCounter.txt";
+            botCounter = Convert.ToInt64(File.ReadAllText(path));
+        }
+
+        static void SaveBotCounter()
+        {
+            string path = GetPathOfFile(Environment.CurrentDirectory) + "botCounter.txt";
+            File.WriteAllText(path, botCounter.ToString());
+        }
+
+        private static string GetPathOfFile(string path)
+        {
+            return path.Substring(0, path.IndexOf("bin")); // костыль 
+        }
+
         static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
         {
 
@@ -21,7 +42,8 @@ namespace English_Bot
             if (users.GetUser(fromId.Value) == null)
                 users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
             
-            users.GetUser(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
+            users.GetUser(fromId.Value).lastMsg = (text.ToLower(), false, botCounter);
+            botCounter++;
 
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
         }
@@ -37,6 +59,7 @@ namespace English_Bot
                 Message = message,
                 ForwardMessages = msgIDs
             });
+            botCounter++;
             WriteLine("слово отправлено");
         }
 
@@ -102,8 +125,8 @@ namespace English_Bot
                     if (pnt.A > 0)//идет по ошибкам
                     {
                         var temp = dictionary.GetWord(pnt.B);
-                        //aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
-                        SendMessage(userID, $"\n{temp.eng} - {temp.rus}"/*, aError*/);
+                        aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
+                        SendMessage(userID, $"\n{temp.eng} - {temp.rus}", aError);
                     }
                 }
             }
