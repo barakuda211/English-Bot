@@ -19,7 +19,10 @@ namespace English_Bot
 
         static void Main(string[] args)
         {
-            //users.Load();
+            users.Load();
+
+            ///Выполняется после закрытия программы 
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             Testing_Start();     //Запуск тестирования
 
@@ -33,8 +36,6 @@ namespace English_Bot
 
             WriteLine("Bot started!");
 
-            ///Выполняется после закрытия программы 
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)

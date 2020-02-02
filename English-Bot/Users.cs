@@ -43,7 +43,7 @@ namespace English_Bot
 
       public  bool AddUser(User sr)
         {
-            if (Dbase.ContainsValue(sr))
+            if (Dbase.ContainsKey(sr.userId))
                 return false;
             else
             {
@@ -64,15 +64,16 @@ namespace English_Bot
             }
         }
    
-      /*  public  void Load()
+        public  void Load()
         {
             // JsonSerializer serializer = new JsonSerializer();
-          // StreamReader sr = new StreamReader("UserData.json");
-                string s = File.ReadAllText("UserData.json");
-                Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(s);
+            // StreamReader sr = new StreamReader("UserData.json");
+            string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
+            string temp = File.ReadAllText(path);
+                Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
             
         }
-        */
+        
         public  void Save()
         {
 
