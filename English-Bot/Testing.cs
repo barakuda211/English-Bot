@@ -147,9 +147,13 @@ namespace English_Bot
             dictionary.AddWord(new Word(5, "five", "пять", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(6, "six", "шесть", "", "", "", "", 1, null));
             dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
-            //users.GetUser(id).learnedWords.Add(1);
-            //users.GetUser(id).learnedWords.Add(2);
+            users.GetUser(id).learnedWords.Add(1);
+            users.GetUser(id).learnedWords.Add(2);
+            
 
+            /*long[] aError = new long[100];    
+            for (int i = 0; i < 100; i++) aError[i] = i + 2601;
+            SendMessage(id, "test", aError);*/
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }
