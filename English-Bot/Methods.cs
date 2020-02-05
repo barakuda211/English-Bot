@@ -91,14 +91,14 @@ namespace Dictionary
         /// <summary>
         /// Десериализация в массив объектов -- устарело
         /// </summary>
-        public static T[] DeSerialization<T>(string fName)
+        public static List<T> DeSerialization<T>(string fName)
         {
-            T[] objs;
+            List<T> objs;
             //Десериализуем файл
             using (FileStream fs = new FileStream(fName + ".json", FileMode.OpenOrCreate))
             {
-                DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(typeof(T[]));
-                objs = (T[])jsonFormatter.ReadObject(fs);
+                DataContractJsonSerializer jsonFormatter = new DataContractJsonSerializer(typeof(List<T>));
+                objs = (List<T>)jsonFormatter.ReadObject(fs);
             }
             return objs;
         }

@@ -13,7 +13,7 @@ namespace English_Bot
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
-            foreach (var word in Methods.DeSerialization<Word>(@"Json dicts/eng_words.json"))
+            foreach (var word in Methods.DeSerialization<Word>(@"eng_words"))
             {
                 dict.Add(word.id, word);
                 if (eng_ids.ContainsKey(word.eng))
