@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dictionary; 
 //using Project_Word;
 
 namespace English_Bot
@@ -6,23 +7,32 @@ namespace English_Bot
     public class Dictionary
     {
         private Dictionary<long, Word> dict;
-        private Dictionary<string, long[]> eng_ids; 
-        private Dictionary<string, long[]> rus_ids; 
+        private Dictionary<string, List<long>> eng_ids; 
+        private Dictionary<string, List<long>> rus_ids; 
         
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
-            foreach (var word in Methods.Deserialization<Word>(@"Json dicts/eng_words.json"))
+            foreach (var word in Methods.DeSerialization<Word>(@"Json dicts/eng_words.json"))
             {
                 dict.Add(word.id, word);
                 if (eng_ids.ContainsKey(word.eng))
                     eng_ids[word.eng].Add(word.id);
-                else 
-                    eng_ids.Add(word.eng, word.id);
+                else
+                {
+                    var l = new List<long>();
+                    l.Add(word.id);
+                    eng_ids.Add(word.eng, l);
+                }
+
                 if (rus_ids.ContainsKey(word.rus))
                     rus_ids[word.rus].Add(word.id);
                 else
-                    rus_ids.Add(word.rus, word.id);
+                {
+                    var l = new List<long>();
+                    l.Add(word.id);
+                    rus_ids.Add(word.rus, l);
+                }
             }
         }
         /// <summary>
@@ -48,14 +58,14 @@ namespace English_Bot
         /// <summary>
         /// получаем id английских слова  по нашему запросу  
         /// </summary>
-        public long[] GetWordEng(string word)
+        public List<long> GetWordEng(string word)
         {
             return eng_ids[word];
         }
         /// <summary>
         /// получаем id русских слова  по нашему запросу  
         /// </summary>
-        public long[] GetWordRus(string word)
+        public List<long> GetWordRus(string word)
         {
             return rus_ids[word];
         }
