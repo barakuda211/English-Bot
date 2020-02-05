@@ -1,1 +1,1 @@
-{"210036813":{"lastMsg":{"Item1":"шесть","Item2":true,"Item3":958},"userId":210036813,"userTags":[],"learnedWords":[4,6],"unLearnedWords":[]}}
+{"210036813":{"lastMsg":{"Item1":"это старая версия бота, поэтому долго работает","Item2":false,"Item3":1445},"userId":210036813,"userTags":[],"learnedWords":[4,6],"unLearnedWords":[]},"203654426":{"lastMsg":{"Item1":"hello","Item2":false,"Item3":1},"userId":203654426,"userTags":[],"learnedWords":[],"unLearnedWords":[]}}
