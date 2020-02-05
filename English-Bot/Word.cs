@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Project_Word
+namespace English_Bot
 {
     public class Word
 

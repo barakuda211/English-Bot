@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Project {
+namespace English_Bot 
+{
     public class User
     {
        public long userId { get; set; }
@@ -15,7 +16,12 @@ namespace Project {
         /// индексы слов ,введенных юзером ,которые он не запомнил  
         /// </summary>
         public HashSet<long> unLearnedWords { get; set; }
-
+        /// <summary>
+        /// последнее слово(текст), написанное пользователем
+        /// bool избавляет от повторного считывания слова(текста)
+        /// 3-ий параметр - это индификатор сообщения
+        /// </summary>
+        public (string, bool, long) lastMsg;
         public User(long Userid, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {
             userId = Userid;
@@ -23,6 +29,7 @@ namespace Project {
             userTags = UsTags;
             learnedWords = learWrds;
             unLearnedWords = UnlearWrds;
+            lastMsg = ("", true, 0);
         }
 
         public override string ToString()

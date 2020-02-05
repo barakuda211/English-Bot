@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Project_Word;
-using System.Linq;
-namespace Project
+﻿using System.Collections.Generic;
+//using Project_Word;
+
+namespace English_Bot
 {
     public class Dictionary
     {
