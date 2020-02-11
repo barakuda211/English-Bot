@@ -11,7 +11,7 @@ namespace English_Bot
     partial class EngBot
     {
 
-        static string Registration(Message msg)
+        static void Registration(Message msg)
         {
             var id = msg.FromId.Value;
             if (!users.HasUser(id))
@@ -21,6 +21,10 @@ namespace English_Bot
                 users.AddUser(us);  //создаём нового юзера
             }
             User user = users[id];
+            user.regId++;
+            Console.WriteLine("Registered: " + user.name + " " + user.userId);
+            Testing_Start(id);
+            /*
             switch (user.regId++)
             {
                 case 0:
@@ -37,6 +41,7 @@ namespace English_Bot
             }
 
             return "You cannot see it!";
+            */
         }
     }
 }

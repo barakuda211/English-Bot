@@ -31,6 +31,10 @@ namespace English_Bot
         /// 3-ий параметр - это индификатор сообщения
         /// </summary>
         public (string, bool, long) lastMsg;
+        /// <summary>
+        /// тестируется ли в данный момент юзер
+        /// </summary>
+        public bool on_Test { get; set; }
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -39,6 +43,7 @@ namespace English_Bot
             name = vk_user.first_name;
             unLearnedWords = new HashSet<long>();
             parseWordsFields(vk_user, dict);
+            on_Test = false;
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
@@ -66,6 +71,7 @@ namespace English_Bot
             userTags = UsTags;
             learnedWords = learWrds;
             unLearnedWords = UnlearWrds;
+            on_Test = false;
             lastMsg = ("", true, 0);
         }
 

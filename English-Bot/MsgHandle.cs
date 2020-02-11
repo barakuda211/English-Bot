@@ -21,23 +21,30 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
+            
+
             if (!users.HasUser(fromId) || users[fromId].regId != 1)
-                answer = Registration(eventArgs.Message);
+                Registration(eventArgs.Message);
             else
+            {
+                users[fromId].lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
+                if (users[fromId].on_Test)      //защита от спама при тесте
+                  return;
+
                 switch (text)
                 {
-                    default: 
+                    default:
                         answer = SendInfo(eventArgs.Message);
                         break;
                 }
-            instanse.Api.Messages.Send(new MessagesSendParams()
-            {
-                RandomId = Environment.TickCount,
-                PeerId = eventArgs.Message.PeerId,
-                Message = answer
-            });
 
-            users[fromId].lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
+                instanse.Api.Messages.Send(new MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount,
+                    PeerId = eventArgs.Message.PeerId,
+                    Message = answer
+                });
+            }   
         }
 
         static string SendInfo(Message msg) => $"{msg.PeerId.Value}, i have captured your message: '{msg.Text}'. its length is {msg.Text.Length}. number of spaces: {msg.Text.Count(x => x == ' ')}";

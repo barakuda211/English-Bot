@@ -111,6 +111,7 @@ namespace English_Bot
                     }
                 }
             }
+            users[userID].on_Test = false;
         }
 
         static void Testing_Start(long id)
@@ -132,6 +133,7 @@ namespace English_Bot
             users.GetUser(id).learnedWords.Add(1);
             users.GetUser(id).learnedWords.Add(2);
             */
+            users[id].on_Test = true;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }
