@@ -38,6 +38,13 @@ namespace English_Bot
         /// </summary>
         public HashSet<string> tags { get; set; }
 
+        public Word(int Id, string Eng, string Tran, string Rus)
+        {
+            id = Id;
+            eng = Eng.ToLower();
+            transcript = Tran;
+            rus = Rus;
+        }
 
         public Word(long Id, string Eng, string Rus, string MeanE, string MeanR, string Trans, string Add, int lev, HashSet<string> Tags)
         {
@@ -52,7 +59,7 @@ namespace English_Bot
             tags = Tags;
 
         }
-  
+
         public override string ToString()
         {
             return eng + "---" + mean_eng + "перевод и значение " + rus + mean_rus;

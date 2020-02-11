@@ -71,8 +71,12 @@ namespace English_Bot
                                 "Жду вашей команды: \"Готов\". ");
             WaitWordFromUser(userID, "готов", true);
 
+            /*
             //если слов меньше, то так тому и быть
-            var lastLW = users.GetUser(userID).learnedWords.TakeLast(6);
+            var lastLW = users.GetUser(userID).learnedWords.TakeLast(6);        //надо задавать неизученные слова для начала, изученных ещё нет
+            */
+
+            var lastLW = users.GetUser(userID).unLearnedWords;     
 
             var rand = new Random();
 
@@ -109,12 +113,13 @@ namespace English_Bot
             }
         }
 
-        static void Testing_Start()
+        static void Testing_Start(long id)
         {
+            /*
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            long id = 210036813;
+            id = 210036813;
             users.AddUser(new User(id, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
             dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null));
@@ -126,7 +131,7 @@ namespace English_Bot
             dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
             users.GetUser(id).learnedWords.Add(1);
             users.GetUser(id).learnedWords.Add(2);
-
+            */
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }

@@ -7,11 +7,11 @@ namespace English_Bot
     {
        private  Dictionary<long,User>  Dbase;
         //индексатор
-        public User this[long idex]
+        public User this[long index]
         {
 
-            set { Dbase[idex] = value; }
-            get { return Dbase[idex]; }
+            set { Dbase[index] = value; }
+            get { return Dbase[index]; }
         }
 
         public Users()
@@ -40,7 +40,7 @@ namespace English_Bot
 
       public  bool AddUser(User sr)
         {
-            if (Dbase.ContainsValue(sr))
+            if (Dbase.ContainsKey(sr.userId))
                 return false;
             else
             {
@@ -49,6 +49,8 @@ namespace English_Bot
                 return true;
             }
         }
+
+        public bool HasUser(long id) => Dbase.ContainsKey(id);
 
         public bool DeleteUser(long id)
         {
