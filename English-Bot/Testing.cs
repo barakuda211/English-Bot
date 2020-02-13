@@ -6,6 +6,7 @@ using System.Linq;
 using static System.Console;
 using System.Threading;
 using Project_Word;
+using static System.Math;
 
 namespace English_Bot
 {
@@ -43,12 +44,12 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
-        static long WaitWordFromUser(long userID, string word, bool always)
+        static long WaitWordFromUser(long userID, string[] word, bool always)
         {
             var user = users.GetUser(userID);
             if (always)
             {
-                while (user.lastMsg.Item1 != word || user.lastMsg.Item2 != false) Thread.Sleep(100);  //ожидание согласия
+                while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) Thread.Sleep(100);  //ожидание согласия
                 WriteLine("готов получен");
                 user.lastMsg.Item2 = true;
             }
@@ -58,7 +59,7 @@ namespace English_Bot
                 WriteLine("слово получено");
                 WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
-                return (user.lastMsg.Item1 == word ? 0 : user.lastMsg.Item3);
+                return (word.Any(x => x == user.lastMsg.Item1) ? 0 : user.lastMsg.Item3);
             }
             return 0;//заглушка
         }
@@ -67,16 +68,27 @@ namespace English_Bot
         static void Testing(object IDobj)
         {
             long userID = (long)IDobj;
-            Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
+            //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
                                 "Жду вашей команды: \"Готов\". ");
-            WaitWordFromUser(userID, "готов", true);
-
-            //если слов меньше, то так тому и быть
-            var lastULW = users.GetUser(userID).unLearnedWords.TakeLast(6);
+            List<string> agree = new List<string>();
+            agree.Add("Готов");
+            agree.Add("Да");
+            agree.Add("точно");
+            WaitWordFromUser(userID, agree.ToArray(), true);
 
             var rand = new Random();
+
+            //если слов меньше, то так тому и быть
+            List<long> lastULW = new List<long>();
+            var w = users.GetUser(userID).unLearnedWords.ToArray();
+            while (lastULW.Count < 5)
+            {
+                int i = rand.Next(w.Length);
+                if (!lastULW.Contains(w[i]))
+                    lastULW.Add(w[i]);
+            } 
 
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();
@@ -86,7 +98,25 @@ namespace English_Bot
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
                 SendMessage(userID, (r == 0 ? word.eng : word.rus));
-                msgIDs.Add(WaitWordFromUser(userID, (r == 1 ? word.eng : word.rus), false));
+                List<string> wrds = new List<string>();
+                if (r == 1)
+                {
+                    wrds.Add(word.eng);
+                    foreach (var def in word.mean_eng.def)
+                        foreach (var tr in def.tr)
+                            if (tr.syn != null)
+                                wrds.AddRange(tr.syn.Select(x => x.text));
+                }
+                else
+                {
+                    wrds.Add(word.rus);
+                    foreach (var def in word.mean_rus.def)
+                        foreach (var tr in def.tr)
+                            if (tr.syn != null)
+                                wrds.AddRange(tr.syn.Select(x => x.text));
+                }
+                wrds.AddRange(wrds);
+                msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
             }
 
             WriteLine("Слова пройдены");

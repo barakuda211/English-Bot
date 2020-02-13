@@ -17,11 +17,9 @@ namespace English_Bot
             dict = new Dictionary<long, Word>();
             eng_ids = new Dictionary<string, List<long>>();
             rus_ids = new Dictionary<string, List<long>>();
-            Console.WriteLine(Environment.CurrentDirectory);
             string dir = Environment.CurrentDirectory;
             for (int i = 1; i <= 4; ++i)
                 dir = Directory.GetParent(dir).ToString();
-            Console.WriteLine(dir);
             foreach (var word in Methods.DeSerialization<Word>(dir + @"/Json dicts/eng_words_100"))
             {
                 dict.Add(word.id, word);
