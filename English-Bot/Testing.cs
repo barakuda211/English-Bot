@@ -5,6 +5,7 @@ using VkBotFramework.Models;
 using System.Linq;
 using static System.Console;
 using System.Threading;
+using Project_Word;
 
 namespace English_Bot
 {
@@ -117,13 +118,13 @@ namespace English_Bot
             long id = 210036813;
             users.AddUser(new User(id, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
 
-            dictionary.AddWord(new Word(1, "one", "один", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(2, "two", "два", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(3, "three", "три", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(4, "four", "четыре", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(5, "five", "пять", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(6, "six", "шесть", "", "", "", "", 1, null));
-            dictionary.AddWord(new Word(7, "seven", "семь", "", "", "", "", 1, null));
+            dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(2, "two", "too", "два", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "three", "tree", "три", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "four", "for", "четыре", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "five", "five", "пять", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "six", "siks", "шесть", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));
             //users.GetUser(id).learnedWords.Add(1);
             //users.GetUser(id).learnedWords.Add(2);
 

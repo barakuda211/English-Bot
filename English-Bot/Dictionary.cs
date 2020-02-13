@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Dictionary; 
-//using Project_Word;
+using Project_Word;
 
 namespace English_Bot
 {
@@ -13,7 +13,9 @@ namespace English_Bot
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
-            foreach (var word in Methods.DeSerialization<Word>(@"eng_words"))
+            eng_ids = new Dictionary<string, List<long>>();
+            rus_ids = new Dictionary<string, List<long>>();
+            foreach (var word in Methods.DeSerialization<Word>("eng_words"))
             {
                 dict.Add(word.id, word);
                 if (eng_ids.ContainsKey(word.eng))
