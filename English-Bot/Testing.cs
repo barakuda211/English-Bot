@@ -67,20 +67,21 @@ namespace English_Bot
         static void Testing(object IDobj)
         {
             long userID = (long)IDobj;
+            Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
                                 "Жду вашей команды: \"Готов\". ");
             WaitWordFromUser(userID, "готов", true);
 
             //если слов меньше, то так тому и быть
-            var lastLW = users.GetUser(userID).learnedWords.TakeLast(6);
+            var lastULW = users.GetUser(userID).unLearnedWords.TakeLast(6);
 
             var rand = new Random();
 
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();
 
-            foreach (long idx in lastLW)//присылает и ждет ответ на последние изученные слова
+            foreach (long idx in lastULW)//присылает и ждет ответ на последние изученные слова
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
@@ -89,16 +90,16 @@ namespace English_Bot
             }
 
             WriteLine("Слова пройдены");
-            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastLW.Count()}. ");
+            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastULW.Count()}. ");
 
             //исправление ошибок юзера
 
-            if (msgIDs.FindAll(x => x == 0).Count() < lastLW.Count())//если есть ошибки
+            if (msgIDs.FindAll(x => x == 0).Count() < lastULW.Count())//если есть ошибки
             {
                 SendMessage(userID, "Вы ошиблись в следующем:");
 
                 long[] aError = new long[1];
-                foreach (var pnt in msgIDs.Zip(lastLW, (x, y) => new { A = x, B = y }))
+                foreach (var pnt in msgIDs.Zip(lastULW, (x, y) => new { A = x, B = y }))
                 {
                     if (pnt.A > 0)//идет по ошибкам
                     {
@@ -115,16 +116,19 @@ namespace English_Bot
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            long id = 210036813;
-            users.AddUser(new User(id, 1, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));
+            long id = 203654426;
 
-            dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
+            //long id = 210036813;
+            HashSet<long> hh = new HashSet<long>(dictionary.GetIds());
+            users.GetUser(id).unLearnedWords = hh;
+
+            /*dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(2, "two", "too", "два", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "three", "tree", "три", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "four", "for", "четыре", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "five", "five", "пять", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "six", "siks", "шесть", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));*/
             //users.GetUser(id).learnedWords.Add(1);
             //users.GetUser(id).learnedWords.Add(2);
 

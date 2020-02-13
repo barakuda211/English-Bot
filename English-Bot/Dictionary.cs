@@ -15,7 +15,7 @@ namespace English_Bot
             dict = new Dictionary<long, Word>();
             eng_ids = new Dictionary<string, List<long>>();
             rus_ids = new Dictionary<string, List<long>>();
-            foreach (var word in Methods.DeSerialization<Word>("eng_words"))
+            foreach (var word in Methods.DeSerialization<Word>(@"C:\Users\Admin\source\repos\barakuda211\English-Bot\Json dicts\eng_words_100"))
             {
                 dict.Add(word.id, word);
                 if (eng_ids.ContainsKey(word.eng))
@@ -46,7 +46,14 @@ namespace English_Bot
         {
 
             set { dict[idex] = value; }
-            get { return dict[idex]; }
+            get { return dict.ContainsKey(idex) ? dict[idex] : null; }
+        }
+
+        public List<long> GetIds()
+        {
+            long[] arr = new long[dict.Count];
+            dict.Keys.CopyTo(arr, 0);
+            return new List<long>(arr);
         }
 
         public Word GetWord(long id)
@@ -62,14 +69,20 @@ namespace English_Bot
         /// </summary>
         public List<long> GetWordEng(string word)
         {
-            return eng_ids[word];
+            if (eng_ids.ContainsKey(word))
+                return eng_ids[word];
+            else
+                return null;
         }
         /// <summary>
         /// получаем id русских слова  по нашему запросу  
         /// </summary>
         public List<long> GetWordRus(string word)
         {
-            return rus_ids[word];
+            if (rus_ids.ContainsKey(word))
+                return rus_ids[word];
+            else
+               return null; 
         }
 
         public bool AddWord(Word w)
