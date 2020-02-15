@@ -17,9 +17,9 @@ namespace English_Bot
             Word word = dictionary[wordId];
             message += "" + word.eng.ToUpper() + "\n";
             message += "Определения:\n";
-            foreach (var def in word.mean_eng.def)
+            foreach (var def in word.mean_rus.def)
             {
-                message += def.text + "\n";
+                message += def.text + " " + def.pos + ". -> " + def.tr[0].text + "\n";
             }
             SendMessage(userId, message);
         }

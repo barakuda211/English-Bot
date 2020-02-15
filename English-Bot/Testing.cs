@@ -139,6 +139,10 @@ namespace English_Bot
                     }
                 }
             }
+
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abuse").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abolish").ElementAt(0));
         }
 
         static void Testing_Start()
