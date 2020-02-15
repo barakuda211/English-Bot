@@ -6,13 +6,13 @@ using System.IO;
 
 namespace English_Bot
 {
-    public class Dictionary
+    public class WordsDictionary
     {
         private Dictionary<long, Word> dict;
         private Dictionary<string, List<long>> eng_ids; 
         private Dictionary<string, List<long>> rus_ids; 
         
-        public Dictionary()
+        public WordsDictionary()
         {
             dict = new Dictionary<long, Word>();
             eng_ids = new Dictionary<string, List<long>>();
