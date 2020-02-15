@@ -13,7 +13,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
-        static Dictionary dictionary = new Dictionary();//подгрузку из файла нужно сделать
+        static Dictionary dictionary = new Dictionary();
         static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
 

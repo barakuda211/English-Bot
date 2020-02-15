@@ -1,16 +1,44 @@
-﻿using System.Collections.Generic;
-//using Project_Word;
+﻿using System; 
+using System.Collections.Generic;
+using Dictionary; 
+using Project_Word;
+using System.IO;
 
 namespace English_Bot
 {
     public class Dictionary
     {
         private Dictionary<long, Word> dict;
-      
+        private Dictionary<string, List<long>> eng_ids; 
+        private Dictionary<string, List<long>> rus_ids; 
         
         public Dictionary()
         {
             dict = new Dictionary<long, Word>();
+            eng_ids = new Dictionary<string, List<long>>();
+            rus_ids = new Dictionary<string, List<long>>();
+            string dir = Users.GetPathOfFile(Environment.CurrentDirectory);
+            foreach (var word in Methods.DeSerialization<Word>(dir + @"/eng_words_100"))
+            {
+                dict.Add(word.id, word);
+                if (eng_ids.ContainsKey(word.eng))
+                    eng_ids[word.eng].Add(word.id);
+                else
+                {
+                    var l = new List<long>();
+                    l.Add(word.id);
+                    eng_ids.Add(word.eng, l);
+                }
+
+                if (rus_ids.ContainsKey(word.rus))
+                    rus_ids[word.rus].Add(word.id);
+                else
+                {
+                    var l = new List<long>();
+                    l.Add(word.id);
+                    rus_ids.Add(word.rus, l);
+                }
+            }
         }
         /// <summary>
         /// индексация с 1
@@ -21,7 +49,30 @@ namespace English_Bot
         {
 
             set { dict[idex] = value; }
-            get { return dict[idex]; }
+            get { return dict.ContainsKey(idex) ? dict[idex] : null; }
+        }
+
+        public List<long> GetIds()
+        {
+            long[] arr = new long[dict.Count];
+            dict.Keys.CopyTo(arr, 0);
+            return new List<long>(arr);
+        }
+
+        public List<long> GetEngWordIds(string word)
+        {
+            if (eng_ids.ContainsKey(word))
+                return eng_ids[word];
+            else
+                return null;
+        }
+
+        public List<long> GetRusWordIds(string word)
+        {
+            if (rus_ids.ContainsKey(word))
+                return rus_ids[word];
+            else
+                return null;
         }
 
         public Word GetWord(long id)
@@ -30,42 +81,27 @@ namespace English_Bot
                 return dict[id];
             else
                 return null;
+        }
 
+        /// <summary>
+        /// получаем id английских слова  по нашему запросу  
+        /// </summary>
+        public List<long> GetWordEng(string word)
+        {
+            if (eng_ids.ContainsKey(word))
+                return eng_ids[word];
+            else
+                return null;
         }
         /// <summary>
-        /// получаем английские слова  по нашему запросу  
+        /// получаем id русских слова  по нашему запросу  
         /// </summary>
-        public Word[] GetWordEng(string word)
+        public List<long> GetWordRus(string word)
         {
-            //работает ,но вроде как такие запросы выполняются медленнее чем обычный цикл
-            // var lst = dict.Select(t=>t.Value).Where(d => d.eng.Contains(word));
-
-            List<Word> lst = new List<Word>();
-            
-            foreach (var t in dict)
-            {
-                if (t.Value.eng.Contains(word.ToLower()))
-                    lst.Add(t.Value);
-            }
-            
-            return lst.ToArray();
-        }
-        /// <summary>
-        /// получаем русские слова  по нашему запросу  
-        /// </summary>
-        public Word[] GetWordRus(string word)
-        {
-
-            ////работает ,но вроде как такие запросы выполняются медленнее чем обычный цикл
-            //var lst = dict.Select(t => t.Value).Where(d => d.rus.Contains(word));
-            List<Word> lst = new List<Word>();
-
-            foreach (var t in dict)
-            {
-                if (t.Value.rus.Contains(word.ToLower()))
-                    lst.Add(t.Value);
-            }
-            return lst.ToArray();
+            if (rus_ids.ContainsKey(word))
+                return rus_ids[word];
+            else
+               return null; 
         }
 
         public bool AddWord(Word w)
