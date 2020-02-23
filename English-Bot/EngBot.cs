@@ -24,7 +24,7 @@ namespace English_Bot
             ///Выполняется после закрытия программы 
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-            Testing_Start();     //Запуск тестирования
+            //Testing_Start();     //Запуск тестирования
 
             bot.OnMessageReceived += NewMessageHandler;
 

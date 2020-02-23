@@ -12,6 +12,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        /*
         static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
         {
 
@@ -27,7 +28,7 @@ namespace English_Bot
 
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
         }
-
+        */
 
         //отправляет сообщение юзеру
         static void SendMessage(long userID, string message, long[] msgIDs = null)
@@ -145,27 +146,27 @@ namespace English_Bot
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abolish").ElementAt(0));
         }
 
-        static void Testing_Start()
+        static void Testing_Start(long id)
         {
+            /*
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            long id = 203654426;
-
             //long id = 210036813;
             HashSet<long> hh = new HashSet<long>(dictionary.GetIds());
             users.GetUser(id).unLearnedWords = hh;
 
-            /*dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(2, "two", "too", "два", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "three", "tree", "три", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "four", "for", "четыре", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "five", "five", "пять", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "six", "siks", "шесть", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));*/
+            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));
             //users.GetUser(id).learnedWords.Add(1);
             //users.GetUser(id).learnedWords.Add(2);
-
+            */
+            users[id].on_Test = true;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }

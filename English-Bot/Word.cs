@@ -92,7 +92,15 @@ namespace Project_Word
             level = lev;
             tags = Tags;
         }
-  
+
+        public Word(int Id, string Eng, string Tran, string Rus)
+        {
+            id = Id;
+            eng = Eng.ToLower();
+            trans = Tran;
+            rus = Rus;
+        }
+
         public override string ToString()
         {
             return eng + ": " + mean_rus.def[0].tr[0].text;

@@ -9,11 +9,11 @@ namespace English_Bot
     {
        public   Dictionary<long,User>  Dbase;
         //индексатор
-        public User this[long idex]
+        public User this[long index]
         {
 
-            set { Dbase[idex] = value; }
-            get { return Dbase[idex]; }
+            set { Dbase[index] = value; }
+            get { return Dbase[index]; }
         }
 
         public Users()
@@ -68,9 +68,11 @@ namespace English_Bot
             // JsonSerializer serializer = new JsonSerializer();
             // StreamReader sr = new StreamReader("UserData.json");
             string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
-            string temp = File.ReadAllText(path);
+            if (File.Exists(path))
+            {
+                string temp = File.ReadAllText(path);
                 Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
-            
+            }
         }
         
         public  void Save()
@@ -103,6 +105,6 @@ namespace English_Bot
             return path.Substring(0, path.IndexOf("bin")); // костыль 
         }
 
-        
+        public bool HasUser(long id) => Dbase.ContainsKey(id);
     }
 }
