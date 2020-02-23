@@ -103,7 +103,8 @@ namespace Project_Word
 
         public override string ToString()
         {
-            return eng + ": " + mean_rus.def[0].tr[0].text;
+            //return eng + ": " + mean_rus.def[0].tr[0].text;
+            return eng;
         }
     }
 }

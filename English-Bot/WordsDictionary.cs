@@ -10,35 +10,39 @@ namespace English_Bot
     {
         private Dictionary<long, Word> dict;
         private Dictionary<string, List<long>> eng_ids; 
-        private Dictionary<string, List<long>> rus_ids; 
+        private Dictionary<string, List<long>> rus_ids;
+        private int id = 0;
         
         public WordsDictionary()
         {
             dict = new Dictionary<long, Word>();
+            /*
             eng_ids = new Dictionary<string, List<long>>();
             rus_ids = new Dictionary<string, List<long>>();
             string dir = Users.GetPathOfFile(Environment.CurrentDirectory);
             foreach (var word in Methods.DeSerialization<Word>(dir + @"/eng_words_100"))
             {
-                dict.Add(word.id, word);
+                dict.Add(id, word);
                 if (eng_ids.ContainsKey(word.eng))
-                    eng_ids[word.eng].Add(word.id);
+                    eng_ids[word.eng].Add(id);
                 else
                 {
                     var l = new List<long>();
-                    l.Add(word.id);
+                    l.Add(id);
                     eng_ids.Add(word.eng, l);
                 }
 
                 if (rus_ids.ContainsKey(word.rus))
-                    rus_ids[word.rus].Add(word.id);
+                    rus_ids[word.rus].Add(id);
                 else
                 {
                     var l = new List<long>();
-                    l.Add(word.id);
+                    l.Add(id);
                     rus_ids.Add(word.rus, l);
                 }
+                id++;
             }
+            */
         }
         /// <summary>
         /// индексация с 1
@@ -127,8 +131,6 @@ namespace English_Bot
             return false;
         }
 
-        private int added_id = 0; //костыль для инициализации словаря
-
         private void AddWordsFromLine(string line)
         {
             int n = line.IndexOf(']');
@@ -138,9 +140,8 @@ namespace English_Bot
             string[] y = rus.Split(", ");
             foreach (var z in y)
             {
-                int id = int.Parse(x[0]);
-                dict.Add(id + added_id, new Word(id + added_id, x[1], x[2], z));
-                added_id++;
+                dict.Add(id, new Word(id, x[1], x[2], z));
+                id++;
             }
         }
 
@@ -149,7 +150,7 @@ namespace English_Bot
             var lines = File.ReadAllLines(fname);
             foreach (string line in lines)
                 AddWordsFromLine(line);
-            System.Console.WriteLine("wordsDictionary Inited");
+            Console.WriteLine("wordsDictionary Inited");
         }
 
         /// <summary>
@@ -181,6 +182,7 @@ namespace English_Bot
                 }
             return set;
         }
+
     }
 
 }
