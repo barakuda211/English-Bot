@@ -16,11 +16,12 @@ namespace English_Bot
         public WordsDictionary()
         {
             dict = new Dictionary<long, Word>();
-            /*
+            
             eng_ids = new Dictionary<string, List<long>>();
             rus_ids = new Dictionary<string, List<long>>();
             string dir = Users.GetPathOfFile(Environment.CurrentDirectory);
-            foreach (var word in Methods.DeSerialization<Word>(dir + @"/eng_words_100"))
+            //foreach (var word in Methods.DeSerialization<Word>(dir + @"/eng_words_100"))
+            foreach (var word in Methods.DeSerialization<Word>(dir + @"..\Json dicts\eng_words"))
             {
                 dict.Add(id, word);
                 if (eng_ids.ContainsKey(word.eng))
@@ -42,7 +43,7 @@ namespace English_Bot
                 }
                 id++;
             }
-            */
+            
         }
         /// <summary>
         /// индексация с 1
@@ -183,6 +184,11 @@ namespace English_Bot
             return set;
         }
 
+        /// <summary>
+        /// Кол-во слов в словаре
+        /// </summary>
+        /// <returns></returns>
+        public int Count() => dict.Count;
     }
 
 }

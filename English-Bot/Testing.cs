@@ -80,16 +80,39 @@ namespace English_Bot
             WaitWordFromUser(userID, agree.ToArray(), true);
 
             var rand = new Random();
-
+            /*
             //если слов меньше, то так тому и быть
             List<long> lastULW = new List<long>();
-            var w = users.GetUser(userID).unLearnedWords.ToArray();
+            var w = users.GetUser(userID).unLearnedWords.ToArray(); 
             while (lastULW.Count < 5)
             {
-                int i = rand.Next(w.Length);
+                int i = rand.Next(w.Length);    
                 if (!lastULW.Contains(w[i]))
                     lastULW.Add(w[i]);
             } 
+            */
+
+            HashSet<long> lastULW = new HashSet<long>();
+            var w = users.GetUser(userID).unLearnedWords.ToArray();
+            int add_words = 0;
+            if (w.Count() < 5)
+                add_words = 5 - w.Count();
+
+
+            for (int i = 0; i < w.Count(); i++)
+            {
+                int j = rand.Next(0,w.Count());      
+                if (!lastULW.Contains(w[j]))
+                    lastULW.Add(w[j]);
+            }
+
+            //дополнение списка слов
+            for (int i = 0; i < add_words; i++)             //TODO: заменить на слова нужного уровня, если возможно
+            {
+                int j = rand.Next(dictionary.Count());
+                if (!lastULW.Contains(dictionary[j].id))
+                    lastULW.Add(dictionary[j].id);
+            }
 
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();

@@ -48,7 +48,7 @@ namespace English_Bot
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
         {
             var fields = string.Join(' ', vk_user.interests, vk_user.music, vk_user.movies, vk_user.quotes, vk_user.status, vk_user.games, vk_user.books).ToLower();
-            var newFields = Regex.Split(fields, @"\b\W+\b").Where(x => x.Length > 1).ToArray();
+            var newFields = Regex.Split(fields, @"\b\W+\b").Where(x => x.Length > 1).Distinct();
             foreach (var x in newFields)
             {
                 foreach (var y in dict.GetEngId(x))

@@ -19,12 +19,12 @@ namespace English_Bot
 
         static void Main(string[] args)
         {
-            users.Load();
+            //users.Load();
 
             ///Выполняется после закрытия программы 
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-            dictionary.Init_dict();  //заполнение словаря из 5000.txt
+            //dictionary.Init_dict();  //заполнение словаря из 5000.txt
 
             //Testing_Start();     //Запуск тестирования
 

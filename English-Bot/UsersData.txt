@@ -1,1 +1,1 @@
-{}
+{"122402184":{"lastMsg":{"Item1":"huy","Item2":true,"Item3":552},"userId":122402184,"regId":1,"name":"Дима","userTags":null,"learnedWords":null,"unLearnedWords":[258],"on_Test":true}}
