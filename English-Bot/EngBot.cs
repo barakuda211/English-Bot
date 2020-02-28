@@ -13,18 +13,20 @@ namespace English_Bot
 {
     public partial class EngBot
     {
-        static Dictionary dictionary = new Dictionary();
+        static WordsDictionary dictionary = new WordsDictionary();
         static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
 
         static void Main(string[] args)
         {
-            users.Load();
+            //users.Load();
 
             ///Выполняется после закрытия программы 
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-            Testing_Start();     //Запуск тестирования
+            //dictionary.Init_dict();  //заполнение словаря из 5000.txt
+
+            //Testing_Start();     //Запуск тестирования
 
             bot.OnMessageReceived += NewMessageHandler;
 

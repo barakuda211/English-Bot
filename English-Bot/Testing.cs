@@ -12,6 +12,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        /*
         static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
         {
 
@@ -27,7 +28,7 @@ namespace English_Bot
 
             WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
         }
-
+        */
 
         //отправляет сообщение юзеру
         static void SendMessage(long userID, string message, long[] msgIDs = null)
@@ -79,16 +80,39 @@ namespace English_Bot
             WaitWordFromUser(userID, agree.ToArray(), true);
 
             var rand = new Random();
-
+            /*
             //если слов меньше, то так тому и быть
             List<long> lastULW = new List<long>();
-            var w = users.GetUser(userID).unLearnedWords.ToArray();
-            while (lastULW.Count < 3)
+            var w = users.GetUser(userID).unLearnedWords.ToArray(); 
+            while (lastULW.Count < 5)
             {
-                int i = rand.Next(w.Length);
+                int i = rand.Next(w.Length);    
                 if (!lastULW.Contains(w[i]))
                     lastULW.Add(w[i]);
             } 
+            */
+
+            HashSet<long> lastULW = new HashSet<long>();
+            var w = users.GetUser(userID).unLearnedWords.ToArray();
+            int add_words = 0;
+            if (w.Count() < 5)
+                add_words = 5 - w.Count();
+
+
+            for (int i = 0; i < w.Count(); i++)
+            {
+                int j = rand.Next(0,w.Count());      
+                if (!lastULW.Contains(w[j]))
+                    lastULW.Add(w[j]);
+            }
+
+            //дополнение списка слов
+            for (int i = 0; i < add_words; i++)             //TODO: заменить на слова нужного уровня, если возможно
+            {
+                int j = rand.Next(dictionary.Count());
+                if (!lastULW.Contains(dictionary[j].id))
+                    lastULW.Add(dictionary[j].id);
+            }
 
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();
@@ -140,32 +164,32 @@ namespace English_Bot
                 }
             }
 
-            SendFullWordDescription(203654426, dictionary.GetEngWordIds("abandon").ElementAt(0));
-            SendFullWordDescription(203654426, dictionary.GetEngWordIds("adore").ElementAt(0));
-            SendFullWordDescription(203654426, dictionary.GetEngWordIds("accurate").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abuse").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetWordEng("abolish").ElementAt(0));
         }
 
-        static void Testing_Start()
+        static void Testing_Start(long id)
         {
+            /*
             //122402184 - Dima
             //210036813 - Mike
             //223707460 - Anton
-            long id = 203654426;
-
             //long id = 210036813;
             HashSet<long> hh = new HashSet<long>(dictionary.GetIds());
             users.GetUser(id).unLearnedWords = hh;
 
-            /*dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
+            dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(2, "two", "too", "два", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "three", "tree", "три", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "four", "for", "четыре", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "five", "five", "пять", null, null, null, null, 1, null));
             dictionary.AddWord(new Word(1, "six", "siks", "шесть", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));*/
+            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));
             //users.GetUser(id).learnedWords.Add(1);
             //users.GetUser(id).learnedWords.Add(2);
-
+            */
+            users[id].on_Test = true;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }
