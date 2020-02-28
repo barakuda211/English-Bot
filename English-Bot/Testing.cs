@@ -83,7 +83,7 @@ namespace English_Bot
             //если слов меньше, то так тому и быть
             List<long> lastULW = new List<long>();
             var w = users.GetUser(userID).unLearnedWords.ToArray();
-            while (lastULW.Count < 5)
+            while (lastULW.Count < 3)
             {
                 int i = rand.Next(w.Length);
                 if (!lastULW.Contains(w[i]))
@@ -140,9 +140,9 @@ namespace English_Bot
                 }
             }
 
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abuse").ElementAt(0));
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abolish").ElementAt(0));
+            SendFullWordDescription(203654426, dictionary.GetEngWordIds("abandon").ElementAt(0));
+            SendFullWordDescription(203654426, dictionary.GetEngWordIds("adore").ElementAt(0));
+            SendFullWordDescription(203654426, dictionary.GetEngWordIds("accurate").ElementAt(0));
         }
 
         static void Testing_Start()

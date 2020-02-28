@@ -59,6 +59,9 @@ namespace English_Bot
             return new List<long>(arr);
         }
 
+        /// <summary>
+        /// получаем id английских слова  по нашему запросу  
+        /// </summary>
         public List<long> GetEngWordIds(string word)
         {
             if (eng_ids.ContainsKey(word))
@@ -67,6 +70,9 @@ namespace English_Bot
                 return null;
         }
 
+        /// <summary>
+        /// получаем id русских слова  по нашему запросу  
+        /// </summary>
         public List<long> GetRusWordIds(string word)
         {
             if (rus_ids.ContainsKey(word))
@@ -81,27 +87,6 @@ namespace English_Bot
                 return dict[id];
             else
                 return null;
-        }
-
-        /// <summary>
-        /// получаем id английских слова  по нашему запросу  
-        /// </summary>
-        public List<long> GetWordEng(string word)
-        {
-            if (eng_ids.ContainsKey(word))
-                return eng_ids[word];
-            else
-                return null;
-        }
-        /// <summary>
-        /// получаем id русских слова  по нашему запросу  
-        /// </summary>
-        public List<long> GetWordRus(string word)
-        {
-            if (rus_ids.ContainsKey(word))
-                return rus_ids[word];
-            else
-               return null; 
         }
 
         public bool AddWord(Word w)
