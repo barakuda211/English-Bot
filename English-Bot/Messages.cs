@@ -50,12 +50,11 @@ namespace English_Bot
         static string Translation(string word)
         {
             string an = "Я не знаю такого слова :(";
-            if (word[0] > 'a' && word[0] < 'Z')
+            if (word.Trim()[0] >= 'a' && word.Trim()[0] <= 'Z')
             {
                 var list = dictionary.GetEngWordIds(word);
                 return list == null ? an : dictionary[list[0]].rus;
             }
-
             else
             {
                 var list = dictionary.GetRusWordIds(word);
