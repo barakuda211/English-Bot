@@ -163,6 +163,7 @@ namespace English_Bot
                     }
                 }
             }
+            users[userID].on_Test = false; 
 
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abuse").ElementAt(0));
