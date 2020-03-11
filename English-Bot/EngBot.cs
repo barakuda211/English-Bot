@@ -37,7 +37,8 @@ namespace English_Bot
             //DailyEvent_start();         //Старт ежедневных событий
             SendFullWordDescription(203654426, dictionary.GetEngWordIds("abandon").ElementAt(0));
             SendFullWordDescription(203654426, dictionary.GetEngWordIds("abuse").ElementAt(0));
-            SendFullWordDescription(203654426, dictionary.GetEngWordIds("abolish").ElementAt(0)); 
+            SendFullWordDescription(203654426, dictionary.GetEngWordIds("abolish").ElementAt(0));
+            SendPicture(203654426, dictionary.GetEngWordIds("adolescent").ElementAt(0));
 
             WriteLine("Bot started!");
 
