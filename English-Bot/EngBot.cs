@@ -31,10 +31,16 @@ namespace English_Bot
             bot.OnMessageReceived += NewMessageHandler;
 
             Thread botStart = new Thread(new ThreadStart(bot.Start));
-            botStart.Start();
+            botStart.Start(); 
             //bot.Start();
 
             //DailyEvent_start();         //Старт ежедневных событий
+            //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abandon").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abuse").ElementAt(0));
+            //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abolish").ElementAt(0));
+            SendPicture(203654426, dictionary.GetEngWordIds("ho").ElementAt(0));
+            //SendPicture(203654426, dictionary.GetEngWordIds("delinquent").ElementAt(0));
+            //SendPicture(203654426, dictionary.GetEngWordIds("dash").ElementAt(0));
 
             WriteLine("Bot started!");
 

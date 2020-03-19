@@ -64,7 +64,7 @@ namespace Dictionary
                 string response = new TimedWebClient { Timeout = 1000 }.DownloadString(url);
 
                 // Исправляем кодировку
-                ChangeEncoding(ref response);
+                // ChangeEncoding(ref response);
                 // Пишем во временный файл -- устарело
                 // File.WriteAllText(prefix + fName + ".json", response);
 

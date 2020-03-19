@@ -32,7 +32,8 @@ namespace English_Bot
                 switch (text)
                 {
                     default:
-                        answer = SendInfo(eventArgs.Message);
+                        //answer = SendInfo(eventArgs.Message);
+                        answer = Translation(text);
                         break;
                 }
 
