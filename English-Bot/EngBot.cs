@@ -38,7 +38,7 @@ namespace English_Bot
             //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abandon").ElementAt(0));
             //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abuse").ElementAt(0));
             //SendFullWordDescription(203654426, dictionary.GetEngWordIds("abolish").ElementAt(0));
-            SendPicture(203654426, dictionary.GetEngWordIds("ho").ElementAt(0));
+            SendPicture(203654426, dictionary.GetEngWordIds("break").ElementAt(0));
             //SendPicture(203654426, dictionary.GetEngWordIds("delinquent").ElementAt(0));
             //SendPicture(203654426, dictionary.GetEngWordIds("dash").ElementAt(0));
 

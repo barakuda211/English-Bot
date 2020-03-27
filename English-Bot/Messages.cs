@@ -5,6 +5,8 @@ using English_Bot.Properties;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System;
+using System.Text;
+using System.Linq; 
 
 namespace English_Bot
 {
@@ -54,7 +56,7 @@ namespace English_Bot
             if (word[0] >= 'A' && word[0] <= 'z')
             {
                 var list = dictionary.GetEngWordIds(word);
-                return list == null ? an : dictionary[list[0]].rus;
+                return list == null ? an : (string.Join('/', from def in dictionary[list[0]].mean_rus.def select def.tr[0].text));
             }
             else
             {
@@ -71,26 +73,36 @@ namespace English_Bot
 
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.DownloadFile(pics.hits[0].webformatURL, "picture.jpg");
+                    webClient.DownloadFile(pics.hits[0].webformatURL, word + "_picture.jpg");
                 }
-                //string url = bot.Api.Photo.GetUploadServer(1).UploadUrl;
-                //string s = @"https://api.vk.com/method/METHOD_NAME?PARAMETERS&access_token=" + Resources.AccessToken;
-                //VkPhotoInfo answer = Methods.DeSerializationObj<VkPhotoInfo>(VkApi.VkRequests.Request(s));
-                //bot.Api.Photo.Save(answer.server, answer.photos_list, answer.aid, answer.hash);
-                //bot.Api.Messages.Send("photo" + id + "");
-                //bot.Api.Photo.SaveMessagesPhoto(url);
+                string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
+
                 Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
                 Random r = new Random(17);
                 int font = r.Next(0, FontFamily.Families.Length - 1);
                 string text = dictionary[word].eng;
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 14, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 - 30), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 46, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 - 70), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + dictionary[word].mean_eng.def[0].ts + "]";
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 12, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2), new StringFormat(StringFormatFlags.NoClip));
-                text = dictionary[word].rus;
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 14, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 + 30), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, 32, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 18), pics.hits[0].webformatHeight / 2), new StringFormat(StringFormatFlags.NoClip));
+                text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 36, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
                 bitmap.Save(word + "_picture_with_str.jpg");
+
+                System.Threading.Thread.Sleep(100); 
+
+                var uploader = new WebClient();
+                var uploadResponseInBytes = uploader.UploadFile(url, word + "_picture_with_str.jpg");
+                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+               // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Attachments = photos
+                }) ;
             }
             catch (Exception)
             { return; }
