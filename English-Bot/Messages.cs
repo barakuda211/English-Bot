@@ -83,11 +83,15 @@ namespace English_Bot
                 Random r = new Random(17);
                 int font = r.Next(0, FontFamily.Families.Length - 1);
                 string text = dictionary[word].eng;
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 46, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 - 70), new StringFormat(StringFormatFlags.NoClip));
+                int width = pics.hits[0].webformatWidth;
+                int height = pics.hits[0].webformatHeight;
+                int font_size = 3 * (width / 50);
+                int tr_size = 3 * (width / 100); 
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2 - 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + dictionary[word].mean_eng.def[0].ts + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, 32, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 18), pics.hits[0].webformatHeight / 2), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2), new StringFormat(StringFormatFlags.NoClip));
                 text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 36, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2 + 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
                 bitmap.Save(word + "_picture_with_str.jpg");
 
                 System.Threading.Thread.Sleep(100); 

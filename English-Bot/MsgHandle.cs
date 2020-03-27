@@ -34,6 +34,8 @@ namespace English_Bot
                     default:
                         //answer = SendInfo(eventArgs.Message);
                         answer = Translation(text);
+                        if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordIds(text) != null)
+                            SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
                         break;
                 }
 
