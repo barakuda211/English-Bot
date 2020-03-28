@@ -6,7 +6,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System;
 using System.Text;
-using System.Linq; 
+using System.Linq;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
+using NAudio; 
 
 namespace English_Bot
 {
@@ -94,12 +97,12 @@ namespace English_Bot
                 graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2 + 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
                 bitmap.Save(word + "_picture_with_str.jpg");
 
-                System.Threading.Thread.Sleep(100); 
+                // System.Threading.Thread.Sleep(100); 
 
                 var uploader = new WebClient();
                 var uploadResponseInBytes = uploader.UploadFile(url, word + "_picture_with_str.jpg");
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-               // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
                 var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
                 bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
                 {
@@ -111,10 +114,21 @@ namespace English_Bot
             catch (Exception)
             { return; }
         }
-
+        
         static void SendSound(long id, long word)
         {
-            
+            SpeechSynthesizer speechSynth = new SpeechSynthesizer();
+            speechSynth.Volume = 50; 
+            PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
+            p.AppendText("Hello world, I'm programming very well, and its great!!");
+            speechSynth.Speak(p);
+            string file_name = id + "_sound";
+            speechSynth.SetOutputToWaveFile("hello.wav");
+            using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+            {
+                // :3
+            }
         }
+        
     }
 }
