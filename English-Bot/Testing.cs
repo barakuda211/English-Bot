@@ -110,8 +110,8 @@ namespace English_Bot
             for (int i = 0; i < add_words; i++)             //TODO: заменить на слова нужного уровня, если возможно
             {
                 int j = rand.Next(dictionary.Count());
-                if (!lastULW.Contains(dictionary[j].id))
-                    lastULW.Add(dictionary[j].id);
+                if (!lastULW.Contains(dictionary.GetKeys().ElementAt(j)))
+                    lastULW.Add(dictionary.GetKeys().ElementAt(j));
             }
 
             //лист для проверки ответов

@@ -19,7 +19,7 @@ namespace English_Bot
         /// Отправляет пользователю полную информацию о слове по его ID
         /// </summary>
         /// <param name="wordId"></param>
-        static void SendFullWordDescription(long userId, long wordId)
+        static string SendFullWordDescription(/*long userId, */long wordId)
         {
             string message = "";
             Word word = dictionary[wordId];
@@ -49,7 +49,8 @@ namespace English_Bot
                     exps = true;
                 }
             }
-            SendMessage(userId, message);
+            //SendMessage(userId, message);
+            return message; 
         } 
 
         static string Translation(string word)
@@ -58,13 +59,12 @@ namespace English_Bot
             string an = "Я не знаю такого слова :(";
             if (word[0] >= 'A' && word[0] <= 'z')
             {
-                var list = dictionary.GetEngWordIds(word);
-                return list == null ? an : (string.Join('/', from def in dictionary[list[0]].mean_rus.def select def.tr[0].text));
+                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text));
             }
             else
             {
-                var list = dictionary.GetRusWordIds(word);
-                return list == null ? an : dictionary[list[0]].eng;
+                var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
+                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng));
             }
         }
 

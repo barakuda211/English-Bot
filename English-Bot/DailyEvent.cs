@@ -32,6 +32,7 @@ namespace English_Bot
                 if ((TimeNowHour >= 7) && (TimeNowHour) < 23)
                     Timer();
                 TimeNowHour = DateTime.Now.Hour;
+                Thread.Sleep(1000);
             }
         }
 
@@ -46,7 +47,11 @@ namespace English_Bot
             int sleeptime = 16 / TimesOfWork * 360000;
             for (int i = 0; i < TimesOfWork; i++)
             {
-                // вызвать метод для тестирования 
+                foreach (var user in users.Dbase.Values)
+                {
+                    Random rand = new Random(); 
+                    SendPicture(user.userId, user.unLearnedWords.ElementAt(rand.Next(user.unLearnedWords.Count)));
+                }
                 if (DateTime.Now.Hour >= 23) break;
                 Thread.Sleep(sleeptime);
             }

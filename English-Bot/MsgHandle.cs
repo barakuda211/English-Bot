@@ -32,10 +32,11 @@ namespace English_Bot
                 switch (text)
                 {
                     default:
-                        //answer = SendInfo(eventArgs.Message);
+                        // answer = SendInfo(eventArgs.Message);
                         answer = Translation(text);
-                        if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordIds(text) != null)
-                            SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
+                        // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
+                            //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
+                            //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
                         break;
                 }
 
