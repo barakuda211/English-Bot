@@ -23,7 +23,8 @@ namespace English_Bot
         {
             string message = "";
             Word word = dictionary[wordId];
-            message += word.eng.ToUpper() + " [" + word.mean_eng.def[0].ts + "]\n";
+            if (word.mean_eng != null && word.mean_eng.def != null)
+                message += word.eng.ToUpper() + " [" + word.mean_eng.def[0].ts + "]\n";
             message += "Определения:\n";
             bool exps = false;
             foreach (var def in word.mean_rus.def)
@@ -59,12 +60,12 @@ namespace English_Bot
             string an = "Я не знаю такого слова :(";
             if (word[0] >= 'A' && word[0] <= 'z')
             {
-                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text));
+                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', (from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text).Take(3)));
             }
             else
             {
                 var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
-                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng));
+                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng).Take(3));
             }
         }
 
@@ -88,13 +89,13 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
-                int font_size = 3 * (width / 50);
-                int tr_size = 3 * (width / 100); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2 - 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
+                int font_size = 3 * (width / 50) - 4;
+                int tr_size = 2 * (width / 100); 
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size * 2), height / 2 - (height / 4)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + dictionary[word].mean_eng.def[0].ts + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, font_size - 4, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size * 2), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
                 text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size), height / 2 + 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size) + 10, height / 2 + 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
                 bitmap.Save(word + "_picture_with_str.jpg");
 
                 // System.Threading.Thread.Sleep(100); 
