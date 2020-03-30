@@ -1,1 +1,1 @@
-{"122402184":{"lastMsg":{"Item1":"huy","Item2":true,"Item3":552},"userId":122402184,"regId":1,"name":"Дима","userTags":null,"learnedWords":null,"unLearnedWords":[258],"on_Test":true}}
+{"203654426":{"lastMsg":{"Item1":"","Item2":false,"Item3":0},"userId":203654426,"regId":1,"name":"Глеб","userTags":null,"learnedWords":null,"unLearnedWords":[1,2,3,4,5,6,7,8,9,40],"on_Test":false},"122402184":{"lastMsg":{"Item1":"","Item2":false,"Item3":0},"userId":122402184,"regId":1,"name":"Дима","userTags":null,"learnedWords":null,"unLearnedWords":[48731,9016,3027,32493],"on_Test":false}}

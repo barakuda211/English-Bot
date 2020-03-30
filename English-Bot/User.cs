@@ -60,6 +60,10 @@ namespace English_Bot
             {
                 Console.WriteLine(dict[x]);
             }
+            if (unLearnedWords.Count == 0)
+            {
+                unLearnedWords = new HashSet<long>(dict.eng_ids.Values.Where(x => Math.Sin(Math.Sqrt(x)) > 0).Take(10));
+            }
         }
         public User(long Userid, int rgId, string nm, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {

@@ -19,7 +19,7 @@ namespace English_Bot
         /// Отправляет пользователю полную информацию о слове по его ID
         /// </summary>
         /// <param name="wordId"></param>
-        static string SendFullWordDescription(/*long userId, */long wordId)
+        static void SendFullWordDescription(long userId, long wordId)
         {
             string message = "";
             Word word = dictionary[wordId];
@@ -49,8 +49,8 @@ namespace English_Bot
                     exps = true;
                 }
             }
-            //SendMessage(userId, message);
-            return message; 
+            SendMessage(userId, message);
+            //return message; 
         } 
 
         static string Translation(string word)

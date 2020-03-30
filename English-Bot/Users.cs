@@ -18,7 +18,8 @@ namespace English_Bot
 
         public Users()
         {
-            Dbase = new Dictionary<long, User>(); 
+            Dbase = new Dictionary<long, User>();
+            Load();
         }
 
 
@@ -78,7 +79,7 @@ namespace English_Bot
         public  void Save()
         {
 
-            string path =GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
+            string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
             
             
             JsonSerializer serializer = new JsonSerializer();
@@ -105,6 +106,6 @@ namespace English_Bot
             return path.Substring(0, path.IndexOf("bin")); // костыль 
         }
 
-        public bool HasUser(long id) => Dbase.ContainsKey(id);
+        public bool HasUser(long id) => Dbase == null ? false : Dbase.ContainsKey(id);
     }
 }

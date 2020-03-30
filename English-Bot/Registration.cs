@@ -23,6 +23,7 @@ namespace English_Bot
             User user = users[id];
             user.regId++;
             Console.WriteLine("Registered: " + user.name + " " + user.userId);
+            users.Save(); 
             Testing_Start(id);
             /*
             switch (user.regId++)
