@@ -65,6 +65,8 @@ namespace English_Bot
             return 0;//заглушка
         }
 
+        static int TEST_Words = 5; 
+
         //тестирование пользователя по !6! последним изученным словам
         static void Testing(object IDobj)
         {
@@ -98,7 +100,7 @@ namespace English_Bot
             if (w.Count() < 5)
                 add_words = 5 - w.Count();
 
-
+            
             for (int i = 0; i < w.Count(); i++)
             {
                 int j = rand.Next(0,w.Count());      
@@ -110,8 +112,8 @@ namespace English_Bot
             for (int i = 0; i < add_words; i++)             //TODO: заменить на слова нужного уровня, если возможно
             {
                 int j = rand.Next(dictionary.Count());
-                if (!lastULW.Contains(dictionary[j].id))
-                    lastULW.Add(dictionary[j].id);
+                if (!lastULW.Contains(dictionary.GetKeys().ElementAt(j)))
+                    lastULW.Add(dictionary.GetKeys().ElementAt(j));
             }
 
             //лист для проверки ответов

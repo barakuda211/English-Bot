@@ -45,4 +45,11 @@ namespace English_Bot
         public int aid { get; set; }
         public string hash { get; set; }
     }
+
+    public class VKRootObject
+    {
+        public int server { get; set; }
+        public string photo { get; set; }
+        public string hash { get; set; }
+    }
 }

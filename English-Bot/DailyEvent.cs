@@ -32,11 +32,12 @@ namespace English_Bot
                 if ((TimeNowHour >= 7) && (TimeNowHour) < 23)
                     Timer();
                 TimeNowHour = DateTime.Now.Hour;
+                Thread.Sleep(1000);
             }
         }
 
         ///<summary>
-        ///метод ,который будет вызывать н раз метод тестирования 
+        ///метод ,который будет вызывать н раз отправку картинок 
         ///</summary>
 
         public static void Timer()
@@ -46,10 +47,21 @@ namespace English_Bot
             int sleeptime = 16 / TimesOfWork * 360000;
             for (int i = 0; i < TimesOfWork; i++)
             {
-                // вызвать метод для тестирования 
+                //if (users.Dbase != null && users.Dbase.Count != 0)
+                foreach (var user in users.Dbase.Values)
+                {
+                    Random rand = new Random();
+                    bool pic = rand.Next(2) % 2 == 0;
+                    if (pic)
+                        SendPicture(user.userId, user.unLearnedWords.ElementAt(rand.Next(user.unLearnedWords.Count)));
+                    else
+                        SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(rand.Next(user.unLearnedWords.Count)));
+                }
                 if (DateTime.Now.Hour >= 23) break;
                 Thread.Sleep(sleeptime);
+                
             }
+            
         }
     }
 }
