@@ -5,6 +5,11 @@ using English_Bot.Properties;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System;
+using System.Text;
+using System.Linq;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
+using NAudio; 
 
 namespace English_Bot
 {
@@ -18,7 +23,8 @@ namespace English_Bot
         {
             string message = "";
             Word word = dictionary[wordId];
-            message += word.eng.ToUpper() + " [" + word.mean_eng.def[0].ts + "]\n";
+            if (word.mean_eng != null && word.mean_eng.def != null)
+                message += word.eng.ToUpper() + " [" + word.mean_eng.def[0].ts + "]\n";
             message += "Определения:\n";
             bool exps = false;
             foreach (var def in word.mean_rus.def)
@@ -45,6 +51,7 @@ namespace English_Bot
                 }
             }
             SendMessage(userId, message);
+            //return message; 
         } 
 
         static string Translation(string word)
@@ -53,13 +60,12 @@ namespace English_Bot
             string an = "Я не знаю такого слова :(";
             if (word[0] >= 'A' && word[0] <= 'z')
             {
-                var list = dictionary.GetEngWordIds(word);
-                return list == null ? an : dictionary[list[0]].rus;
+                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', (from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text).Take(3)));
             }
             else
             {
-                var list = dictionary.GetRusWordIds(word);
-                return list == null ? an : dictionary[list[0]].eng;
+                var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
+                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng).Take(3));
             }
         }
 
@@ -71,34 +77,59 @@ namespace English_Bot
 
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.DownloadFile(pics.hits[0].webformatURL, "picture.jpg");
+                    webClient.DownloadFile(pics.hits[0].webformatURL, word + "_picture.jpg");
                 }
-                //string url = bot.Api.Photo.GetUploadServer(1).UploadUrl;
-                //string s = @"https://api.vk.com/method/METHOD_NAME?PARAMETERS&access_token=" + Resources.AccessToken;
-                //VkPhotoInfo answer = Methods.DeSerializationObj<VkPhotoInfo>(VkApi.VkRequests.Request(s));
-                //bot.Api.Photo.Save(answer.server, answer.photos_list, answer.aid, answer.hash);
-                //bot.Api.Messages.Send("photo" + id + "");
-                //bot.Api.Photo.SaveMessagesPhoto(url);
+                string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
+
                 Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
                 Random r = new Random(17);
                 int font = r.Next(0, FontFamily.Families.Length - 1);
                 string text = dictionary[word].eng;
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 14, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 - 30), new StringFormat(StringFormatFlags.NoClip));
+                int width = pics.hits[0].webformatWidth;
+                int height = pics.hits[0].webformatHeight;
+                int font_size = 3 * (width / 50) - 4;
+                int tr_size = 2 * (width / 100); 
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size * 2), height / 2 - (height / 4)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + dictionary[word].mean_eng.def[0].ts + "]";
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 12, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2), new StringFormat(StringFormatFlags.NoClip));
-                text = dictionary[word].rus;
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, 14, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(pics.hits[0].webformatWidth / 2 - (int)((text.Length / (double)2) * 30), pics.hits[0].webformatHeight / 2 + 30), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, font_size - 4, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size * 2), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
+                text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size) + 10, height / 2 + 25*(height / 100)), new StringFormat(StringFormatFlags.NoClip));
                 bitmap.Save(word + "_picture_with_str.jpg");
+
+                // System.Threading.Thread.Sleep(100); 
+
+                var uploader = new WebClient();
+                var uploadResponseInBytes = uploader.UploadFile(url, word + "_picture_with_str.jpg");
+                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Attachments = photos
+                }) ;
             }
             catch (Exception)
             { return; }
         }
-
+        
         static void SendSound(long id, long word)
         {
-            
+            SpeechSynthesizer speechSynth = new SpeechSynthesizer();
+            speechSynth.Volume = 50; 
+            PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
+            p.AppendText("Hello world, I'm programming very well, and its great!!");
+            speechSynth.Speak(p);
+            string file_name = id + "_sound";
+            speechSynth.SetOutputToWaveFile("hello.wav");
+            using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+            {
+                // :3
+            }
         }
+        
     }
 }
