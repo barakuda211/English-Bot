@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Alvas.Audio">
+      <HintPath>bin\Debug\netcoreapp3.0\Alvas.Audio.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio">
       <HintPath>bin\Debug\netcoreapp3.0\NAudio.dll</HintPath>
     </Reference>
