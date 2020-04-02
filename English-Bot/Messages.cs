@@ -60,12 +60,12 @@ namespace English_Bot
             string an = "Я не знаю такого слова :(";
             if (word[0] >= 'A' && word[0] <= 'z')
             {
-                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', (from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text).Take(3)));
+                return !dictionary.eng_ids.ContainsKey(word) ? an : (string.Join('/', from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text));
             }
             else
             {
                 var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
-                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng).Take(3));
+                return list == null ? an : string.Join('/', list.Select(x => dictionary[x]?.eng));
             }
         }
 
@@ -115,16 +115,54 @@ namespace English_Bot
             catch (Exception)
             { return; }
         }
-        
+        /*
+        static void ToWav()
+        {
+            string fileName = @"e:\down\male.ogg";
+            using (DsReader dr = new DsReader(fileName))
+            {
+                if (dr.HasAudio)
+                {
+                    IntPtr format = dr.ReadFormat();
+                    using (WaveWriter ww = new WaveWriter(File.Create(fileName + ".wav"),
+                        AudioCompressionManager.FormatBytes(format)))
+                    {
+                        byte[] data = dr.ReadData();
+                        ww.WriteData(data);
+                    }
+                }
+            }
+        }
+
+        static void OggToWavWithOgg()
+        {
+            string fileName = @"e:\Down\fortuna.ogg";
+            using (DsReader dr = new DsReader(fileName))
+            {
+                if (dr.HasAudio)
+                {
+                    short oggFormatTag = 26479;
+                    IntPtr format = dr.ReadFormat();
+                    WaveFormat waveFormat = AudioCompressionManager.GetWaveFormat(format);
+                    IntPtr formatOgg = AudioCompressionManager.GetCompatibleFormat(format, oggFormatTag);
+                    using (WaveWriter ww = new WaveWriter(File.Create(fileName + ".wav"),
+                        AudioCompressionManager.FormatBytes(formatOgg)))
+                    {
+                        AudioCompressionManager.Convert(dr, ww, true);
+                    }
+                }
+            }
+            */
         static void SendSound(long id, long word)
         {
             SpeechSynthesizer speechSynth = new SpeechSynthesizer();
-            speechSynth.Volume = 50; 
+            speechSynth.Volume = 50;
             PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
             p.AppendText("Hello world, I'm programming very well, and its great!!");
             speechSynth.Speak(p);
             string file_name = id + "_sound";
-            speechSynth.SetOutputToWaveFile("hello.wav");
+            speechSynth.SetOutputToWaveFile(file_name + ".wav");
+
             using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
             {
                 // :3

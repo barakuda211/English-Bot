@@ -1,0 +1,166 @@
+.show {
+   display: block;
+   visibility: visible;
+}
+
+.hidden {
+   display: none;
+   visibility: hidden;
+}
+
+body{
+CURSOR: default;
+FONT-SIZE: 13px; FONT-FAMILY: "Tahoma", "Arial", "Helvetica"; font-family: "Tahoma, Arial, Helvetica"; 
+}
+
+div.code {
+	BORDER-RIGHT: #000000 2px dotted; PADDING-RIGHT: 5px; 
+	BORDER-TOP: #000000 2px dotted; PADDING-LEFT: 5px; BACKGROUND: #F8F8F8; PADDING-BOTTOM: 5px; MARGIN: 10px 5px; 
+	BORDER-LEFT: #000000 2px dotted; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 2px dotted; word-wrap : break-word
+}
+
+TABLE 
+{
+  min-height:100%;
+}
+
+img
+{
+  border: none;
+}
+
+td.out
+{
+  border-style: outset;
+  border-width: 2;
+}
+
+TD.inact
+{
+  border-style: solid;
+  border-width: 1;
+  border-color: white;
+  border-right-width: 0;
+  border-top-width: 1;
+  border-left-color: Gray;
+  border-top-color: #f7f3e9;
+  background-color: #f7f3e9;
+}
+
+TD.act
+{
+  border-style: solid;
+  border-width: 1;
+  border-color: white;
+  border-right-width: 0;
+  border-bottom-color: #d4d0c8;
+  border-top-width: 1;
+  border-top-color: White;
+  border-left-color: White;
+}
+
+TR.menu
+{
+  cursor: hand;
+}
+
+TD.info
+{
+  border-left-color: white;
+}
+
+td.im {
+    border-style:solid;
+    border-width: 1px;
+
+    border-left-color:#d4d0c8;
+    border-top-color:#d4d0c8;
+    border-bottom-color:#d4d0c8;
+    border-right-color:#d4d0c8;
+}
+
+td.dm {
+    border-style:solid;
+    border-width: 1px;
+
+    border-left-color:#FFFFFF;
+    border-top-color:#FFFFFF;
+    border-bottom-color:gray;
+    border-right-color:gray;
+}
+
+TD {
+  COLOR: "#303030";
+  /*text-align: justify;*/
+  /*border: 1px dashed;*/
+}
+TH {
+  /*FONT-SIZE: 13px; FONT-FAMILY: "Tahoma", "Arial", "Helvetica"; font-family: "Tahoma, Arial, Helvetica"; */
+  COLOR: "#303030";
+}
+
+A:link, A:visited {
+  COLOR: #000088; 
+  TEXT-DECORATION: none;
+  /*border-bottom: 1px dotted;*/
+}
+
+a:link.noborder, a:visited.noborder, a:hover.noborder {
+  border: none;/*border-bottom: 1px dashed;*/
+}
+
+a:link.border, a:visited.border, a:hover.border {
+  border-bottom: 1px dashed;
+}
+
+a:link.help, a:visited.help, a:hover.help {
+  border-bottom: 1px dashed;
+  cursor: help;
+}
+
+a:link.help2, a:visited.help2, a:hover.help2 {
+  cursor: help;
+}
+/*
+a:link, a:visited {color: #0063D5; font-family: trebuchet ms, verdana;
+border-bottom: 1px dotted #0063D5; TEXT-DECORATION: none
+}
+*/
+
+A:hover {
+  COLOR: blue;
+  /*text-decoration:underline;*/
+}
+.m {
+  COLOR: white
+}
+.h {
+  BACKGROUND: buttonhighlight
+}
+.s {
+  BACKGROUND: buttonshadow
+}
+.f {
+  BACKGROUND: #d4d0c8
+}
+.ss {
+  BACKGROUND: threeddarkshadow
+}
+.c {
+  BACKGROUND: activecaption; COLOR: captiontext
+}
+.standardsButton {
+  BORDER-RIGHT: #7d3302 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #ffc8a4 1px solid; PADDING-LEFT: 3px; PADDING-BOTTOM: 0px; MARGIN: 0px; FONT: bold 10px verdana,sans-serif; BORDER-LEFT: #ff9a57 1px solid; COLOR: #ffffff; PADDING-TOP: 0px; BORDER-BOTTOM: #3f1a01 1px solid; BACKGROUND-COLOR: #ff6600; TEXT-DECORATION: none;
+}
+.padButton {
+  BORDER-RIGHT: #7d3302 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #bdf3ff 1px solid; PADDING-LEFT: 3px; PADDING-BOTTOM: 0px; MARGIN: 0px; FONT: bold 10px verdana,sans-serif; BORDER-LEFT: #bdf3ff 1px solid; COLOR: #bdf3ff; PADDING-TOP: 0px; BORDER-BOTTOM: #3f1a01 1px solid; BACKGROUND-COLOR: #2d4494; TEXT-DECORATION: none;
+  cursor: help;
+}
+
+h1 {
+  FONT-SIZE: 20px; FONT-FAMILY: "Tahoma", "Arial", "Helvetica"; font-family: "Tahoma, Arial, Helvetica"; COLOR: "#303030";
+}
+
+h2 {
+  FONT-SIZE: 16px; FONT-FAMILY: "Tahoma", "Arial", "Helvetica"; font-family: "Tahoma, Arial, Helvetica"; COLOR: "#303030";
+}

@@ -1,0 +1,40 @@
+﻿<Window x:Class="WpfCs.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"        
+    Title="Alvas.Audio WPF Demo" Height="500" Width="1000" Icon="/WpfCs;component/App.ico">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
+            <ToolBar Band="1" BandIndex="1">
+                <Button Name="tbbOpen" Content="Open" Click="tbbOpen_Click">
+                </Button>
+                <Separator/>
+                <Button Name="tbbPlay" Content="Play" Click="tbbPlay_Click">
+                </Button>
+                <Separator/>
+                <Button Name="tbbStop" Content="Stop" Click="tbbStop_Click">
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+
+        <WindowsFormsHost Name="wfh" Grid.Row="1" Grid.Column="1" >
+            <!--xmlns:aa="clr-namespace:Alvas.Audio;assembly=Alvas.Audio"-->
+            <!--<aa:WaveformVisualizer x:Name="wfv"/>-->
+        </WindowsFormsHost>
+        
+        <WindowsFormsHost Grid.Row="1" Grid.Column="0" >
+            <wf:PropertyGrid x:Name="pgMain"/>
+        </WindowsFormsHost>
+
+    </Grid>
+</Window>
