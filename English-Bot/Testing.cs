@@ -199,7 +199,7 @@ namespace English_Bot
             }
 
             New:
-            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x)).ToList();
+            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
             if(Math.Abs(words_level.Count - users[userID].unLearnedWords.Count) < Users.UNLearned)
             {
                 if (users[userID].userLevel == 0)
@@ -226,6 +226,7 @@ namespace English_Bot
                 }
                 goto New;
             }
+
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
             {
                 if (words_level.Count == 0)
