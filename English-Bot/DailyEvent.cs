@@ -59,7 +59,7 @@ namespace English_Bot
         public static void Timer()
         {
             Random r = new Random();
-            int TimesOfWork = r.Next(3, 11);
+            int TimesOfWork = r.Next(3, Users.UNLearned);
             int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
