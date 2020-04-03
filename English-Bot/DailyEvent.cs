@@ -48,9 +48,9 @@ namespace English_Bot
             for (int i = 0; i < TimesOfWork; i++)
             {
                 //if (users.Dbase != null && users.Dbase.Count != 0)
+                Random rand = new Random();
                 foreach (var user in users.Dbase.Values)
                 {
-                    Random rand = new Random();
                     bool pic = rand.Next(2) % 2 == 0;
                     if (pic)
                         SendPicture(user.userId, user.unLearnedWords.ElementAt(rand.Next(user.unLearnedWords.Count)));
