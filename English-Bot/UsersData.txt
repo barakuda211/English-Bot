@@ -1,0 +1,1 @@
+{"203654426":{"lastMsg":{"Item1":"train","Item2":true,"Item3":2140},"userId":203654426,"userLevel":1,"regId":1,"name":"Глеб","userTags":null,"learnedWords":[53526,30607,19476,35142,28782,6065,4612],"unLearnedWords":[50836,28891,44170,35115,8286,19414,13450,29840],"on_Test":false}}
