@@ -85,6 +85,7 @@ namespace English_Bot
             {
                 try
                 {
+                    word = string.Join("", word.Select(x => x == 'ё' ? 'е' : x));
                     var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
                     return (list == null || list.Count == 0) ? an : string.Join('/', list.Select(x => dictionary[x]?.eng));
                 }
@@ -169,6 +170,24 @@ namespace English_Bot
             }
         }
 
+        static string ToOgg(string file)
+        {
+            using (DsReader dr = new DsReader(file))
+            {
+                if (dr.HasAudio)
+                {
+                    IntPtr format = dr.ReadFormat();
+                    using (WaveWriter ww = new WaveWriter(File.Create(file + ".ogg"),
+                        AudioCompressionManager.FormatBytes(format)))
+                    {
+                        byte[] data = dr.ReadData();
+                        ww.WriteData(data);
+                    }
+                }
+            }
+            return file + ".ogg";
+        }
+
         /*
         static void ToOgg(string file)
         {
@@ -186,10 +205,31 @@ namespace English_Bot
             string file_name = id + "_sound";
             speechSynth.SetOutputToWaveFile(file_name + ".wav");
 
+            /*
             using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
             {
                 // :3
             }
+            */
+
+            file_name = ToOgg(file_name + ".wav");
+
+            string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
+
+            var uploader = new WebClient();
+            var uploadResponseInBytes = uploader.UploadFile(url, file_name);
+            var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+            var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
+            // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+            var mess = bot.Api.Docs.Save(voice.file, "voice" + word);
+            /*
+            bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            {
+                RandomId = Environment.TickCount64,
+                UserId = id,
+                Attachments = mess
+            }) ;
+            */
         } 
 
         static void SendRecognition(EventArgs message)

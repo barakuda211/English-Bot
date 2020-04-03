@@ -44,7 +44,7 @@ namespace English_Bot
         {
             Random r = new Random();
             int TimesOfWork = r.Next(3, 11);
-            int sleeptime = 16 / TimesOfWork * 360000;
+            int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
                 //if (users.Dbase != null && users.Dbase.Count != 0)
