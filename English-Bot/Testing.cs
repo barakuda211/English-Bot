@@ -31,7 +31,7 @@ namespace English_Bot
         */
 
         //отправляет сообщение юзеру
-        static void SendMessage(long userID, string message, long[] msgIDs = null)
+        public static void SendMessage(long userID, string message, long[] msgIDs = null)
         {
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
@@ -45,7 +45,7 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
-        static long WaitWordFromUser(long userID, string[] word, bool always)
+        static long WaitWordFromUser(long userID, string[] word, bool always, long word_id)
         {
             var user = users.GetUser(userID);
             if (always)
@@ -60,7 +60,7 @@ namespace English_Bot
                 WriteLine("слово получено");
                 WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
-                return (word.Any(x => x == user.lastMsg.Item1) ? 0 : user.lastMsg.Item3);
+                return (word.Any(x => x == user.lastMsg.Item1) ? -word_id : user.lastMsg.Item3);
             }
             return 0;//заглушка
         }
@@ -79,7 +79,7 @@ namespace English_Bot
             agree.Add("Готов");
             agree.Add("Да");
             agree.Add("точно");
-            WaitWordFromUser(userID, agree.ToArray(), true);
+            WaitWordFromUser(userID, agree.ToArray(), true, -1);
 
             var rand = new Random();
             /*
@@ -145,16 +145,19 @@ namespace English_Bot
                                     wrds.AddRange(tr.syn.Select(x => x.text));
                 }
                 // wrds.AddRange(wrds);
-                msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
+                msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false, idx));
             }
 
+            if (msgIDs.Any(x => x < 0) && users[userID].learnedWords == null)
+                users[userID].learnedWords = new HashSet<long>();
+
             // Добавляем верные ответы в изученные слова и  убираем из невыученных
-            foreach (var id in msgIDs.FindAll(x => x != 0))
+            foreach (var id in msgIDs.FindAll(x => x < 0))
             {
                 try
                 {
-                    users[userID].learnedWords.Add(id);
-                    users[userID].unLearnedWords.Remove(id);
+                    users[userID].learnedWords.Add(-id);
+                    users[userID].unLearnedWords.Remove(-id);
                 }
                 catch(Exception e)
                 {
@@ -165,11 +168,11 @@ namespace English_Bot
             }
 
             WriteLine("Слова пройдены");
-            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastULW.Count()}. ");
+            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x < 0).Count()} из {lastULW.Count()}. ");
 
             //исправление ошибок юзера
 
-            if (msgIDs.FindAll(x => x == 0).Count() < lastULW.Count())//если есть ошибки
+            if (msgIDs.FindAll(x => x < 0).Count() < lastULW.Count())//если есть ошибки
             {
                 SendMessage(userID, "Вы ошиблись в следующем:");
 
@@ -200,34 +203,14 @@ namespace English_Bot
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
             }
-            Fin:
-            users[userID].on_Test = false; 
+        Fin:
+            users[userID].on_Test = false;
 
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abuse").ElementAt(0));
-            //SendFullWordDescription(203654426, dictionary.GetWordEng("abolish").ElementAt(0));
+            users.Save();
         }
 
         static void Testing_Start(long id)
         {
-            /*
-            //122402184 - Dima
-            //210036813 - Mike
-            //223707460 - Anton
-            //long id = 210036813;
-            HashSet<long> hh = new HashSet<long>(dictionary.GetIds());
-            users.GetUser(id).unLearnedWords = hh;
-
-            dictionary.AddWord(new Word(1, "one", "van", "один", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(2, "two", "too", "два", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "three", "tree", "три", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "four", "for", "четыре", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "five", "five", "пять", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "six", "siks", "шесть", null, null, null, null, 1, null));
-            dictionary.AddWord(new Word(1, "seven", "seven", "семь", null, null, null, null, 1, null));
-            //users.GetUser(id).learnedWords.Add(1);
-            //users.GetUser(id).learnedWords.Add(2);
-            */
             users[id].on_Test = true;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);

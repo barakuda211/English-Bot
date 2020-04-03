@@ -67,7 +67,7 @@ namespace English_Bot
             int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
-                //if (users.Dbase != null && users.Dbase.Count != 0)
+                if (users.Dbase != null && users.Dbase.Count != 0)
                 foreach (var user in users.Dbase.Values)
                 {
                     bool pic = r.Next(2) % 2 == 0;

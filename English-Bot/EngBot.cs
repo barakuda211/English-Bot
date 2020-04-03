@@ -13,9 +13,9 @@ namespace English_Bot
 {
     public partial class EngBot
     {
-        static WordsDictionary dictionary = new WordsDictionary();
-        static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
-        static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
+        public static WordsDictionary dictionary = new WordsDictionary();
+        public static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
+        public static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
 
         static void Main(string[] args)
         {
