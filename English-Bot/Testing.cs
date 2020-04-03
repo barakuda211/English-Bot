@@ -185,13 +185,22 @@ namespace English_Bot
                 }
             }
 
+            New:
             List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x)).ToList();
+            if(Math.Abs(words_level.Count - users[userID].unLearnedWords.Count) < Users.UNLearned)
+            {
+                if (users[userID].userLevel == 5)
+                    users[userID].userLevel = -1;
+                else if (users[userID].userLevel == -1)
+                    goto Fin;
+                goto New;
+            }
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
             {
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
             }
-
+            Fin:
             users[userID].on_Test = false; 
 
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
