@@ -17,7 +17,9 @@ namespace English_Bot
         static void DailyEvent_start()
         {
             Thread tr = new Thread(StartTimer);
+            Thread test = new Thread(TestStart);
             tr.Start();
+            test.Start();
         }
 
         ///<summary>
@@ -33,6 +35,20 @@ namespace English_Bot
                     Timer();
                 TimeNowHour = DateTime.Now.Hour;
                 Thread.Sleep(1000);
+            }
+        }
+
+        public static void TestStart()
+        {
+            var Time = DateTime.Now.Hour;
+            while (true)
+            {
+                if (Time >= 20 && Time <= 21)
+                    foreach (var user in users.Dbase.Values)
+                    {
+                        Testing(user.userId);
+                    }
+                Thread.Sleep(3600000);
             }
         }
 
