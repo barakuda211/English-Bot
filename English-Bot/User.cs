@@ -37,11 +37,21 @@ namespace English_Bot
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;
-            userLevel = 1;
+            userLevel = 0;
             userId = vk_user.id;
             name = vk_user.first_name;
             unLearnedWords = new HashSet<long>();
-            parseWordsFields(vk_user, dict);
+            Random r = new Random(); 
+            for (int i = 1; i <= 5; ++i)
+            {
+                var list = dict.GetKeysByLevel(i);
+                for (int j = 1; j <= 3; ++j)
+                {
+                    unLearnedWords.Add(list.ElementAt(r.Next(list.Count)));
+                }
+            }
+            unLearnedWords = unLearnedWords.Distinct().ToHashSet();
+            //parseWordsFields(vk_user, dict);
             on_Test = false;
             lastMsg = ("", false, 0);
         }
