@@ -67,10 +67,20 @@ namespace English_Bot
                 foreach (var user in users.Dbase.Values)
                 {
                     bool pic = r.Next(2) % 2 == 0;
+                    Desc:
                     if (pic)
-                        SendPicture(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                    {
+                        bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                        if (!success)
+                        {
+                            pic = false;
+                            goto Desc;
+                        }
+                    }
                     else
+                    {
                         SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                    }
                 }
                 if (DateTime.Now.Hour >= 23) break;
                 Thread.Sleep(sleeptime);

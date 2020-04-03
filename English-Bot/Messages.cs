@@ -98,7 +98,7 @@ namespace English_Bot
             return an; 
         }
 
-        static void SendPicture(long id, long word)
+        static bool SendPicture(long id, long word)
         {
             try
             {
@@ -143,12 +143,14 @@ namespace English_Bot
                     UserId = id,
                     Attachments = photos
                 }) ;
+                return true;
             }
             catch (Exception e)
             { 
                 Console.WriteLine("Отправка фото неудачна: ID = " + id + ", Word id = " + word);
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
+                return false;
             }
         }
 
