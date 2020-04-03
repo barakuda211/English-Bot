@@ -21,6 +21,7 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
+            if(text != null && text.Length != 0)
             if (!users.HasUser(fromId) || users[fromId].regId != 1)
                 Registration(eventArgs.Message);
             else
@@ -39,14 +40,13 @@ namespace English_Bot
                             //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
                         break;
                 }
-
-                instanse.Api.Messages.Send(new MessagesSendParams()
-                {
-                    RandomId = Environment.TickCount,
-                    PeerId = eventArgs.Message.PeerId,
-                    Message = answer
-                });
             }
+            instanse.Api.Messages.Send(new MessagesSendParams()
+            {
+                RandomId = Environment.TickCount,
+                PeerId = eventArgs.Message.PeerId,
+                Message = answer
+            });
         }
 
         static string SendInfo(Message msg) => $"{msg.PeerId.Value}, i have captured your message: '{msg.Text}'. its length is {msg.Text.Length}. number of spaces: {msg.Text.Count(x => x == ' ')}";

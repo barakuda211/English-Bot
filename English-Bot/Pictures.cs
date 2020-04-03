@@ -52,4 +52,42 @@ namespace English_Bot
         public string photo { get; set; }
         public string hash { get; set; }
     }
+
+    public class VkVoice
+    {
+        public string file { get; set; }
+    }
+
+    // ----------------------------- 
+
+    public class AudioMsg
+    {
+        public int duration { get; set; }
+        public List<int> waveform { get; set; }
+        public string link_ogg { get; set; }
+        public string link_mp3 { get; set; }
+    }
+
+    public class Preview
+    {
+        public AudioMsg audio_msg { get; set; }
+    }
+
+    public class Response
+    {
+        public int id { get; set; }
+        public int owner_id { get; set; }
+        public string title { get; set; }
+        public int size { get; set; }
+        public string ext { get; set; }
+        public string url { get; set; }
+        public int date { get; set; }
+        public int type { get; set; }
+        public Preview preview { get; set; }
+    }
+
+    public class RootObject
+    {
+        public List<Response> response { get; set; }
+    }
 }

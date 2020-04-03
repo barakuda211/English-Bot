@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Dictionary; 
 using Project_Word;
 using System.IO;
+using System.Linq;
 
 namespace English_Bot
 {
@@ -47,6 +48,11 @@ namespace English_Bot
             long[] arr = new long[dict.Keys.Count];
             dict.Keys.CopyTo(arr, 0);
             return new List<long>(arr);
+        } 
+
+        public List<long> GetKeysByLevel(int level)
+        {
+            return dict.Values.Where(x => x.level == level).Select(x => x.id).ToList();
         }
 
         /// <summary>

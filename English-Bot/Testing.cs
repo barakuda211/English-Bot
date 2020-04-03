@@ -128,21 +128,40 @@ namespace English_Bot
                 if (r == 1)
                 {
                     wrds.Add(word.eng);
-                    foreach (var def in word.mean_eng.def)
-                        foreach (var tr in def.tr)
-                            if (tr.syn != null)
-                                wrds.AddRange(tr.syn.Select(x => x.text));
+                    if (word.mean_eng != null)
+                        foreach (var def in word.mean_eng.def)
+                            foreach (var tr in def.tr)
+                                if (tr.syn != null)
+                                    wrds.AddRange(tr.syn.Select(x => x.text));
                 }
                 else
                 {
-                    wrds.Add(word.rus);
-                    foreach (var def in word.mean_rus.def)
-                        foreach (var tr in def.tr)
-                            if (tr.syn != null)
-                                wrds.AddRange(tr.syn.Select(x => x.text));
+                    if (word.rus != null)
+                        wrds.Add(word.rus);
+                    if (word.mean_rus != null)
+                        foreach (var def in word.mean_rus.def)
+                            foreach (var tr in def.tr)
+                                if (tr.syn != null)
+                                    wrds.AddRange(tr.syn.Select(x => x.text));
                 }
-                wrds.AddRange(wrds);
+                // wrds.AddRange(wrds);
                 msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
+            }
+
+            // Добавляем верные ответы в изученные слова и  убираем из невыученных
+            foreach (var id in msgIDs.FindAll(x => x != 0))
+            {
+                try
+                {
+                    users[userID].learnedWords.Add(id);
+                    users[userID].unLearnedWords.Remove(id);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Something wrong in removing unlearned or adding learned words");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
             WriteLine("Слова пройдены");
@@ -165,6 +184,23 @@ namespace English_Bot
                     }
                 }
             }
+
+            New:
+            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x)).ToList();
+            if(Math.Abs(words_level.Count - users[userID].unLearnedWords.Count) < Users.UNLearned)
+            {
+                if (users[userID].userLevel == 5)
+                    users[userID].userLevel = -1;
+                else if (users[userID].userLevel == -1)
+                    goto Fin;
+                goto New;
+            }
+            while (users[userID].unLearnedWords.Count < Users.UNLearned)
+            {
+                int value = rand.Next(words_level.Count);
+                users[userID].unLearnedWords.Add(words_level.ElementAt(value));
+            }
+            Fin:
             users[userID].on_Test = false; 
 
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));
