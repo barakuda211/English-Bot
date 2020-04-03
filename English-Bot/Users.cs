@@ -7,6 +7,8 @@ namespace English_Bot
 {
     public class Users
     {
+        public static int UNLearned = 10;
+
        public   Dictionary<long,User>  Dbase;
         //индексатор
         public User this[long index]

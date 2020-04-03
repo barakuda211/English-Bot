@@ -148,8 +148,21 @@ namespace English_Bot
                 msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
             }
 
+            // Добавляем верные ответы в изученные слова и  убираем из невыученных
             foreach (var id in msgIDs.FindAll(x => x != 0))
-                users[userID].learnedWords.Add(id);
+            {
+                try
+                {
+                    users[userID].learnedWords.Add(id);
+                    users[userID].unLearnedWords.Remove(id);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Something wrong in removing unlearned or adding learned words");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
 
             WriteLine("Слова пройдены");
             SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastULW.Count()}. ");
@@ -171,6 +184,14 @@ namespace English_Bot
                     }
                 }
             }
+
+            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x)).ToList();
+            while (users[userID].unLearnedWords.Count < Users.UNLearned)
+            {
+                int value = rand.Next(words_level.Count);
+                users[userID].unLearnedWords.Add(words_level.ElementAt(value));
+            }
+
             users[userID].on_Test = false; 
 
             //SendFullWordDescription(203654426, dictionary.GetWordEng("abandon").ElementAt(0));

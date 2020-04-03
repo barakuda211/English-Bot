@@ -9,7 +9,7 @@ namespace English_Bot
     public class User
     {
        public long userId { get; set; }
-        public static int userLevel { get; set; }
+        public int userLevel { get; set; }
         //для корректной регистрации
         public int regId { get; set; }
         //Имя юзера на всякий случай
@@ -37,6 +37,7 @@ namespace English_Bot
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;
+            userLevel = 1;
             userId = vk_user.id;
             name = vk_user.first_name;
             unLearnedWords = new HashSet<long>();
