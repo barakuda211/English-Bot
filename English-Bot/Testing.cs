@@ -128,20 +128,23 @@ namespace English_Bot
                 if (r == 1)
                 {
                     wrds.Add(word.eng);
-                    foreach (var def in word.mean_eng.def)
-                        foreach (var tr in def.tr)
-                            if (tr.syn != null)
-                                wrds.AddRange(tr.syn.Select(x => x.text));
+                    if (word.mean_eng != null)
+                        foreach (var def in word.mean_eng.def)
+                            foreach (var tr in def.tr)
+                                if (tr.syn != null)
+                                    wrds.AddRange(tr.syn.Select(x => x.text));
                 }
                 else
                 {
-                    wrds.Add(word.rus);
-                    foreach (var def in word.mean_rus.def)
-                        foreach (var tr in def.tr)
-                            if (tr.syn != null)
-                                wrds.AddRange(tr.syn.Select(x => x.text));
+                    if (word.rus != null)
+                        wrds.Add(word.rus);
+                    if (word.mean_rus != null)
+                        foreach (var def in word.mean_rus.def)
+                            foreach (var tr in def.tr)
+                                if (tr.syn != null)
+                                    wrds.AddRange(tr.syn.Select(x => x.text));
                 }
-                wrds.AddRange(wrds);
+                // wrds.AddRange(wrds);
                 msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
             }
 
