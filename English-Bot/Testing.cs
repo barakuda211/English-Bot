@@ -148,6 +148,9 @@ namespace English_Bot
                 msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false));
             }
 
+            foreach (var id in msgIDs.FindAll(x => x != 0))
+                users[userID].learnedWords.Add(id);
+
             WriteLine("Слова пройдены");
             SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x == 0).Count()} из {lastULW.Count()}. ");
 
