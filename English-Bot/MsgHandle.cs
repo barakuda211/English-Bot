@@ -21,7 +21,7 @@ namespace English_Bot
             var text = eventArgs.Message.Text;
             var answer = "Sorry, there is a empty answer :-(";
 
-            if(text.Length != 0)
+            if(text != null && text.Length != 0)
             if (!users.HasUser(fromId) || users[fromId].regId != 1)
                 Registration(eventArgs.Message);
             else
