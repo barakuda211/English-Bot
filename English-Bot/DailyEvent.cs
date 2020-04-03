@@ -38,6 +38,9 @@ namespace English_Bot
             }
         }
 
+        /// <summary>
+        /// Запуск ежедневного тестирования вечером
+        /// </summary>
         public static void TestStart()
         {
             var Time = DateTime.Now.Hour;
@@ -49,6 +52,7 @@ namespace English_Bot
                         Testing(user.userId);
                     }
                 Thread.Sleep(3600000);
+                Time = DateTime.Now.Hour;
             }
         }
 
