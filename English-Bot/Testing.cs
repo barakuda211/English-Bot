@@ -33,13 +33,20 @@ namespace English_Bot
         //отправляет сообщение юзеру
         public static void SendMessage(long userID, string message, long[] msgIDs = null)
         {
-            bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            try
             {
-                RandomId = Environment.TickCount64,
-                UserId = userID,
-                Message = message,
-                ForwardMessages = msgIDs
-            });
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = userID,
+                    Message = message,
+                    ForwardMessages = msgIDs
+                });
+            }
+            catch (VkNet.Exception.PublicServerErrorException e)
+            {
+                WriteLine("Server error with sending message!");
+            }
             WriteLine("слово отправлено");
         }
 
@@ -60,6 +67,7 @@ namespace English_Bot
                 WriteLine("слово получено");
                 WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
+                word.Select(x => string.Join("", x.Select(ch => ch == 'ё' ? 'е' : ch)));
                 return (word.Any(x => x == user.lastMsg.Item1) ? -word_id : user.lastMsg.Item3);
             }
             return 0;//заглушка
@@ -129,16 +137,18 @@ namespace English_Bot
             {
                 var word = dictionary.GetWord(idx);
                 int r = rand.Next(2);
-                SendMessage(userID, (r == 0 ? word.eng : word.rus));
+                SendMessage(userID, ((r == 0 || word.rus == null) ? word.eng : word.rus));
                 List<string> wrds = new List<string>();
                 if (r == 1)
-                {
+                { 
                     wrds.Add(word.eng);
                     if (word.mean_eng != null)
                         foreach (var def in word.mean_eng.def)
                             foreach (var tr in def.tr)
                                 if (tr.syn != null)
-                                    wrds.AddRange(tr.syn.Select(x => x.text));
+                                    wrds.AddRange(tr.syn.Select(x => x.text)); 
+                    if (dictionary.rus_ids.ContainsKey(word.rus))
+                        wrds.AddRange(dictionary.rus_ids[word.rus].Select(x => dictionary[x].eng));
                 }
                 else
                 {
@@ -197,18 +207,24 @@ namespace English_Bot
                     }
                 }
             }
+            Console.WriteLine("Errata shown --------------------");
+
+            // if first prob 
+            if (users[userID].userLevel == 0)
+            {
+                int lev = (int)Math.Floor((double)msgIDs.FindAll(x => x < 0).Select(x => dictionary[-x].level).Sum() / 9);
+                users[userID].userLevel = lev == 5 ? lev : lev + 1;
+                SendMessage(userID, "Отличное начало! \nВаш уровень - " + users[userID].userLevel + " из 5");
+                Console.WriteLine("First prob successful! ----------");
+                goto First;
+            }
 
             List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
-            if (words_level.Count == 0)
+            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
+
+            if (words_level.Count == 0 && users[userID].unLearnedWords.Count == 0)
             {
-                if (users[userID].userLevel == 0)
-                {
-                    int lev = (int)Math.Floor((double)msgIDs.FindAll(x => x < 0).Select(x => dictionary[-x].level).Sum() / msgIDs.Count);
-                    users[userID].userLevel = lev + 1;
-                    SendMessage(userID, "Отличное начало! \nВаш уровень - " + users[userID].userLevel + " из 5");
-                    goto Fin; 
-                }
-                else if (users[userID].userLevel == 5)
+                if (users[userID].userLevel == 5)
                 {
                     users[userID].userLevel = -1;
                     SendMessage(userID, "Поздравляем! Вы изучили 10000 слов на уровне 5 и открыли новый огромный список слов!");
@@ -223,9 +239,14 @@ namespace English_Bot
                     users[userID].userLevel++;
                     SendMessage(userID, "Поздравляем, Вы перешли на уровень " + users[userID].userLevel);
                 }
-            }
+                Console.WriteLine("Level changed! ----------");
+            } 
+            else { goto Next; }
 
+        First:
             words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
+
+        Next:
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
             {
                 if (words_level.Count == 0)
@@ -233,10 +254,10 @@ namespace English_Bot
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
             }
+            Console.WriteLine("Words added to 10 ---------------");
 
         Fin:
             users[userID].on_Test = false;
-
             users.Save();
         }
 
