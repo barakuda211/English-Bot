@@ -119,14 +119,14 @@ namespace English_Bot
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
                 int font_size = 36; // 3 * (width / 50) - 4;
-                int tr_size = 24; // 2 * (width / 100); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * (font_size + 20) * 2), height / 2 - (height / 4)), new StringFormat(StringFormatFlags.NoClip));
+                int tr_size = 20; // 2 * (width / 100); 
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * font_size * 2), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2), new StringFormat(StringFormatFlags.NoClip));
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
                     text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)((text.Length / (double)2) * (font_size + 20) * 2), height / 2 + 25 * (height / 100)), new StringFormat(StringFormatFlags.NoClip));
+                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
                 }
                     bitmap.Save(word + "_picture_with_str.jpg");
 

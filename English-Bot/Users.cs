@@ -9,7 +9,7 @@ namespace English_Bot
     {
         public static int UNLearned = 10;
 
-       public   Dictionary<long,User>  Dbase;
+        public Dictionary<long, User> Dbase;
         //индексатор
         public User this[long index]
         {
@@ -25,7 +25,7 @@ namespace English_Bot
         }
 
 
-       public User GetUser(long id)
+        public User GetUser(long id)
         {
             if (Dbase.ContainsKey(id))
                 return Dbase[id];
@@ -35,7 +35,7 @@ namespace English_Bot
 
         public User GetUserVKID(long id)
         {
-            foreach(var k in Dbase)
+            foreach (var k in Dbase)
             {
                 if (k.Value.userId == id)
                     return GetUser(k.Key);
@@ -43,8 +43,10 @@ namespace English_Bot
             return null;
         }
 
-      public  bool AddUser(User sr)
+        public bool AddUser(User sr)
         {
+            if (Dbase == null)
+                Dbase = new Dictionary<long, User>();
             if (Dbase.ContainsKey(sr.userId))
                 return false;
             else
@@ -66,8 +68,8 @@ namespace English_Bot
                 return true;
             }
         }
-   
-        public  void Load()
+
+        public void Load()
         {
             // JsonSerializer serializer = new JsonSerializer();
             // StreamReader sr = new StreamReader("UserData.json");
@@ -78,20 +80,20 @@ namespace English_Bot
                 Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
             }
         }
-        
-        public  void Save()
+
+        public void Save()
         {
 
             string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
-            
-            
+
+
             JsonSerializer serializer = new JsonSerializer();
             using (StreamWriter sw = new StreamWriter(path))
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 serializer.Serialize(writer, Dbase);
             }
-            
+
 
             /*  тоже рабочий варик 
              *  
@@ -101,7 +103,7 @@ namespace English_Bot
             sw.WriteLine(s);
             sw.Close();
             */
-               
+
         }
 
         public static string GetPathOfFile(string path)

@@ -47,10 +47,11 @@ namespace English_Bot
             while (true)
             {
                 if (Time >= 20 && Time <= 21)
-                    foreach (var user in users.Dbase.Values)
-                    {
-                        Testing(user.userId);
-                    }
+                    if (users.Dbase != null && users.Dbase.Count != 0)
+                        foreach (var user in users.Dbase.Values)
+                        {
+                            Testing_Start(user.userId);
+                        }
                 Thread.Sleep(3600000);
                 Time = DateTime.Now.Hour;
             }
@@ -63,29 +64,31 @@ namespace English_Bot
         public static void Timer()
         {
             Random r = new Random();
-            int TimesOfWork = r.Next(3, Users.UNLearned);
+            int TimesOfWork = r.Next(5, Users.UNLearned);
             int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
-                //if (users.Dbase != null && users.Dbase.Count != 0)
-                foreach (var user in users.Dbase.Values)
-                {
-                    bool pic = r.Next(2) % 2 == 0;
-                    Desc:
-                    if (pic)
+                if (users.Dbase != null && users.Dbase.Count != 0)
+                    foreach (var user in users.Dbase.Values)
                     {
-                        bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
-                        if (!success)
+                        if (user.on_Test)
+                            continue;
+                        bool pic = r.Next(2) % 2 == 0;
+                    Desc:
+                        if (pic)
                         {
-                            pic = false;
-                            goto Desc;
+                            bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                            if (!success)
+                            {
+                                pic = false;
+                                goto Desc;
+                            }
+                        }
+                        else
+                        {
+                            SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
                         }
                     }
-                    else
-                    {
-                        SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
-                    }
-                }
                 if (DateTime.Now.Hour >= 23) break;
                 Thread.Sleep(sleeptime);
                 
