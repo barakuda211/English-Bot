@@ -46,7 +46,7 @@ namespace English_Bot
             var Time = DateTime.Now.Hour;
             while (true)
             {
-                if (Time >= 20 && Time <= 21)
+                if (Time == 20)
                     if (users.Dbase != null && users.Dbase.Count != 0)
                         foreach (var user in users.Dbase.Values)
                         {
@@ -64,7 +64,7 @@ namespace English_Bot
         public static void Timer()
         {
             Random r = new Random();
-            int TimesOfWork = r.Next(5, Users.UNLearned);
+            int TimesOfWork = Users.UNLearned;
             int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
