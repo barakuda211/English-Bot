@@ -47,7 +47,7 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
-            WriteLine("слово отправлено");
+            WriteLine("Word sent");
         }
 
         //ждет ответа !определенного! ответа от юзера, 
@@ -58,13 +58,13 @@ namespace English_Bot
             if (always)
             {
                 while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) Thread.Sleep(100);  //ожидание согласия
-                WriteLine("готов получен");
+                WriteLine("Get \"Ready\"");
                 user.lastMsg.Item2 = true;
             }
             if (!always)
             {
                 while (user.lastMsg.Item2 != false) Thread.Sleep(100);
-                WriteLine("слово получено");
+                WriteLine("get word");
                 WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
                 word.Select(x => string.Join("", x.Select(ch => ch == 'ё' ? 'е' : ch)));
@@ -167,7 +167,7 @@ namespace English_Bot
             if (users[userID].learnedWords == null && msgIDs.Any(x => x < 0))
                 users[userID].learnedWords = new HashSet<long>();
 
-            WriteLine("Слова пройдены");
+            WriteLine("Words learnt");
             SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x < 0).Count()} из {lastULW.Count()}. ");
 
             // Добавляем верные ответы в изученные слова и убираем из невыученных

@@ -147,7 +147,7 @@ namespace English_Bot
             }
             catch (Exception e)
             { 
-                Console.WriteLine("Отправка фото неудачна: ID = " + id + ", Word id = " + word);
+                Console.WriteLine("Error sending photo: ID = " + id + ", Word id = " + word);
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
                 return false;
