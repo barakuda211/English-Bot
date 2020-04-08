@@ -47,6 +47,17 @@ namespace English_Bot
 
                     switch (text)
                     {
+                        case " оманды бота":
+                        case "/commands":
+                            answer = "/change_level - изменить свой уровень\n" +
+                                     "/my_level - мой уровень\n" +
+                                     "\'слово на русском\' - перевод на английский\n" +
+                                     "\'слово на английском\' - перевод на русский";
+                            break;
+                        case "ћой уровень":
+                        case "/my_level":
+                            answer = "¬ы на " + users[fromId].userLevel + " уровне.";
+                            break;
                         case "»зменить уровень":
                         case "/change_level":
                             ChangingLevel_Start(fromId);
