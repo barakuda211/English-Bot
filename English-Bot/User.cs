@@ -9,6 +9,7 @@ namespace English_Bot
     public class User
     {
        public long userId { get; set; }
+        //Уровень пользователя (1,2,3,4,5,-1)
         public int userLevel { get; set; }
         //для корректной регистрации
         public int regId { get; set; }
@@ -30,9 +31,11 @@ namespace English_Bot
         /// </summary>
         public (string, bool, long) lastMsg;
         /// <summary>
-        /// тестируется ли в данный момент юзер
+        /// тестируется ли в данный момент юзер (не только тестируется))))))
         /// </summary>
         public bool on_Test { get; set; }
+        //Для смены уровня пользователя 
+        public int ch_lvl_id {get; set;}
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -53,6 +56,7 @@ namespace English_Bot
             unLearnedWords = unLearnedWords.Distinct().ToHashSet();
             //parseWordsFields(vk_user, dict);
             on_Test = false;
+            ch_lvl_id = 0;
             lastMsg = ("", false, 0);
         }
 
@@ -87,6 +91,7 @@ namespace English_Bot
             unLearnedWords = UnlearWrds;
             lastMsg = ("", true, 0);
             on_Test = false;
+            ch_lvl_id =0;
         }
 
         public User() { }
@@ -96,12 +101,15 @@ namespace English_Bot
             return "your level " + userLevel.ToString();
         }
 
+        //Смена уровня пользователя
         public bool ChangeLevel(int level)
         {
-            if (level == userLevel) return true;
-            int temp = userLevel;
-            userLevel = level;
-            return (temp != userLevel);
+            if ((level>0 && level<6)|| level == -1 )
+            {
+                userLevel = level;
+                return true;
+            }
+            return false;
         }
 
        

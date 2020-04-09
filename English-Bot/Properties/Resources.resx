@@ -120,6 +120,9 @@
   <data name="AccessToken" xml:space="preserve">
     <value>c3eb5026b1cdc9945a97c2d6018d548a6f06c972eea55812b9b3df43efb9f749c93b7be5f1bb2573aaa44</value>
   </data>
+  <data name="AccessToken2" xml:space="preserve">
+    <value>53d6c4cf69ffd56664091883ff4e5d9dcc46619fbaefa88cf38c7fcff21f7f3ba2eca0c54ab3091b9658c</value>
+  </data>
   <data name="groupId" xml:space="preserve">
     <value>187725374</value>
   </data>

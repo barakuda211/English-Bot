@@ -51,7 +51,7 @@ namespace Dictionary
         /// </summary>
         public static string Request(string url, string fName)
         {
-            return "Сигнатура устарела";
+            return "Signature is outdated";
         }
         /// <summary>
         /// Выполнение запроса и (запись в файл по указанному пути -- устарело) возврат строки-ответа
