@@ -118,6 +118,7 @@ namespace English_Bot
                 }
                 string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
 
+
                 Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
@@ -128,15 +129,15 @@ namespace English_Bot
                 int height = pics.hits[0].webformatHeight;
                 int font_size = 36; // 3 * (width / 50) - 4;
                 int tr_size = 20; // 2 * (width / 100); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2), new StringFormat(StringFormatFlags.NoClip));
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
                     text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 2), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
+                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#000000")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 + 50), new StringFormat(StringFormatFlags.NoClip));
                 }
-                    bitmap.Save(word + "_picture_with_str.jpg");
+                bitmap.Save(word + "_picture_with_str.jpg");
 
                 // System.Threading.Thread.Sleep(100); 
 
@@ -150,12 +151,21 @@ namespace English_Bot
                     RandomId = Environment.TickCount64,
                     UserId = id,
                     Attachments = photos
-                }) ;
+                });
+                try
+                {
+                    File.Delete(word + "_picture_with_str.jpg");
+                }
+                catch (DirectoryNotFoundException ex)
+                {
+                    Console.WriteLine("Error with deleting photo");
+                    Console.WriteLine(ex.Message);
+                }
                 return true;
             }
             catch (Exception e)
-            { 
-                Console.WriteLine("Error sending photo: ID = " + id + ", Word id = " + word);
+            {
+                Console.WriteLine("Error downloading photo: ID = " + id + ", Word id = " + word);
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
                 return false;
