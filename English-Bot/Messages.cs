@@ -202,9 +202,9 @@ namespace English_Bot
             SpeechSynthesizer speechSynth = new SpeechSynthesizer();
             speechSynth.Volume = 50;
             PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
-            p.AppendText("Hello world, I'm programming very well, and its great!!");
-            speechSynth.Speak(p);
-            string file_name = id + "_sound";
+            p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
+            //speechSynth.Speak(p);
+            string file_name = word + "_sound";
             speechSynth.SetOutputToWaveFile(file_name + ".wav");
 
             /*
@@ -214,7 +214,7 @@ namespace English_Bot
             }
             */
 
-            file_name = ToOgg(file_name + ".wav");
+            //file_name = ToOgg(file_name + ".wav");
 
             string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
 
