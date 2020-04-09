@@ -39,7 +39,6 @@ namespace English_Bot
                     message += user.name + " -> " + users[user.id].week_words + "\n";
                 }
                 SendMessage(userID, message);
-                users[userID].week_words = 0; 
             }
             catch (Exception e)
             {
@@ -83,6 +82,10 @@ namespace English_Bot
                     foreach (var user in users.Dbase.Values)
                     {
                         ShowSuccess(user.userId);
+                    }
+                    foreach (var user in users.Dbase.Values)
+                    {
+                        users[user.userId].week_words = 0;
                     }
                 }
                 Thread.Sleep(3600000);
