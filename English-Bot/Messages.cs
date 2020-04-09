@@ -73,7 +73,15 @@ namespace English_Bot
             {
                 try
                 {
-                    return !dictionary.eng_ids.ContainsKey(word) ? an : string.Join('/', from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
+                    if (!dictionary.eng_ids.ContainsKey(word))
+                        return an;
+                    else
+                    {
+                        if (dictionary[dictionary.eng_ids[word]].mean_rus == null)
+                            return "Перевод отсуттвует"; 
+                        else 
+                            return string.Join(", ", from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
+                    }
                 }
                 catch(Exception e)
                 {
