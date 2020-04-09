@@ -232,7 +232,7 @@ namespace English_Bot
             }
             */
 
-            //file_name = ToOgg(file_name + ".wav");
+            file_name = ToOgg(file_name + ".wav");
 
             string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
 
@@ -241,7 +241,7 @@ namespace English_Bot
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
             var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.Save(voice.file, "voice" + word);
+            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
             /*
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
