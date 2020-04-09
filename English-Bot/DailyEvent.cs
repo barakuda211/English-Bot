@@ -14,12 +14,38 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        /// <summary>
+        /// Старт ежедневных событий
+        /// </summary>
         static void DailyEvent_start()
         {
             Thread tr = new Thread(StartTimer);
             Thread test = new Thread(TestStart);
             tr.Start();
             test.Start();
+        }
+
+        public static void ShowSuccess(long userID)
+        {
+            try
+            {
+                string message = "Поздравляем! За неделю Вы выучили " + users[userID].week_words + "\n";
+                List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams() { UserId = userID }).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
+                message += "Вот топ пять пользователей среди Вас и ваших друзей по итогам недели: \n";
+                friends.Add((userID, "Вы"));
+                var sorted = friends.OrderByDescending(x => users[x.id].week_words);
+                foreach (var user in sorted)
+                {
+                    message += user.name + " -> " + users[user.id].week_words + "\n";
+                }
+                SendMessage(userID, message);
+                users[userID].week_words = 0; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something bad with sending statistics");
+                Console.WriteLine(e.Message);
+            }
         }
 
         ///<summary>
@@ -31,10 +57,10 @@ namespace English_Bot
             var TimeNowHour = DateTime.Now.Hour;
             while (true)
             {
-                if ((TimeNowHour >= 7) && (TimeNowHour) < 23)
-                    Timer();
+                if (TimeNowHour == 10) //((TimeNowHour >= 10) && (TimeNowHour) < 20)
+                    WordsSender();
                 TimeNowHour = DateTime.Now.Hour;
-                Thread.Sleep(1000);
+                Thread.Sleep(3600000);
             }
         }
 
@@ -52,6 +78,13 @@ namespace English_Bot
                         {
                             Testing_Start(user.userId);
                         }
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)
+                {
+                    foreach (var user in users.Dbase.Values)
+                    {
+                        ShowSuccess(user.userId);
+                    }
+                }
                 Thread.Sleep(3600000);
                 Time = DateTime.Now.Hour;
             }
@@ -61,11 +94,11 @@ namespace English_Bot
         ///метод ,который будет вызывать н раз отправку картинок 
         ///</summary>
 
-        public static void Timer()
+        public static void WordsSender()
         {
             Random r = new Random();
             int TimesOfWork = Users.UNLearned;
-            int sleeptime = (int)Math.Ceiling((double)16 / TimesOfWork * 3600000);
+            int sleeptime = 3600000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
                 if (users.Dbase != null && users.Dbase.Count != 0)
@@ -77,7 +110,7 @@ namespace English_Bot
                     Desc:
                         if (pic)
                         {
-                            bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                            bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
                             if (!success)
                             {
                                 pic = false;
@@ -86,12 +119,11 @@ namespace English_Bot
                         }
                         else
                         {
-                            SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(r.Next(user.unLearnedWords.Count)));
+                            SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
                         }
                     }
-                if (DateTime.Now.Hour >= 23) break;
+                if (DateTime.Now.Hour == 19) break;
                 Thread.Sleep(sleeptime);
-                
             }
             
         }
