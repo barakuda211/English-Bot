@@ -47,6 +47,10 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            {
+                WriteLine("Server error with sending message!");
+            }
             WriteLine("Word sent");
         }
 
@@ -150,6 +154,7 @@ namespace English_Bot
                                 //if (tr.syn != null)
                                 //wrds.AddRange(tr.syn.Select(x => x.text));
                                 wrds.Add(tr.text); */
+                    wrds.Add(word.eng);
                     if (dictionary.rus_ids.ContainsKey(word.rus))
                         wrds.AddRange(dictionary.rus_ids[word.rus].Select(x => dictionary[x].eng));
                 }

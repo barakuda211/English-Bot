@@ -56,7 +56,7 @@ namespace English_Bot
             var TimeNowHour = DateTime.Now.Hour;
             while (true)
             {
-                if (TimeNowHour == 10) //((TimeNowHour >= 10) && (TimeNowHour) < 20)
+                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour) < 20)
                     WordsSender();
                 TimeNowHour = DateTime.Now.Hour;
                 Thread.Sleep(3600000);
@@ -73,11 +73,14 @@ namespace English_Bot
             {
                 if (Time == 20)
                     if (users.Dbase != null && users.Dbase.Count != 0)
+                    {
                         foreach (var user in users.Dbase.Values)
                         {
                             Testing_Start(user.userId);
                         }
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)
+                        users.Save(); 
+                    }
+                /* if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && Time == 21)
                 {
                     foreach (var user in users.Dbase.Values)
                     {
@@ -87,7 +90,7 @@ namespace English_Bot
                     {
                         users[user.userId].week_words = 0;
                     }
-                }
+                } */
                 Thread.Sleep(3600000);
                 Time = DateTime.Now.Hour;
             }
@@ -104,7 +107,10 @@ namespace English_Bot
             int sleeptime = 3600000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
-                if (users.Dbase != null && users.Dbase.Count != 0)
+                //var temp = new Dictionary<long, User>();
+                //foreach (var elem in users.Dbase)
+                    //temp.Append(elem);
+                //if (temp.Count != 0)
                     foreach (var user in users.Dbase.Values)
                     {
                         if (user.on_Test)
