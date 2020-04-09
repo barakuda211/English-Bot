@@ -40,10 +40,6 @@ namespace English_Bot
         /// Сколько слов пользователь выучил за неделю
         /// </summary>
         public int week_words { get; set; }
-        /// <summary>
-        /// Для поиска на странице
-        /// </summary>
-        public VkUser vk_User { get; }
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -66,7 +62,7 @@ namespace English_Bot
             on_Test = false;
             ch_lvl_id = 0;
             week_words = 0;
-            vk_User = vk_user;
+            // vk_User = vk_user;
             lastMsg = ("", false, 0);
         }
 
