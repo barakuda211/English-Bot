@@ -36,6 +36,10 @@ namespace English_Bot
         public bool on_Test { get; set; }
         //Для смены уровня пользователя 
         public int ch_lvl_id {get; set;}
+        /// <summary>
+        /// Сколько слов пользователь выучил за неделю
+        /// </summary>
+        public int week_words { get; set; }
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -57,6 +61,8 @@ namespace English_Bot
             //parseWordsFields(vk_user, dict);
             on_Test = false;
             ch_lvl_id = 0;
+            week_words = 0;
+            // vk_User = vk_user;
             lastMsg = ("", false, 0);
         }
 

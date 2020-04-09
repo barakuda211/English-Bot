@@ -47,6 +47,10 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            {
+                WriteLine("Server error with sending message!");
+            }
             WriteLine("Word sent");
         }
 
@@ -136,29 +140,36 @@ namespace English_Bot
             foreach (long idx in lastULW)//присылает и ждет ответ на последние изученные слова
             {
                 var word = dictionary.GetWord(idx);
+                // 0 - Английское слово 
+                // 1 - Русское слово 
                 int r = rand.Next(2);
-                SendMessage(userID, ((r == 0 || word.rus == null) ? word.eng : word.rus));
+                SendMessage(userID, ((r == 0 && word.mean_rus != null) ? word.eng : word.rus));
                 List<string> wrds = new List<string>();
-                if (r == 1)
-                { 
+                if (r == 1 || word.mean_rus == null)
+                { /*
                     wrds.Add(word.eng);
-                    if (word.mean_eng != null)
+                    //if (word.mean_eng != null)
                         foreach (var def in word.mean_eng.def)
                             foreach (var tr in def.tr)
-                                if (tr.syn != null)
-                                    wrds.AddRange(tr.syn.Select(x => x.text)); 
+                                //if (tr.syn != null)
+                                //wrds.AddRange(tr.syn.Select(x => x.text));
+                                wrds.Add(tr.text); */
+                    wrds.Add(word.eng);
                     if (dictionary.rus_ids.ContainsKey(word.rus))
                         wrds.AddRange(dictionary.rus_ids[word.rus].Select(x => dictionary[x].eng));
                 }
                 else
                 {
-                    if (word.rus != null)
+                    //if (word.rus != null)
                         wrds.Add(word.rus);
-                    if (word.mean_rus != null)
-                        foreach (var def in word.mean_rus.def)
-                            foreach (var tr in def.tr)
-                                if (tr.syn != null)
-                                    wrds.AddRange(tr.syn.Select(x => x.text));
+                    //if (word.mean_rus != null)
+                    foreach (var def in word.mean_rus.def)
+                        foreach (var tr in def.tr)
+                        {
+                            wrds.Add(tr.text);
+                            if (tr.syn != null)
+                                wrds.AddRange(tr.syn.Select(x => x.text));
+                        }
                 }
                 // wrds.AddRange(wrds);
                 msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false, idx));
@@ -168,7 +179,9 @@ namespace English_Bot
                 users[userID].learnedWords = new HashSet<long>();
 
             WriteLine("Words learnt");
-            SendMessage(userID, $"Вы ответили на {msgIDs.FindAll(x => x < 0).Count()} из {lastULW.Count()}. ");
+            int good_words = msgIDs.FindAll(x => x < 0).Count;
+            SendMessage(userID, $"Вы ответили на {good_words} из {lastULW.Count()}. ");
+            users[userID].week_words += good_words;
 
             // Добавляем верные ответы в изученные слова и убираем из невыученных
             foreach (var id in msgIDs.FindAll(x => x < 0))
