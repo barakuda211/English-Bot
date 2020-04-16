@@ -12,6 +12,7 @@ using System.Speech.Synthesis;
 using NAudio;
 using Alvas.Audio;
 using System.IO;
+using static System.Math;
 
 namespace English_Bot
 {
@@ -127,15 +128,47 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
-                int font_size = (int)((height / 12) / 1.338);
-                int tr_size = (int)((height / 14) / 1.338); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
+                //int width = pics.hits[0].imageWidth;
+                //int height = pics.hits[0].imageHeight;    
+                int font_size, tr_size;
+                
+                //graphImage.TextContrast = 
+
+                StringFormat stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                stringFormat.LineAlignment = StringAlignment.Center;
+                
+                
+
+                int size = (int)(125 / graphImage.DpiX);
+                float maxf = System.Single.MaxValue;
+
+                graphImage.DrawString(
+                    text,
+                    new Font(FontFamily.Families[font].Name, font_size = width / text.Length * size, FontStyle.Regular),
+                    new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
+                    new Point(width / 2,
+                            height / 2 - (height / 3)),
+                    new StringFormat(stringFormat));
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * tr_size * 1.338), height / 2 - (height / 10)), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(
+                    @text,
+                    new Font(FontFamily.Families[font].Name, tr_size = width / text.Length * size, FontStyle.Regular),
+                    new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
+                    new Point(width / 2,
+                            height / 2 - (height / 10)),
+                    new StringFormat(stringFormat));
+
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
                     text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 + (height / 6)), new StringFormat(StringFormatFlags.NoClip));
+                    graphImage.DrawString(
+                        text,
+                        new Font(FontFamily.Families[font].Name, font_size = width / text.Length * size, FontStyle.Regular),
+                        new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
+                        new Point(width / 2,
+                        height / 2 + (height / 6)),
+                        new StringFormat(stringFormat));
                 }
                 bitmap.Save(word + "_picture_with_str.jpg");
 
