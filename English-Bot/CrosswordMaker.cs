@@ -230,6 +230,7 @@ namespace Crossword
     //Простая версия кроссворда
     public class SimpleCross
     {
+        private long id { get; set; }
         private int area_height { get; set; }
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
@@ -242,6 +243,7 @@ namespace Crossword
         public SimpleCross(long id, int min_sz = 4, int max_sz = 8, int area_height = 13)
         {
             this.area_height = area_height;
+            this.id = id;
             var user = EngBot.users[id];
 
             //делаем списки выученных/невыученных слов
@@ -440,7 +442,7 @@ namespace Crossword
                 }
             }
             g.Save();
-            bmp.Save("cross_example.jpg",ImageFormat.Jpeg);
+            bmp.Save(@"users\"+id+@"\cross_example.jpg",ImageFormat.Jpeg);
         }
     }
 }
