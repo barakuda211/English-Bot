@@ -3,6 +3,7 @@ using Dictionary;
 using System.Net;
 using English_Bot.Properties;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Speech.Synthesis;
 using NAudio;
 using Alvas.Audio;
 using System.IO;
+using static System.Math;
 
 namespace English_Bot
 {
@@ -127,15 +129,70 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
-                int font_size = (int)((height / 12) / 1.338);
-                int tr_size = (int)((height / 14) / 1.338); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
+
+                StringFormat stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                stringFormat.LineAlignment = StringAlignment.Center;
+                stringFormat.FormatFlags = StringFormatFlags.FitBlackBox;
+
+                HatchBrush hBrush = 
+                    new HatchBrush(
+                        HatchStyle.Trellis,
+                        Color.Red,
+                        Color.FromArgb(255, 128, 255, 255));
+   
+
+                var path = new GraphicsPath();
+                path.AddRectangle(new Rectangle(0, 0, 640, 480));
+                PathGradientBrush pthGrBrush = new PathGradientBrush(path);
+                Color[] colors = { Color.FromArgb(255, 0, 255, 255), Color.Black, Color.White };
+                pthGrBrush.SurroundColors = colors;
+
+                LinearGradientBrush brush =
+                    new LinearGradientBrush(
+                        new Point(0, 0),
+                        new Point(640, 480),
+                        Color.FromArgb(255, 0, 0),
+                        Color.FromArgb(0, 155, 255)
+                        );
+
+                var t = (Image)bitmap.Clone();
+                t.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                TextureBrush tBrush = new TextureBrush(t);
+               
+
+                int size = (int)(125 / graphImage.DpiX);
+                float maxf = System.Single.MaxValue;
+
+                graphImage.DrawString(
+                    text,
+                    new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                    //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
+                    tBrush,
+                    new Point(width / 2,
+                            height / 2 - (height / 3)),
+                    new StringFormat(stringFormat));
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
-                graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * tr_size * 1.338), height / 2 - (height / 10)), new StringFormat(StringFormatFlags.NoClip));
+                graphImage.DrawString(
+                    @text,
+                    new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                    //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
+                    tBrush,
+                    new Point(width / 2,
+                            height / 2 - (height / 10)),
+                    new StringFormat(stringFormat));
+
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
                     text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
-                    graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 + (height / 6)), new StringFormat(StringFormatFlags.NoClip));
+                    graphImage.DrawString(
+                        text,
+                        new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                        //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
+                        tBrush,
+                        new Point(width / 2,
+                        height / 2 + (height / 6)),
+                        new StringFormat(stringFormat));
                 }
                 bitmap.Save(word + "_picture_with_str.jpg");
 
