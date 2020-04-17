@@ -232,6 +232,7 @@ namespace Crossword
     {
         private long id { get; set; }
         private int area_height { get; set; }
+        private Random rand = new Random();
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
         //Слова, пересекающиеся с основным, их id, и индекс буквы, которая пересекается
@@ -253,7 +254,9 @@ namespace Crossword
                 learned.Add(x);
             foreach (var x in user.unLearnedWords)
                 unlearned.Add(x);
-            
+            randomize_list(learned);
+            randomize_list(unlearned);
+
             if (!init_main_word(learned, min_sz, max_sz)) //заполнение главного слова
                 if (!init_main_word(unlearned, min_sz, max_sz))
                     init_main_word(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel),min_sz,max_sz);
@@ -266,11 +269,24 @@ namespace Crossword
                 if (!init_words(unlearned, area_height))
                     init_words(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), area_height);
 
+
+            DrawPicture();
+        }
+
+        private void randomize_list(List<long> lst)
+        {
+            for (int i=0;i<lst.Count;i++)
+            {
+                long x = lst[i];
+                int j = rand.Next(0, lst.Count-1);
+                lst[i] = lst[j];
+                lst[j] = x;
+            }
+
         }
 
         private bool init_words(List<long> w, int area_height)
         {
-            Random rand = new Random();
             int half_area = area_height / 2;
             bool is_inited = false;
             foreach (var x in w)
@@ -311,7 +327,6 @@ namespace Crossword
 
         private bool init_words(HashSet<long> w, int area_height)
         {
-            Random rand = new Random();
             int half_area = area_height / 2;
             int k = 0;
             while (true)    //подбираем слова
@@ -386,8 +401,6 @@ namespace Crossword
 
         private bool init_main_word(HashSet<long> w, int min_sz, int max_sz)
         {
-            Random rand = new Random();
-
             int k = 0;
             while (true)    //подбираем главное слово
             {
@@ -408,7 +421,7 @@ namespace Crossword
             return true;
         }
 
-        public void DrawPicture()
+        private void DrawPicture()
         {
             int width = words.Count * 200+400;
             int height = area_height * 200;
