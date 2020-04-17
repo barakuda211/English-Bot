@@ -32,10 +32,14 @@ namespace English_Bot
             bot.OnMessageReceived += NewMessageHandler;
 
             Thread botStart = new Thread(new ThreadStart(bot.Start));
-            botStart.Start(); 
+            botStart.Start();
             //bot.Start();
 
-            //DailyEvent_start();         //Старт ежедневных событий
+            DailyEvent_start();         //Старт ежедневных событий
+
+            //SendPicture(210036813, dictionary.GetEngWordId("inspector"));
+            //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
+            //SendPicture(210036813, dictionary.GetEngWordId("car"));
 
             WriteLine("Bot started!");
 
