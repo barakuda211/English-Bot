@@ -1,23 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Crossword;
 
 namespace English_Bot
 {
     public static class Games
     {
+        public static void Crossvord_start(long id)
+        {
+            EngBot.users[id].on_Test = false;
+            Thread crossvord_thread = new Thread(new ParameterizedThreadStart(Crossvord_thread_start));
+            crossvord_thread.Start(id);
+        }
+
+
+        static void Crossvord_thread_start(object Idobj)
+        {
+            long id = (long)Idobj;
+            PlaySimpleCrossvord(id);
+        }
+
+        static void PlaySimpleCrossvord(long id)
+        {
+            var scw = new SimpleCross(id);
+        }
+
         public static void PlayCrossword(long user_id)
         {
-            Crossword.CrossMaker.word_list = new List<long>();
+            CrossMaker CM = new CrossMaker();
+            //CM.word_list = new List<long>();
             foreach (long word_id in EngBot.users[user_id].unLearnedWords)
             {
-                Crossword.CrossMaker.word_list.Add(word_id);
+                CM.word_list.Add(word_id);
             }
-            Crossword.CrossMaker.CrosswordMaker();
+            CM.CrosswordMaker();
 
             char[,] field = new char[10,10]; 
-            foreach(var cross in CrossMaker.cross)
+            foreach(var cross in CM.cross)
             {
                 if (cross.direction == Cross.Direction.toRight)
                 {

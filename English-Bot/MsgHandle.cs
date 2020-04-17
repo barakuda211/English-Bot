@@ -62,6 +62,10 @@ namespace English_Bot
                         case "/change_level":
                             ChangingLevel_Start(fromId);
                             return;
+                        case "Игра кроссворд":
+                        case "/crossword":
+                            Games.Crossvord_start(fromId);
+                            return;
                         default:
                             // answer = SendInfo(eventArgs.Message);
                             answer = Translation(text);
@@ -114,7 +118,7 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //Просит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Этого я ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Этого я не ждал!")
         {
             var user = users.GetUser(userID);
             string text = user.lastMsg.Item1.ToLower();
