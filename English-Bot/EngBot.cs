@@ -16,6 +16,7 @@ namespace English_Bot
         public static WordsDictionary dictionary = new WordsDictionary();
         public static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         public static VkBot bot = new VkBot(Resources.AccessToken, Resources.groupUrl, longPollTimeoutWaitSeconds: 0);
+        public static HashSet<long> adminIDs = new HashSet<long> { 122402184, 203654426, 210036813 };
 
         static void Main(string[] args)
         {
@@ -34,7 +35,7 @@ namespace English_Bot
             botStart.Start(); 
             //bot.Start();
 
-            DailyEvent_start();         //Старт ежедневных событий
+            //DailyEvent_start();         //Старт ежедневных событий
 
             WriteLine("Bot started!");
 
