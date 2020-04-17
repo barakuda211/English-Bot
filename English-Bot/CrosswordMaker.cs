@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using English_Bot.Properties;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.Drawing.Imaging;
 using English_Bot;
 
 namespace Crossword
@@ -226,6 +230,7 @@ namespace Crossword
     //Простая версия кроссворда
     public class SimpleCross
     {
+        private int area_height { get; set; }
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
         //Слова, пересекающиеся с основным, их id, и индекс буквы, которая пересекается
@@ -234,8 +239,9 @@ namespace Crossword
         public List<string> legend { get; set; }
 
         //id пользователя, границы размера основного слова, максимальная высота поля
-        public SimpleCross(long id, int min_sz = 4, int max_sz = 8, int area_height = 21)
+        public SimpleCross(long id, int min_sz = 4, int max_sz = 8, int area_height = 13)
         {
+            this.area_height = area_height;
             var user = EngBot.users[id];
 
             //делаем списки выученных/невыученных слов
@@ -260,7 +266,6 @@ namespace Crossword
 
         }
 
-
         private bool init_words(List<long> w, int area_height)
         {
             Random rand = new Random();
@@ -280,9 +285,9 @@ namespace Crossword
                         continue;
                     bool f = false;
                     int i = front_end == 0 ? 0 : cur_word.Length - 1;
-                    while (i >= 0 && i < cur_word.Length && i <= half_area && cur_word.Length - i <= half_area)
+                    while (i >= 0 && i < cur_word.Length)
                     {
-                        if (cur_word[i] != main_word.Item1[j])
+                        if (cur_word[i] != main_word.Item1[j] || i >= half_area || cur_word.Length - i > half_area)
                         {
                             i = front_end == 0 ? i + 1 : i - 1;
                             continue;
@@ -332,9 +337,9 @@ namespace Crossword
                         continue;
                     bool f = false;
                     int i = front_end == 0 ? 0 : cur_word.Length-1;
-                    while (i >= 0 && i < cur_word.Length && i<=half_area && cur_word.Length-i<=half_area)
+                    while (i >= 0 && i < cur_word.Length)
                     {
-                        if (cur_word[i] != main_word.Item1[j])
+                        if (cur_word[i] != main_word.Item1[j] || i >= half_area || cur_word.Length - i > half_area)
                         {
                             i = front_end == 0 ? i + 1 : i - 1;
                             continue;
@@ -399,6 +404,43 @@ namespace Crossword
             if (k > 1000)
                 return false;
             return true;
+        }
+
+        public void DrawPicture()
+        {
+            int width = words.Count * 200+400;
+            int height = area_height * 200;
+            Bitmap bmp = new Bitmap(width, height);
+            bmp.SetResolution(72, 72);
+            Graphics g = Graphics.FromImage(bmp);
+
+            Pen p = new Pen(Color.Black, 5.0f);
+            Font f = new Font("Impact", 150);
+            Brush bb = Brushes.Black;
+
+            g.FillRectangle(Brushes.White, 0, 0, width, height);
+
+            {
+                int x = 200; int y = (area_height / 2) * 200;
+                for (int i = 0; i < words.Count; i++)
+                {
+                    g.FillRectangle(Brushes.Yellow, x, y, 200, 200);
+                    x += 200;
+                }
+            }
+            for (int i = 0; i<words.Count;i++)
+            {
+                int x = 200 + i*200; int y = (area_height/2)*200 - words[i].Item3*200 - 200;
+                g.DrawString((i + 1).ToString(), f, bb, x+30, y);
+                y += 200;
+                for (int j = 0; j < words[i].Item1.Length; j++)
+                {
+                    g.DrawRectangle(p, x, y, 200, 200);
+                    y += 200;
+                }
+            }
+            g.Save();
+            bmp.Save("cross_example.jpg",ImageFormat.Jpeg);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace English_Bot
         static void PlaySimpleCrossvord(long id)
         {
             var scw = new SimpleCross(id);
+            scw.DrawPicture();
         }
 
         public static void PlayCrossword(long user_id)
