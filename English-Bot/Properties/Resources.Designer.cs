@@ -70,6 +70,15 @@ namespace English_Bot.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на 53d6c4cf69ffd56664091883ff4e5d9dcc46619fbaefa88cf38c7fcff21f7f3ba2eca0c54ab3091b9658c.
+        /// </summary>
+        internal static string AccessToken2 {
+            get {
+                return ResourceManager.GetString("AccessToken2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на 187725374.
         /// </summary>
         internal static string groupId {
@@ -84,6 +93,15 @@ namespace English_Bot.Properties {
         internal static string groupUrl {
             get {
                 return ResourceManager.GetString("groupUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на https://vk.com/eng_ez2.
+        /// </summary>
+        internal static string groupUrl2 {
+            get {
+                return ResourceManager.GetString("groupUrl2", resourceCulture);
             }
         }
     }

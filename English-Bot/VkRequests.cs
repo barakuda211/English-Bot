@@ -4,6 +4,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Net;
 using System.Runtime.Serialization;
+using English_Bot;
 
 namespace VkApi
 {
@@ -43,7 +44,7 @@ namespace VkApi
             if (id == null)
                 throw new NullReferenceException();
             string url = $"https://api.vk.com/method/users.get?user_id=" + id +$"&fields=interests,status,games,music,quotes,movies,books" ;
-            url= url+ $"&v=5.89&access_token="+English_Bot.Properties.Resources.AccessToken;
+            url= url+ $"&v=5.89&access_token="+EngBot.Token;
             return ObjectFromStr<VkUsers>(Request(url)).response[0];
         }
     }
