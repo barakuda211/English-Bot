@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using English_Bot.Properties;
 using System.Drawing;
+using System.IO;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
@@ -271,6 +272,8 @@ namespace Crossword
 
 
             DrawPicture();
+            for (int i = 0; i < words.Count; i++)
+                DrawWord(i);
         }
 
         private void randomize_list(List<long> lst)
@@ -421,6 +424,34 @@ namespace Crossword
             return true;
         }
 
+        public void DrawWord(int n)
+        {
+            if (n < 0 || n >= words.Count)
+                throw new IndexOutOfRangeException();
+            Bitmap bmp = new Bitmap(@"users\" + id + @"\cross.jpg");
+            Graphics g = Graphics.FromImage(bmp);
+
+            int y = (area_height / 2) * 200 - words[n].Item3 * 200;
+            int x = 200 + n * 200;
+            Font f = new Font("Comic Sans Ms", 150);
+            Brush bb = Brushes.Black;
+
+           
+            foreach (var letter in words[n].Item1)
+            {
+                g.DrawString(letter.ToString(), f, bb, x + 30, y-20);
+                y += 200;
+            }
+
+            
+            bmp.Save(@"users\" + id + @"\cross_temp.jpg", ImageFormat.Jpeg);
+            g.Dispose();
+            bmp.Dispose();
+            
+            File.Delete(@"users\" + id + @"\cross.jpg");
+            File.Move(@"users\" + id + @"\cross_temp.jpg", @"users\" + id + @"\cross.jpg");
+        }
+
         private void DrawPicture()
         {
             int width = words.Count * 200+400;
@@ -455,7 +486,8 @@ namespace Crossword
                 }
             }
             g.Save();
-            bmp.Save(@"users\"+id+@"\cross_example.jpg",ImageFormat.Jpeg);
+            bmp.Save(@"users\"+id+@"\cross.jpg",ImageFormat.Jpeg);
+            bmp.Dispose();
         }
     }
 }
