@@ -25,7 +25,8 @@ namespace English_Bot
             var scw = new SimpleCross(id);
             EngBot.SendMessage(id, "Итак, твоя задача - перевести пронумерованные слова на английский.");
             EngBot.SendMessage(id, "Полученное слово, выделенное жёлтым, требуется перевести на русский.");
-            EngBot.SendMessage(id, "Жду ответы в виде:\n'цифра' 'перевод' ");
+            EngBot.SendMessage(id, "Жду ответы в виде:\n цифра перевод ");
+            EngBot.SendMessage(id, "Если надоест, пиши /exit");
             SendMessage(scw);
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;

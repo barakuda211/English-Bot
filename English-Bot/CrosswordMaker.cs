@@ -235,6 +235,7 @@ namespace Crossword
         public bool is_all_answered {get; set;}
         private int up_height { get; set; }
         private int down_height { get; set; }
+        private int border { get; set; }
         private Random rand = new Random();
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
@@ -252,6 +253,7 @@ namespace Crossword
         {
             down_height = area_height / 2;
             up_height = area_height / 2;
+            border = 200;
             this.id = id;
             
             var user = EngBot.users[id];
@@ -478,7 +480,7 @@ namespace Crossword
             Graphics g = Graphics.FromImage(bmp);
 
             int y = up_height * 200 - words[n].Item3 * 200;
-            int x = 200 + n * 200;
+            int x = border + n * 200;
             Font f = new Font("Comic Sans Ms", 150);
             Brush bb = Brushes.Black;
 
@@ -502,7 +504,6 @@ namespace Crossword
         {
             int height = (up_height + down_height + 1) * 200;
             int width = words.Count * 200 + 400;
-            int border = 200;
             if (width < height - 300)
             {
                 width = height - 300;
