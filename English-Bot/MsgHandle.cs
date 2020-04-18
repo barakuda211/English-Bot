@@ -13,6 +13,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        const string ACCESS_IS_DENIED = "ACCESS IS DENIED";
 
         static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
         {
@@ -62,6 +63,16 @@ namespace English_Bot
                         case "/change_level":
                             ChangingLevel_Start(fromId);
                             return;
+                        case "admin::getCommands":
+                            if (adminIDs.Contains(fromId))
+                                answer = "getId, ...";
+                            else answer = ACCESS_IS_DENIED;
+                            break;
+                        case "admin::getId":
+                            if (adminIDs.Contains(fromId))
+                                answer = fromId.ToString();
+                            else answer = ACCESS_IS_DENIED;
+                            break;
                         default:
                             // answer = SendInfo(eventArgs.Message);
                             answer = Translation(text);
