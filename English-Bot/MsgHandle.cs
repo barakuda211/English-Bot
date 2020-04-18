@@ -64,6 +64,10 @@ namespace English_Bot
                         case "/change_level":
                             ChangingLevel_Start(fromId);
                             return;
+                        case "Игра кроссворд":
+                        case "/crossword":
+                            Games.Crossvord_start(fromId);
+                            return;
                         case "admin::getCommands":
                             if (adminIDs.Contains(fromId))
                                 answer = "getId, ...";
