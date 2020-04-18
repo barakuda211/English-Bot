@@ -72,14 +72,12 @@ namespace English_Bot
             while (true)
             {
                 if (Time == 20)
+                {
                     if (users.Dbase != null && users.Dbase.Count != 0)
-                    {
                         foreach (var user in users.Dbase.Values)
-                        {
                             Testing_Start(user.userId);
-                        }
-                        users.Save(); 
-                    }
+                    users.Save();
+                }
                 /* if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && Time == 21)
                 {
                     foreach (var user in users.Dbase.Values)

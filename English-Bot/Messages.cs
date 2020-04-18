@@ -173,7 +173,7 @@ namespace English_Bot
                 */
 
                 // Размер текста
-                int emSize = (height / 5) / 4;
+                float emSize = height * 125 / graphImage.DpiY;
                 //int size = (int)(125 / graphImage.DpiX);
                 // float maxf = System.Single.MaxValue;
                 
@@ -184,22 +184,22 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(FontFamily.Families[font].Name, emSize/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
-                            height / 2 - (height / 3)),
+                            height / 2 - (height / 4)),
                     new StringFormat(stringFormat));
 
                 // Пишем транскрипцию 
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
                 graphImage.DrawString(
                     @text,
-                    new Font(FontFamily.Families[font].Name, emSize/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
-                            height / 2 - (height / 10)),
+                            height / 2 /* - (height / 10)*/),
                     new StringFormat(stringFormat));
 
                 // Добавляем перевод 
@@ -208,11 +208,11 @@ namespace English_Bot
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(FontFamily.Families[font].Name, emSize/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                        new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
-                        height / 2 + (height / 6)),
+                        height / 2 + (height / 4)),
                         new StringFormat(stringFormat));
                 }
 
@@ -239,7 +239,7 @@ namespace English_Bot
                 try
                 {
                     File.Delete(word + "_picture_with_str.jpg");
-                    File.Delete(word + "_picture.jpg");
+                    // File.Delete(word + "_picture.jpg");
                 }
                 catch (DirectoryNotFoundException ex)
                 {
