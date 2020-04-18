@@ -231,8 +231,10 @@ namespace Crossword
     //Простая версия кроссворда
     public class SimpleCross
     {
-        private long id { get; set; }
-        private int area_height { get; set; }
+        public long id { get; set; }
+        public bool is_all_answered {get; set;}
+        private int up_height { get; set; }
+        private int down_height { get; set; }
         private Random rand = new Random();
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
@@ -240,12 +242,18 @@ namespace Crossword
         public List<(string,long,int)> words { get; set; }
         //Список русских значений слов с указанием части речи
         public List<string> legend { get; set; }
+        //Список отвеченных слов
+        public List<bool> is_answered {get;set;}
+
+        public (string,long) MainWord => main_word;
 
         //id пользователя, границы размера основного слова, максимальная высота поля
-        public SimpleCross(long id, int min_sz = 4, int max_sz = 8, int area_height = 13)
+        public SimpleCross(long id, int min_sz = 4, int max_sz = 10, int area_height = 11)
         {
-            this.area_height = area_height;
+            down_height = area_height / 2;
+            up_height = area_height / 2;
             this.id = id;
+            
             var user = EngBot.users[id];
 
             //делаем списки выученных/невыученных слов
@@ -263,17 +271,48 @@ namespace Crossword
                     init_main_word(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel),min_sz,max_sz);
 
             words = new List<(string, long, int)>(main_word.Item1.Length);
+            is_answered = new List<bool>(main_word.Item1.Length);
+            legend = new List<string>(main_word.Item1.Length);
             for (int i = 0; i < main_word.Item1.Length; i++)
+            {
                 words.Add(("", -1, -1));
+                is_answered.Add(false);
+                legend.Add("");            
+            }
 
             if (!init_words(learned, area_height)) //заполнение главного слова
                 if (!init_words(unlearned, area_height))
                     init_words(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), area_height);
 
+            correct_height();
+            init_legend();
 
             DrawPicture();
-            for (int i = 0; i < words.Count; i++)
-                DrawWord(i);
+            //for (int i = 0; i < words.Count; i++)
+            //    DrawWord(i);
+        }
+
+        private void correct_height()
+        {
+            int max_up = 0, max_down = 0;
+            foreach (var x in words)
+            {
+                if (x.Item3 > max_up)
+                    max_up = x.Item3;
+                if (x.Item1.Length - 1 - x.Item3 > max_down)
+                    max_down = x.Item1.Length - 1 - x.Item3;
+            }
+            up_height = max_up + 1;
+            down_height = max_down + 1;
+        }
+
+        private void init_legend()
+        {
+            for (int i=0;i<words.Count;i++)
+            {
+                string w = EngBot.dictionary[words[i].Item2].rus;
+                legend[i] = (i+1).ToString() +") "+ w + "\n";
+            }
         }
 
         private void randomize_list(List<long> lst)
@@ -428,10 +467,17 @@ namespace Crossword
         {
             if (n < 0 || n >= words.Count)
                 throw new IndexOutOfRangeException();
+
+            is_answered[n] = true;
+            is_all_answered = true;
+            foreach (var b in is_answered)
+                if (!b)
+                    is_all_answered = b;
+
             Bitmap bmp = new Bitmap(@"users\" + id + @"\cross.jpg");
             Graphics g = Graphics.FromImage(bmp);
 
-            int y = (area_height / 2) * 200 - words[n].Item3 * 200;
+            int y = up_height * 200 - words[n].Item3 * 200;
             int x = 200 + n * 200;
             Font f = new Font("Comic Sans Ms", 150);
             Brush bb = Brushes.Black;
@@ -454,20 +500,30 @@ namespace Crossword
 
         private void DrawPicture()
         {
-            int width = words.Count * 200+400;
-            int height = area_height * 200;
+            int height = (up_height + down_height + 1) * 200;
+            int width = words.Count * 200 + 400;
+            int border = 200;
+            if (width < height - 300)
+            {
+                width = height - 300;
+                border = (width - words.Count * 200) / 2;
+            }
+
+            
+            
             Bitmap bmp = new Bitmap(width, height);
             bmp.SetResolution(72, 72);
             Graphics g = Graphics.FromImage(bmp);
 
-            Pen p = new Pen(Color.Black, 5.0f);
+            Pen p = new Pen(Color.Black, 10.0f);
             Font f = new Font("Impact", 150);
             Brush bb = Brushes.Black;
 
             g.FillRectangle(Brushes.White, 0, 0, width, height);
+            g.DrawRectangle(new Pen(Color.Black,20.0f), 0, 0, width, height);
 
             {
-                int x = 200; int y = (area_height / 2) * 200;
+                int x = border; int y = up_height * 200;
                 for (int i = 0; i < words.Count; i++)
                 {
                     g.FillRectangle(Brushes.Yellow, x, y, 200, 200);
@@ -476,7 +532,7 @@ namespace Crossword
             }
             for (int i = 0; i<words.Count;i++)
             {
-                int x = 200 + i*200; int y = (area_height/2)*200 - words[i].Item3*200 - 200;
+                int x = border + i*200; int y = up_height*200 - words[i].Item3*200 - 200;
                 g.DrawString((i + 1).ToString(), f, bb, x+30, y);
                 y += 200;
                 for (int j = 0; j < words[i].Item1.Length; j++)
