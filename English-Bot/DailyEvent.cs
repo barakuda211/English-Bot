@@ -111,7 +111,7 @@ namespace English_Bot
                 //foreach (var elem in users.Dbase)
                     //temp.Append(elem);
                 //if (temp.Count != 0)
-                    foreach (var user in users.Dbase.Values)
+                    foreach (var user in users.Dbase.Values /*.Where(x => x.userId == 203654426)*/)
                     {
                         if (user.on_Test)
                             continue;
