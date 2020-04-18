@@ -18,8 +18,8 @@ namespace English_Bot
         //public const string url_dima_test = @"https://vk.com/ewb_test";
 
         //менять только для смены паблика!
-        public static string Token = Resources.AccessToken;
-        public static string Url = Resources.groupUrl;
+        public static string Token = Resources.AccessToken2;
+        public static string Url = Resources.groupUrl2;
 
         public static WordsDictionary dictionary = new WordsDictionary();
         public static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)

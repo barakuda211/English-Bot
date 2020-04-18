@@ -542,7 +542,11 @@ namespace Crossword
                     y += 200;
                 }
             }
-            g.Save();
+            //g.Save();
+            if (!Directory.Exists("users"))
+                Directory.CreateDirectory("users");
+            if (!Directory.Exists(@"users\"+id.ToString()))
+                Directory.CreateDirectory(@"users\" + id.ToString());
             bmp.Save(@"users\"+id+@"\cross.jpg",ImageFormat.Jpeg);
             bmp.Dispose();
         }
