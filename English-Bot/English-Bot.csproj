@@ -5,9 +5,11 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>English_Bot</RootNamespace>
     <Description>Бот на платформе VK для изучения английских слов.</Description>
-    <Copyright>Отсутсвуют</Copyright>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <FileVersion>1.0.0.1</FileVersion>
+    <Copyright>barakuda211</Copyright>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <FileVersion>1.0.0.3</FileVersion>
+    <Version>1.0.3</Version>
+    <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
