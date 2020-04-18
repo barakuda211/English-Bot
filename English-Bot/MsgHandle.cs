@@ -52,6 +52,7 @@ namespace English_Bot
                         case "/commands":
                             answer = "/change_level - изменить свой уровень\n" +
                                      "/my_level - мой уровень\n" +
+                                     "/crossword - сыграть кроссворд\n"+
                                      "\'слово на русском\' - перевод на английский\n" +
                                      "\'слово на английском\' - перевод на русский";
                             break;
@@ -125,7 +126,7 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //Просит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Этого я ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Этого я не ждал!")
         {
             var user = users.GetUser(userID);
             string text = user.lastMsg.Item1.ToLower();

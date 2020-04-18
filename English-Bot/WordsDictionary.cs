@@ -50,9 +50,27 @@ namespace English_Bot
             return new List<long>(arr);
         } 
 
+        /// <summary>
+        /// Список слов определённого уровня
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
         public List<long> GetKeysByLevel(int level)
         {
             return dict.Values.Where(x => x.level == level).Select(x => x.id).ToList();
+        }
+
+        /// <summary>
+        /// Список слов определённого уровня (множеством)
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public HashSet<long> GetKeysByLevel_hash(int level)
+        {
+            HashSet<long> hs = new HashSet<long>();
+            foreach (var x in dict.Values.Where(x => x.level == level).Select(x => x.id))
+                hs.Add(x);
+            return hs;
         }
 
         /// <summary>
