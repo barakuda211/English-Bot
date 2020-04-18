@@ -112,29 +112,40 @@ namespace English_Bot
         {
             try
             {
-                Pictures pics = Methods.DeSerializationObjFromStr<Pictures>(Methods.Request(@"https://pixabay.com/api/?key=15427273-eddca1835086f92624a5b62a0&q=" + dictionary[word].eng + @"&image_type=photo&pretty=true"));
+                // Получаем адрес изображения 
+                string answer = Methods.Request(@"https://pixabay.com/api/?key=15427273-eddca1835086f92624a5b62a0&q=" + dictionary[word].eng + @"&image_type=photo&pretty=true");
+                // Console.WriteLine(answer);
+                Pictures pics = Methods.DeSerializationObjFromStr<Pictures>(answer);
 
+                // Скачиваем картинку
                 using (WebClient webClient = new WebClient())
                 {
                     webClient.DownloadFile(pics.hits[0].webformatURL, word + "_picture.jpg");
                 }
-                string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
 
-
+                // Создаем обЪекты для рисования
                 Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
+
+                // Определяем шрифт, а также сохраняем ширину и длину изображения
                 Random r = new Random(17);
                 int font = r.Next(0, FontFamily.Families.Length - 1);
-                string text = dictionary[word].eng;
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
 
+                // Затемняем фон
+                Color col = Color.FromArgb(63, 0, 0, 0);
+                graphImage.FillRectangle(new SolidBrush(col), new Rectangle(0, 0, width, height));
+                // bitmap.Save(word + "_dark.jpg");
+
+                // Выравнивание текста по центру 
                 StringFormat stringFormat = new StringFormat();
                 stringFormat.Alignment = StringAlignment.Center;
                 stringFormat.LineAlignment = StringAlignment.Center;
                 stringFormat.FormatFlags = StringFormatFlags.FitBlackBox;
 
+                /*
                 HatchBrush hBrush = 
                     new HatchBrush(
                         HatchStyle.Trellis,
@@ -158,46 +169,60 @@ namespace English_Bot
 
                 var t = (Image)bitmap.Clone();
                 t.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                TextureBrush tBrush = new TextureBrush(t);
-               
+                TextureBrush tBrush = new TextureBrush(t); 
+                */
 
-                int size = (int)(125 / graphImage.DpiX);
-                float maxf = System.Single.MaxValue;
-
+                // Размер текста
+                float emSize = height * 125 / graphImage.DpiY;
+                //int size = (int)(125 / graphImage.DpiX);
+                // float maxf = System.Single.MaxValue;
+                
+                // Выюираем белый цвет
+                var tBrush = new SolidBrush(Color.White);
+                
+                // Наносим слово на английском
+                string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
-                            height / 2 - (height / 3)),
+                            height / 2 - (height / 4)),
                     new StringFormat(stringFormat));
+
+                // Пишем транскрипцию 
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
                 graphImage.DrawString(
                     @text,
-                    new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
-                            height / 2 - (height / 10)),
+                            height / 2 /* - (height / 10)*/),
                     new StringFormat(stringFormat));
 
+                // Добавляем перевод 
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
-                    text = string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
+                    text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(FontFamily.Families[font].Name, Min(width / text.Length * size, 80), FontStyle.Regular),
+                        new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
-                        height / 2 + (height / 6)),
+                        height / 2 + (height / 4)),
                         new StringFormat(stringFormat));
                 }
+
+                // Сохраняем преобразованное изображение
                 bitmap.Save(word + "_picture_with_str.jpg");
 
                 // System.Threading.Thread.Sleep(100); 
 
+                // Отправляем сообщение пользователю
+                string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
                 var uploader = new WebClient();
                 var uploadResponseInBytes = uploader.UploadFile(url, word + "_picture_with_str.jpg");
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
@@ -209,9 +234,12 @@ namespace English_Bot
                     UserId = id,
                     Attachments = photos
                 });
+
+                // Удаляем сохоаненные фотографии
                 try
                 {
                     File.Delete(word + "_picture_with_str.jpg");
+                    // File.Delete(word + "_picture.jpg");
                 }
                 catch (DirectoryNotFoundException ex)
                 {
@@ -222,7 +250,7 @@ namespace English_Bot
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error downloading photo: ID = " + id + ", Word id = " + word);
+                Console.WriteLine("Error downloading photo: ID = " + id + ", Word id = " + word + ", Word = " + dictionary[word].eng);
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
                 return false;
@@ -296,9 +324,10 @@ namespace English_Bot
             var uploader = new WebClient();
             var uploadResponseInBytes = uploader.UploadFile(url, file_name);
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-            var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
+            // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
+            var mess = bot.Api.Docs.SaveAsync(uploadResponseInString, "voice" + word);
+            
             /*
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {

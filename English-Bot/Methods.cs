@@ -61,8 +61,9 @@ namespace Dictionary
             // Выполняем запрос по адресу и получаем ответ в виде строки (Используем вебреквест!)
             try
             {
-                string response = new TimedWebClient { Timeout = 1000 }.DownloadString(url);
-
+                // string response = new TimedWebClient { Timeout = 1000 }.DownloadString(url);
+                WebClient web_client = new WebClient();
+                string response = web_client.DownloadString(url);
                 // Исправляем кодировку
                 // ChangeEncoding(ref response);
                 // Пишем во временный файл -- устарело
