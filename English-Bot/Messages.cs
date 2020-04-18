@@ -117,7 +117,7 @@ namespace English_Bot
                     webClient.DownloadFile(pics.hits[0].webformatURL, word + "_picture.jpg");
                 }
                 string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
-
+                
 
                 Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
@@ -128,8 +128,9 @@ namespace English_Bot
                 int width = pics.hits[0].webformatWidth;
                 int height = pics.hits[0].webformatHeight;
                 int font_size = (int)((height / 12) / 1.338);
-                int tr_size = (int)((height / 14) / 1.338); 
-                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * font_size * 1.338), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
+                int tr_size = (int)((height / 14) / 1.338);
+                // graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), RectangleF.));
+                graphImage.DrawString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - /* graphImage.MeasureString(text, new Font(FontFamily.Families[font].Name, font_size, FontStyle.Regular))*/ (int)(text.Length / (double)2 * font_size * 1.338), height / 2 - (height / 3)), new StringFormat(StringFormatFlags.NoClip));
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
                 graphImage.DrawString(@text, new Font(FontFamily.Families[font].Name, tr_size, FontStyle.Regular), new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")), new Point(width / 2 - (int)(text.Length / (double)2 * tr_size * 1.338), height / 2 - (height / 10)), new StringFormat(StringFormatFlags.NoClip));
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
@@ -239,9 +240,10 @@ namespace English_Bot
             var uploader = new WebClient();
             var uploadResponseInBytes = uploader.UploadFile(url, file_name);
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-            var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
+            // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
+            var mess = bot.Api.Docs.SaveAsync(uploadResponseInString, "voice" + word);
+            
             /*
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
             {
