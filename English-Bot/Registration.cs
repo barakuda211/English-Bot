@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VkBotFramework;
 using English_Bot.Properties;
+using System.IO;
 using VkNet.Model;
 using VkApi;
 
@@ -22,6 +23,9 @@ namespace English_Bot
             }
             User user = users[id];
             user.regId++;
+            if (!Directory.Exists("users"))
+                Directory.CreateDirectory("users");
+            Directory.CreateDirectory("users\\" + id);
             Console.WriteLine("Registered: " + user.name + " " + user.userId);
             users.Save(); 
             Testing_Start(id);

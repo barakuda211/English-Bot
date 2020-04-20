@@ -52,6 +52,7 @@ namespace English_Bot
                         case "/commands":
                             answer = "/change_level - изменить свой уровень\n" +
                                      "/my_level - мой уровень\n" +
+                                     "/crossword - сыграть кроссворд\n"+
                                      "\'слово на русском\' - перевод на английский\n" +
                                      "\'слово на английском\' - перевод на русский";
                             break;
@@ -62,6 +63,10 @@ namespace English_Bot
                         case "»зменить уровень":
                         case "/change_level":
                             ChangingLevel_Start(fromId);
+                            return;
+                        case "»гра кроссворд":
+                        case "/crossword":
+                            Games.Crossvord_start(fromId);
                             return;
                         case "admin::getCommands":
                             if (adminIDs.Contains(fromId))
@@ -125,7 +130,7 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //ѕросит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Ётого € ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Ётого € не ждал!")
         {
             var user = users.GetUser(userID);
             string text = user.lastMsg.Item1.ToLower();
