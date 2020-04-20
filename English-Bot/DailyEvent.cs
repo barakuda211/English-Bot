@@ -9,6 +9,7 @@ using VkNet.Model.RequestParams;
 using English_Bot.Properties;
 using static System.Console;
 using System.Threading;
+using VkNet.Enums.Filters;
 
 namespace English_Bot
 {
@@ -32,7 +33,7 @@ namespace English_Bot
             try
             {
                 string message = "Поздравляем! За неделю Вы выучили " + users[userID].week_words + "\n";
-                List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams() { UserId = userID }).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
+                List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams { UserId = userID }, true).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
                 message += "Вот топ пять пользователей среди Вас и ваших друзей по итогам недели: \n";
                 friends.Add((userID, "Вы"));
                 var sorted = friends.OrderByDescending(x => users[x.id].week_words);
@@ -81,7 +82,7 @@ namespace English_Bot
                                 Testing_Start(user.userId);
                     users.Save();
                 }
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && Time == 11)
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && Time == 21)
                 {
                     foreach (var user in users.Dbase.Values)
                     {
