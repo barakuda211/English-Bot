@@ -31,6 +31,8 @@ namespace English_Bot
             }
             */
 
+            // if audio mess then regognize it
+
             if (text != null && text.Length != 0)
             {
                 if (!users.HasUser(fromId) || users[fromId].regId != 1)
