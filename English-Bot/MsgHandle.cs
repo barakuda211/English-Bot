@@ -21,7 +21,7 @@ namespace English_Bot
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
             var text = eventArgs.Message.Text;
-            var answer = "Sorry, there is a empty answer :-(";
+            var answer = "Sorry, there is an empty answer :-(";
 
             /*
             if (text == @"\cross")
@@ -54,7 +54,8 @@ namespace English_Bot
                                      "/my_level - мой уровень\n" +
                                      "/crossword - сыграть кроссворд\n"+
                                      "\'слово на русском\' - перевод на английский\n" +
-                                     "\'слово на английском\' - перевод на русский";
+                                     "\'слово на английском\' - перевод на русский\n" +
+                                     "/пример \'слово на английском\' - примеры использования слова в предложенияъ\n";
                             break;
                         case "Мой уровень":
                         case "/my_level":
@@ -72,15 +73,25 @@ namespace English_Bot
                             if (adminIDs.Contains(fromId))
                                 answer = "getId, ...";
                             else answer = ACCESS_IS_DENIED;
-                            break;
+                            return;
                         case "admin::getId":
                             if (adminIDs.Contains(fromId))
                                 answer = fromId.ToString();
                             else answer = ACCESS_IS_DENIED;
-                            break;
+                            return;
                         default:
+                            var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (ss.Length == 2)
+                            {
+                                if (ss[0] == "/пример")
+                                    foreach (var s in GetSentenceExemples(ss[1]))
+                                    {
+                                        SendMessage(fromId, s);
+                                    }
+                                return;
+                            }
+                            else if (ss.Length == 1) answer = Translation(text);
                             // answer = SendInfo(eventArgs.Message);
-                            answer = Translation(text);
                             // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                             //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
                             //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
