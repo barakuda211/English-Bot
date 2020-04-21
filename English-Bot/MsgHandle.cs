@@ -54,7 +54,8 @@ namespace English_Bot
                                      "/my_level - мой уровень\n" +
                                      "/crossword - сыграть кроссворд\n"+
                                      "\'слово на русском\' - перевод на английский\n" +
-                                     "\'слово на английском\' - перевод на русский";
+                                     "\'слово на английском\' - перевод на русский\n" +
+                                     "/пример \'слово на английском\' - примеры использования слова в предложенияъ\n";
                             break;
                         case "Мой уровень":
                         case "/my_level":
@@ -72,19 +73,26 @@ namespace English_Bot
                             if (adminIDs.Contains(fromId))
                                 answer = "getId, ...";
                             else answer = ACCESS_IS_DENIED;
-                            break;
+                            return;
                         case "admin::getId":
                             if (adminIDs.Contains(fromId))
                                 answer = fromId.ToString();
                             else answer = ACCESS_IS_DENIED;
-                            break;
+                            return;
                         default:
+                            if(text.Substring(0, 7) == "/пример")
+                            {
+                                foreach(var s in GetSentenceExemples(text.Substring(8, text.Length-8)))
+                                {
+                                    SendMessage(fromId, s);
+                                }
+                            }
                             // answer = SendInfo(eventArgs.Message);
                             answer = Translation(text);
                             // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                             //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
                             //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
-                            break;
+                            return;
                     }
                 }
             }

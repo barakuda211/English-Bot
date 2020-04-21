@@ -43,11 +43,6 @@ namespace English_Bot
             botStart.Start();
             //bot.Start();
 
-            foreach(var t in GetSentenceExemples("swim"))
-            {
-                Console.WriteLine(t);
-            }
-
             DailyEvent_start();         //Старт ежедневных событий
 
             //SendPicture(210036813, dictionary.GetEngWordId("inspector"));
