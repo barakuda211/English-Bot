@@ -13,6 +13,8 @@ using System.Speech.Synthesis;
 using NAudio;
 using Alvas.Audio;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using static System.Math;
 
 namespace English_Bot
@@ -343,6 +345,21 @@ namespace English_Bot
             SpeechRecognizer rec = new SpeechRecognizer(); 
             
         }
-        
+
+        static List<string> GetWordExemples(string word)
+        {
+            //consist ? ok! : throw new Ex or return null
+
+            Regex r_Exs = new Regex(@"(?<1>[^>]*)\<em\>" + word + @"\<\/em\>(?<2>[^<]*)");
+            string html = new WebClient().DownloadString("https://context.reverso.net/translation/english-russian/swim");
+            List<string> s_Exs = new List<string>(html.Length);
+            foreach (Match m in r_Exs.Matches(html))
+            {
+                s_Exs.Add(m.Groups["1"].Value.Substring(1, m.Length-2).TrimStart(' ') +
+                            word +
+                            m.Groups["2"].Value.Substring(1, m.Length-2));
+            }
+            return s_Exs;
+        }
     }
 }
