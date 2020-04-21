@@ -346,18 +346,32 @@ namespace English_Bot
             
         }
 
-        static List<string> GetWordExemples(string word)
+        static List<string> GetSentenceExemples(string word, int cnt = 5)
         {
-            //consist ? ok! : throw new Ex or return null
-
-            Regex r_Exs = new Regex(@"(?<1>[^>]*)\<em\>" + word + @"\<\/em\>(?<2>[^<]*)");
-            string html = new WebClient().DownloadString("https://context.reverso.net/translation/english-russian/swim");
-            List<string> s_Exs = new List<string>(html.Length);
-            foreach (Match m in r_Exs.Matches(html))
+            List<string> s_Exs = new List<string>();
+            //if (dictionary.GetRusWordIds(word).Count > 0)
             {
-                s_Exs.Add(m.Groups["1"].Value.Substring(1, m.Length-2).TrimStart(' ') +
-                            word +
-                            m.Groups["2"].Value.Substring(1, m.Length-2));
+                try
+                {
+
+                    WebClient webclient = new WebClient();
+                    webclient.Headers.Add(HttpRequestHeader.UserAgent, "Only a test!");
+                    string html = webclient.DownloadString("https://context.reverso.net/translation/english-russian/" + word);
+
+                    Regex r_Exs = new Regex(@"([^>]+)\<em\>" + word + @"\<\/em\>([^<]+)");
+
+                    foreach (Match m in r_Exs.Matches(html))
+                    {
+                        s_Exs.Add(m.Groups[1].Value.Remove(0, 11) +
+                                    word.ToUpper() +
+                                    m.Groups[2].Value);
+                    }
+                    return s_Exs.Take(cnt).ToList();
+                }
+                catch (WebException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
             return s_Exs;
         }

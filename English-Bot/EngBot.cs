@@ -43,7 +43,7 @@ namespace English_Bot
             botStart.Start();
             //bot.Start();
 
-            foreach(var t in GetWordExemples("плавать"))
+            foreach(var t in GetSentenceExemples("swim"))
             {
                 Console.WriteLine(t);
             }
