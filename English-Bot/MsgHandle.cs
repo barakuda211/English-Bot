@@ -21,7 +21,7 @@ namespace English_Bot
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
             var text = eventArgs.Message.Text;
-            var answer = "Sorry, there is a empty answer :-(";
+            var answer = "Sorry, there is an empty answer :-(";
 
             /*
             if (text == @"\cross")
@@ -80,19 +80,22 @@ namespace English_Bot
                             else answer = ACCESS_IS_DENIED;
                             return;
                         default:
-                            if(text.Substring(0, 7) == "/пример")
+                            var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (ss.Length == 2)
                             {
-                                foreach(var s in GetSentenceExemples(text.Substring(8, text.Length-8)))
-                                {
-                                    SendMessage(fromId, s);
-                                }
+                                if (ss[0] == "/пример")
+                                    foreach (var s in GetSentenceExemples(ss[1]))
+                                    {
+                                        SendMessage(fromId, s);
+                                    }
+                                return;
                             }
+                            else if (ss.Length == 1) answer = Translation(text);
                             // answer = SendInfo(eventArgs.Message);
-                            answer = Translation(text);
                             // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                             //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
                             //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
-                            return;
+                            break;
                     }
                 }
             }

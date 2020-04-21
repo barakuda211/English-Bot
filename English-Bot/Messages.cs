@@ -348,6 +348,7 @@ namespace English_Bot
 
         static List<string> GetSentenceExemples(string word, int cnt = 5)
         {
+            //HashSet<string> s_Exs = new HashSet<string>();
             List<string> s_Exs = new List<string>();
             //if (dictionary.GetRusWordIds(word).Count > 0)
             {
@@ -358,13 +359,11 @@ namespace English_Bot
                     webclient.Headers.Add(HttpRequestHeader.UserAgent, "Only a test!");
                     string html = webclient.DownloadString("https://context.reverso.net/translation/english-russian/" + word);
 
-                    Regex r_Exs = new Regex(@"([^>]+)\<em\>" + word + @"\<\/em\>([^<]+)");
+                    Regex r_Exs = new Regex(@"(.+\W" + word + @"\W.+)<\/span>");
 
                     foreach (Match m in r_Exs.Matches(html))
                     {
-                        s_Exs.Add(m.Groups[1].Value.Remove(0, 11) +
-                                    word.ToUpper() +
-                                    m.Groups[2].Value);
+                        s_Exs.Add(m.Groups[1].Value.Replace("<em>", "").Replace("</em>", ""));
                     }
                     return s_Exs.Take(cnt).ToList();
                 }
@@ -373,7 +372,7 @@ namespace English_Bot
                     Console.WriteLine(e.Message);
                 }
             }
-            return s_Exs;
+            return s_Exs.ToList();
         }
     }
 }
