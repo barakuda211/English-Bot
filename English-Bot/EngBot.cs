@@ -14,12 +14,12 @@ namespace English_Bot
     public partial class EngBot
     {
         //не обращайте внимания, я это забыл удалить
-        public const string token_dima_test = @"91a6850da23e14a70147ff490504932c53fbcbf9c5f8f21e2f7c228949b3f2cf9c42a402e907aa123ce87";
-        public const string url_dima_test = @"https://vk.com/ewb_test";
+        //public const string token_dima_test = @"91a6850da23e14a70147ff490504932c53fbcbf9c5f8f21e2f7c228949b3f2cf9c42a402e907aa123ce87";
+        //public const string url_dima_test = @"https://vk.com/ewb_test";
 
         //менять только для смены паблика!
-        public static string Token = token_dima_test;
-        public static string Url = url_dima_test;
+        public static string Token = Resources.AccessToken;
+        public static string Url = Resources.groupUrl;
 
         public static WordsDictionary dictionary = new WordsDictionary();
         public static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
