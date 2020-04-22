@@ -54,6 +54,9 @@ namespace English_Bot
             WriteLine("Word sent");
         }
 
+        ///delete upper registr and del ё
+        static string GetFormatedWord(string word) => string.Join("", word.Select(x => char.ToLower(x))).Replace('ё', 'е');
+
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
         static long WaitWordFromUser(long userID, string[] word, bool always, long word_id)
@@ -71,7 +74,7 @@ namespace English_Bot
                 WriteLine("get word");
                 WriteLine(user.lastMsg.Item3);
                 user.lastMsg.Item2 = true;
-                word.Select(x => string.Join("", x.Select(ch => ch == 'ё' ? 'е' : ch)));
+                user.lastMsg.Item1 = GetFormatedWord(user.lastMsg.Item1);
                 return (word.Any(x => x == user.lastMsg.Item1) ? -word_id : user.lastMsg.Item3);
             }
             return 0;//заглушка
