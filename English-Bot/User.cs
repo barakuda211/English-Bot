@@ -47,6 +47,7 @@ namespace English_Bot
             userLevel = 0;
             userId = vk_user.id;
             name = vk_user.first_name;
+            learnedWords = new HashSet<long>();
             unLearnedWords = new HashSet<long>();
             Random r = new Random(); 
             for (int i = 1; i <= 5; ++i)

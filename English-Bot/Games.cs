@@ -76,7 +76,7 @@ namespace English_Bot
                 ind = IndicatorTimer(wait_time);
 
                 ident_msg = user.lastMsg.Item3;
-                text = user.lastMsg.Item1.ToLower();
+                text = EngBot.GetFormatedWord(user.lastMsg.Item1);
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (text == "/help")

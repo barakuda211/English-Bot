@@ -55,7 +55,7 @@ namespace English_Bot
         }
 
         ///delete upper registr and del ё
-        static string GetFormatedWord(string word) => string.Join("", word.Select(x => char.ToLower(x))).Replace('ё', 'е');
+        public static string GetFormatedWord(string word) => string.Join("", word.Select(x => char.ToLower(x))).Replace('ё', 'е');
 
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
@@ -95,7 +95,7 @@ namespace English_Bot
             agree.Add("да");
             agree.Add("точно");
             //WaitWordFromUser(userID, agree.ToArray(), true, -1);
-            if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 1, "Ладно, протестируемся потом."))
+            if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 30, "Ладно, протестируемся потом."))
             {
                 users[userID].on_Test = false;
                 return;
@@ -309,7 +309,7 @@ namespace English_Bot
                     continue;
                 }
 
-                string text = user.lastMsg.Item1.ToLower();  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                string text = GetFormatedWord(user.lastMsg.Item1);
 
                 if (agree.Any(x => x == text)) 
                     break;
