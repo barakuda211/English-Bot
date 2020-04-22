@@ -78,6 +78,15 @@ namespace English_Bot
                                 answer = fromId.ToString();
                             else answer = ACCESS_IS_DENIED;
                             break;
+                        case "admin::wantTest":
+                            if (adminIDs.Contains(fromId))
+                            {
+                                users[fromId].on_Test = true;
+                                Testing_Start(fromId);
+                                return;
+                            }
+                            else answer = ACCESS_IS_DENIED;
+                            break;
                         default:
                             // answer = SendInfo(eventArgs.Message);
                             answer = Translation(text);

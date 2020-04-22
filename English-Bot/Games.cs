@@ -42,6 +42,7 @@ namespace English_Bot
             long userID = scw.id;
             var user = EngBot.users[scw.id];
             string text = user.lastMsg.Item1.ToLower();
+            long ident_msg = user.lastMsg.Item3;
             while (true)
             {
                 if (ind.x)
@@ -49,7 +50,7 @@ namespace English_Bot
                     EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
                     return false;
                 }
-                if (text == user.lastMsg.Item1.ToLower())
+                if (ident_msg == user.lastMsg.Item3)
                 {
                     Thread.Sleep(100);
                     continue;
@@ -58,6 +59,7 @@ namespace English_Bot
                 ind.x = true;
                 ind = IndicatorTimer(wait_time);
 
+                ident_msg = user.lastMsg.Item3;
                 text = user.lastMsg.Item1.ToLower();
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -151,7 +153,7 @@ namespace English_Bot
                     EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
                     return false;
                 }
-                if (text == user.lastMsg.Item1.ToLower())
+                if (ident_msg == user.lastMsg.Item3)
                 {
                     Thread.Sleep(100);
                     continue;
@@ -160,6 +162,7 @@ namespace English_Bot
                 ind.x = true;
                 ind = IndicatorTimer(wait_time);
 
+                ident_msg = user.lastMsg.Item3;
                 text = user.lastMsg.Item1.ToLower();
 
                 if (text == "/help")
