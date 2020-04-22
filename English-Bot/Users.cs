@@ -79,12 +79,14 @@ namespace English_Bot
                 string temp = File.ReadAllText(path);
                 Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
             }
+
+            foreach (var key in Dbase.Keys)
+                Dbase[key].on_Test = false;
         }
 
         public void Save()
         {
-            foreach (var key in Dbase.Keys)
-                Dbase[key].on_Test = false;
+
 
 
             string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";

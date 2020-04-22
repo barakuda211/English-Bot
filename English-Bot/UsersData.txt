@@ -1,1 +1,0 @@
-{"122402184":{"lastMsg":{"Item1":"/give_up","Item2":false,"Item3":1406},"userId":122402184,"userLevel":5,"regId":1,"name":"Дима","userTags":null,"learnedWords":[24596,56731,18566,31591,39299,24040,6079,13270,5688,28537,45343,52801],"unLearnedWords":[51566,2883,2543,43700,39181,9875,25621,36876,30119,21753],"on_Test":false,"ch_lvl_id":0,"week_words":12}}
