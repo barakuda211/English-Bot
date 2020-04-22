@@ -91,10 +91,15 @@ namespace English_Bot
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
                                 "Жду вашей команды: \"Готов\". ");
             List<string> agree = new List<string>();
-            agree.Add("Готов");
-            agree.Add("Да");
+            agree.Add("готов");
+            agree.Add("да");
             agree.Add("точно");
-            WaitWordFromUser(userID, agree.ToArray(), true, -1);
+            //WaitWordFromUser(userID, agree.ToArray(), true, -1);
+            if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 1, "Ладно, протестируемся потом."))
+            {
+                users[userID].on_Test = false;
+                return;
+            } 
 
             var rand = new Random();
             /*
@@ -284,5 +289,40 @@ namespace English_Bot
             testingThread.Start(id);
         }
 
+        static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message)
+        {
+            var user = users.GetUser(userID);
+
+            var ind = Timers.IndicatorTimer(wait_time);
+            long ident_msg = user.lastMsg.Item3;
+            //while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) 
+            while (true)
+            {
+                if (ind.x)
+                {
+                    SendMessage(userID, wait_message);
+                    return false;
+                }
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);  //ожидание согласия
+                    continue;
+                }
+
+                string text = user.lastMsg.Item1.ToLower();  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                if (agree.Any(x => x == text)) 
+                    break;
+                if (deny.Any(x => x == text))
+                {
+                    SendMessage(userID, wait_message);
+                    return false;
+                }
+            }
+            user.lastMsg.Item2 = true;
+            WriteLine($"Get \"Ready\" from {userID}");
+            ind.x = true;
+            return true;
+        }
     }
 }

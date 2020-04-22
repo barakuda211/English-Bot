@@ -83,10 +83,11 @@ namespace English_Bot
 
         public void Save()
         {
+            foreach (var key in Dbase.Keys)
+                Dbase[key].on_Test = false;
+
 
             string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
-
-
             JsonSerializer serializer = new JsonSerializer();
             using (StreamWriter sw = new StreamWriter(path))
             using (JsonWriter writer = new JsonTextWriter(sw))

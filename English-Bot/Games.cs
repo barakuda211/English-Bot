@@ -5,6 +5,7 @@ using System.Threading;
 using Crossword;
 using System.Net;
 using English_Bot.Properties;
+using static English_Bot.Timers;
 
 namespace English_Bot
 {
@@ -41,35 +42,89 @@ namespace English_Bot
             var scw = new SimpleCross(id);
             EngBot.SendMessage(id, "Итак, твоя задача - перевести пронумерованные слова на английский.");
             EngBot.SendMessage(id, "Полученное слово, выделенное жёлтым, требуется перевести на русский.");
-            EngBot.SendMessage(id, "Жду ответы в виде:\n цифра перевод ");
-            EngBot.SendMessage(id, "Если надоест, пиши /exit");
+            EngBot.SendMessage(id, "Жду переводы по-порядку или ответы в виде:\n цифра перевод ");
+            EngBot.SendMessage(id, "Если что, пиши /help");
             SendMessage(scw);
+
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;
         }
 
         static bool Wait_normal_answers(SimpleCross scw)
         {
+            int wait_time = 5;
+            var ind = IndicatorTimer(wait_time);
+
             long userID = scw.id;
             var user = EngBot.users[scw.id];
             string text = user.lastMsg.Item1.ToLower();
+            long ident_msg = user.lastMsg.Item3;
             while (true)
             {
-                if (text == user.lastMsg.Item1.ToLower())
+                if (ind.x)
+                {
+                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
+                    return false;
+                }
+                if (ident_msg == user.lastMsg.Item3)
                 {
                     Thread.Sleep(100);
                     continue;
                 }
+
+                ind.x = true;
+                ind = IndicatorTimer(wait_time);
+
+                ident_msg = user.lastMsg.Item3;
                 text = user.lastMsg.Item1.ToLower();
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (text == "/exit")
+                if (text == "/help")
+                {
+                    EngBot.SendMessage(userID, "/hint - подсказка\n" +
+                                               "/give_up - сдаться\n");
+                    continue;
+                }
+
+                if (text == "/hint")
                 {
                     EngBot.SendMessage(userID, @"Ну как хочешь :-\");
+                    for (int i = 0; i < scw.is_answered.Count; i++)
+                        if (!scw.is_answered[i])
+                        {
+                            scw.DrawWord(i);
+                            SendMessage(scw);
+                            break;
+                        }
+                    continue;
+                }
+
+                if (text == "/give_up")
+                {
+                    EngBot.SendMessage(userID, @"Ну как хочешь :-\");
+                    scw.DrawWords();
+                    SendMessage(scw);
                     return false;
                 }
 
-                if (words.Length != 2)
+                if (words.Length == 1)
+                {
+                    int i = scw.is_answered.FindIndex(x => !x);
+                    if (text != scw.words[i].Item1)
+                    {
+                        EngBot.SendMessage(userID, "Ошибочка, попробуй ещё раз.");
+                        continue;
+                    }
+                    EngBot.SendMessage(userID, "Отлично");
+                    scw.DrawWord(i);
+                    SendMessage(scw);
+
+                    if (scw.is_all_answered)
+                        break;
+                    continue;
+                }
+
+                if (words.Length >2)
                 {
                     EngBot.SendMessage(userID, @"Что-то не так с количеством слов :-\");
                     continue;
@@ -77,7 +132,7 @@ namespace English_Bot
                 int num = -1;
                 if (!int.TryParse(words[0], out num))
                 {
-                    EngBot.SendMessage(userID, "Это точно цифра?)");
+                    EngBot.SendMessage(userID, $" \"{words[0]}\" - это точно цифра?)");
                     continue;
                 }
                 if (num < 1 || num > scw.words.Count)
@@ -104,22 +159,40 @@ namespace English_Bot
             }
 
             EngBot.SendMessage(userID, "Супер, так что же такое "+scw.MainWord.Item1+"?");
+
             string ans = EngBot.dictionary[scw.MainWord.Item2].rus;
+            
             while (true)
             {
-                if (text == user.lastMsg.Item1.ToLower())
+                if (ind.x)
+                {
+                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
+                    return false;
+                }
+                if (ident_msg == user.lastMsg.Item3)
                 {
                     Thread.Sleep(100);
                     continue;
                 }
+
+                ind.x = true;
+                ind = IndicatorTimer(wait_time);
+
+                ident_msg = user.lastMsg.Item3;
                 text = user.lastMsg.Item1.ToLower();
 
-                if (text == "/exit")
+                if (text == "/help")
                 {
-                    EngBot.SendMessage(userID, @"Ну как хочешь :-\");
-                    return false;
+                    EngBot.SendMessage(userID, "/give_up - сдаться\n");
+                    continue;
                 }
 
+                if (text == "/give_up")
+                {
+                    EngBot.SendMessage(userID, $"Стыдно не знать, это же \"{ans}\"");
+                    EngBot.SendMessage(userID, $"В следующий раз повтори слова тщательней)");
+                    return false;
+                }
 
                 if (ans != text)
                 {

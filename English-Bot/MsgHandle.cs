@@ -80,7 +80,16 @@ namespace English_Bot
                             if (adminIDs.Contains(fromId))
                                 answer = fromId.ToString();
                             else answer = ACCESS_IS_DENIED;
-                            return;
+                            break;
+                        case "admin::wantTest":
+                            if (adminIDs.Contains(fromId))
+                            {
+                                users[fromId].on_Test = true;
+                                Testing_Start(fromId);
+                                return;
+                            }
+                            else answer = ACCESS_IS_DENIED;
+                            break;
                         default:
                             var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                             if (ss.Length == 2)
