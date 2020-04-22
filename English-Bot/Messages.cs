@@ -175,7 +175,7 @@ namespace English_Bot
                 */
 
                 // Размер текста
-                float emSize = height * 125 / graphImage.DpiY;
+                float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
                 //int size = (int)(125 / graphImage.DpiX);
                 // float maxf = System.Single.MaxValue;
                 
@@ -328,7 +328,7 @@ namespace English_Bot
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
             // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.SaveAsync(uploadResponseInString, "voice" + word);
+            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
             
             /*
             bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()

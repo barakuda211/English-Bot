@@ -82,7 +82,7 @@ namespace English_Bot
 
         // static int TEST_Words = 5; 
 
-        //тестирование пользователя по !6! последним изученным словам
+        //тестирование пользователя по !10! последним неизученным словам
         static void Testing(object IDobj)
         {
             long userID = (long)IDobj;

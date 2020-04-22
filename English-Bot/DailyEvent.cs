@@ -9,11 +9,14 @@ using VkNet.Model.RequestParams;
 using English_Bot.Properties;
 using static System.Console;
 using System.Threading;
+using VkNet.Enums.Filters;
 
 namespace English_Bot
 {
     public partial class EngBot
     {
+        public static bool Sending_Words_Goes; 
+
         /// <summary>
         /// Старт ежедневных событий
         /// </summary>
@@ -30,7 +33,7 @@ namespace English_Bot
             try
             {
                 string message = "Поздравляем! За неделю Вы выучили " + users[userID].week_words + "\n";
-                List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams() { UserId = userID }).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
+                List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams { UserId = userID }, true).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
                 message += "Вот топ пять пользователей среди Вас и ваших друзей по итогам недели: \n";
                 friends.Add((userID, "Вы"));
                 var sorted = friends.OrderByDescending(x => users[x.id].week_words);
@@ -56,7 +59,7 @@ namespace English_Bot
             var TimeNowHour = DateTime.Now.Hour;
             while (true)
             {
-                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour) < 20)
+                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 20) && !Sending_Words_Goes)
                     WordsSender();
                 TimeNowHour = DateTime.Now.Hour;
                 Thread.Sleep(3600000);
@@ -75,10 +78,11 @@ namespace English_Bot
                 {
                     if (users.Dbase != null && users.Dbase.Count != 0)
                         foreach (var user in users.Dbase.Values)
-                            Testing_Start(user.userId);
+                            if (!user.on_Test)
+                                Testing_Start(user.userId);
                     users.Save();
                 }
-                /* if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday && Time == 21)
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && Time == 21)
                 {
                     foreach (var user in users.Dbase.Values)
                     {
@@ -88,7 +92,7 @@ namespace English_Bot
                     {
                         users[user.userId].week_words = 0;
                     }
-                } */
+                } 
                 Thread.Sleep(3600000);
                 Time = DateTime.Now.Hour;
             }
@@ -100,6 +104,7 @@ namespace English_Bot
 
         public static void WordsSender()
         {
+            Sending_Words_Goes = true; 
             Random r = new Random();
             int TimesOfWork = Users.UNLearned;
             int sleeptime = 3600000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
@@ -129,7 +134,11 @@ namespace English_Bot
                             SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
                         }
                     }
-                if (DateTime.Now.Hour == 19) break;
+                if (DateTime.Now.Hour == 19)
+                {
+                    Sending_Words_Goes = false; 
+                    break;
+                }
                 Thread.Sleep(sleeptime);
             }
             
