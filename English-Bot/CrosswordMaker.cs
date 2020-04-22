@@ -465,8 +465,12 @@ namespace Crossword
             return true;
         }
 
+        //Рисует указанное слово
         public void DrawWord(int n)
         {
+            if (n < 0 || n >= words.Count)
+                throw new IndexOutOfRangeException();
+
             if (n < 0 || n >= words.Count)
                 throw new IndexOutOfRangeException();
 
@@ -484,22 +488,64 @@ namespace Crossword
             Font f = new Font("Comic Sans Ms", 150);
             Brush bb = Brushes.Black;
 
-           
+
             foreach (var letter in words[n].Item1)
             {
-                g.DrawString(letter.ToString(), f, bb, x + 30, y-20);
+                g.DrawString(letter.ToString(), f, bb, x + 30, y - 20);
                 y += 200;
             }
 
-            
+
             bmp.Save(@"users\" + id + @"\cross_temp.jpg", ImageFormat.Jpeg);
             g.Dispose();
             bmp.Dispose();
-            
+
             File.Delete(@"users\" + id + @"\cross.jpg");
             File.Move(@"users\" + id + @"\cross_temp.jpg", @"users\" + id + @"\cross.jpg");
         }
 
+        //Рисует все ненарисованные слова
+        public void DrawWords()
+        {
+            Bitmap bmp = new Bitmap(@"users\" + id + @"\cross.jpg");
+            Graphics g = Graphics.FromImage(bmp);
+
+            Font f = new Font("Comic Sans Ms", 150);
+            Brush bb = Brushes.Black;
+
+            for (int n = 0; n < is_answered.Count; n++)
+            {
+                if (is_all_answered)
+                    break;
+                if (is_answered[n])
+                    continue;
+
+                is_answered[n] = true;
+                is_all_answered = true;
+                foreach (var b in is_answered)
+                    if (!b)
+                        is_all_answered = b;
+
+                int y = up_height * 200 - words[n].Item3 * 200;
+                int x = border + n * 200;
+
+                foreach (var letter in words[n].Item1)
+                {
+                    g.DrawString(letter.ToString(), f, bb, x + 30, y - 20);
+                    y += 200;
+                }
+            }
+
+
+            bmp.Save(@"users\" + id + @"\cross_temp.jpg", ImageFormat.Jpeg);
+            g.Dispose();
+            bmp.Dispose();
+
+            File.Delete(@"users\" + id + @"\cross.jpg");
+            File.Move(@"users\" + id + @"\cross_temp.jpg", @"users\" + id + @"\cross.jpg");
+        }
+
+        //Рисует пустой кроссворд
         private void DrawPicture()
         {
             int height = (up_height + down_height + 1) * 200;
