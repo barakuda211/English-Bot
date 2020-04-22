@@ -10,6 +10,22 @@ namespace English_Bot
 {
     public static class Games
     {
+        public static void Gallows_Start(long user_id)
+        {
+            EngBot.users[user_id].on_Test = true;
+            Thread gallows_thread = new Thread(new ParameterizedThreadStart(Gallows_Thread_Start));
+            gallows_thread.Start(user_id);
+        } 
+
+        private static void Gallows_Thread_Start(object obj_id)
+        {
+            long user_id = (long)obj_id;
+
+            // var g = new Gallows(user_id);
+            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать слова за ограниченное количество попыток!");
+
+        }
+
         public static void Crossvord_start(long id)
         {
             EngBot.users[id].on_Test = true;
