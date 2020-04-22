@@ -126,7 +126,11 @@ namespace English_Bot
                 }
 
                 // Создаем обЪекты для рисования
-                Image bitmap = (Image)Bitmap.FromFile(word + "_picture.jpg");
+                Image bitmap = Image.FromFile(word + "_picture.jpg");
+                
+                //Bitmap pic = new Bitmap(bitmap);
+                //pic.SetResolution(300, 300);
+
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
 
@@ -174,6 +178,8 @@ namespace English_Bot
                 TextureBrush tBrush = new TextureBrush(t); 
                 */
 
+                Console.WriteLine(graphImage.DpiX + " " + graphImage.DpiY);
+
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
                 //int size = (int)(125 / graphImage.DpiX);
@@ -181,12 +187,12 @@ namespace English_Bot
                 
                 // Выюираем белый цвет
                 var tBrush = new SolidBrush(Color.White);
-                
+
                 // Наносим слово на английском
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
@@ -195,22 +201,25 @@ namespace English_Bot
 
                 // Пишем транскрипцию 
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
+                if (text.Length == 2)
+                    goto Translation; 
                 graphImage.DrawString(
                     @text,
-                    new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
                             height / 2 /* - (height / 10)*/),
                     new StringFormat(stringFormat));
 
+                Translation: 
                 // Добавляем перевод 
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(FontFamily.Families[font].Name, emSize / text.Length/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                        new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
@@ -336,7 +345,7 @@ namespace English_Bot
                 RandomId = Environment.TickCount64,
                 UserId = id,
                 Attachments = mess
-            }) ;
+            });
             */
         } 
 

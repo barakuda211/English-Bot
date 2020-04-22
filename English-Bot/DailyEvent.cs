@@ -82,7 +82,8 @@ namespace English_Bot
                                 Testing_Start(user.userId);
                     users.Save();
                 }
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && Time == 21)
+                /*
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)
                 {
                     foreach (var user in users.Dbase.Values)
                     {
@@ -92,7 +93,7 @@ namespace English_Bot
                     {
                         users[user.userId].week_words = 0;
                     }
-                } 
+                }*/ 
                 Thread.Sleep(3600000);
                 Time = DateTime.Now.Hour;
             }
@@ -112,36 +113,35 @@ namespace English_Bot
             {
                 //var temp = new Dictionary<long, User>();
                 //foreach (var elem in users.Dbase)
-                    //temp.Append(elem);
+                //temp.Append(elem);
                 //if (temp.Count != 0)
-                    foreach (var user in users.Dbase.Values /*.Where(x => x.userId == 203654426)*/)
+                foreach (var user in users.Dbase.Values /*.Where(x => x.userId == 203654426)*/)
+                {
+                    if (user.on_Test)
+                        continue;
+                    bool pic = r.Next(2) % 2 == 0;
+                Desc:
+                    if (pic)
                     {
-                        if (user.on_Test)
-                            continue;
-                        bool pic = r.Next(2) % 2 == 0;
-                    Desc:
-                        if (pic)
+                        bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
+                        if (!success)
                         {
-                            bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
-                            if (!success)
-                            {
-                                pic = false;
-                                goto Desc;
-                            }
-                        }
-                        else
-                        {
-                            SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
+                            pic = false;
+                            goto Desc;
                         }
                     }
+                    else
+                    {
+                        SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
+                    }
+                }
                 if (DateTime.Now.Hour == 19)
                 {
-                    Sending_Words_Goes = false; 
+                    Sending_Words_Goes = false;
                     break;
                 }
                 Thread.Sleep(sleeptime);
             }
-            
         }
     }
 }
