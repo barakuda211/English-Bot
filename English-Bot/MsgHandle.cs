@@ -47,66 +47,71 @@ namespace English_Bot
                     if (users[fromId].on_Test)
                         return;
 
-
-                    switch (text)
+                    var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (ss.Length == 2)
+                        if (ss[0] == "/example")
+                        {
+                            foreach (var s in GetSentenceExemples(ss[1]))
+                            {
+                                SendMessage(fromId, s);
+                            }
+                            return;
+                        }
                     {
-                        case " оманды бота":
-                        case "/commands":
-                            answer = "/change_level - изменить свой уровень\n" +
-                                     "/my_level - мой уровень\n" +
-                                     "/crossword - сыграть кроссворд\n"+
-                                     "\'слово на русском\' - перевод на английский\n" +
-                                     "\'слово на английском\' - перевод на русский\n" +
-                                     "/пример \'слово на английском\' - примеры использовани€ слова в предложени€ъ\n";
-                            break;
-                        case "ћой уровень":
-                        case "/my_level":
-                            answer = "¬ы на " + users[fromId].userLevel + " уровне.";
-                            break;
-                        case "»зменить уровень":
-                        case "/change_level":
-                            ChangingLevel_Start(fromId);
-                            return;
-                        case "»гра кроссворд":
-                        case "/crossword":
-                            Games.Crossvord_start(fromId);
-                            return;
-                        case "admin::getCommands":
-                            if (adminIDs.Contains(fromId))
-                                answer = "getId, ...";
-                            else answer = ACCESS_IS_DENIED;
-                            return;
-                        case "admin::getId":
-                            if (adminIDs.Contains(fromId))
-                                answer = fromId.ToString();
-                            else answer = ACCESS_IS_DENIED;
-                            break;
-                        case "admin::wantTest":
-                            if (adminIDs.Contains(fromId))
-                            {
-                                users[fromId].on_Test = true;
-                                Testing_Start(fromId);
+                        switch (text)
+                        {
+                            case " оманды бота":
+                            case "/commands":
+                                answer = "/change_level - изменить свой уровень\n" +
+                                         "/my_level - мой уровень\n" +
+                                         "/example \'слово\'- примеры использовани€\n" +
+                                         "/crossword - сыграть кроссворд\n" +
+                                         "\'слово на русском\' - перевод на английский\n" +
+                                         "\'слово на английском\' - перевод на русский\n";
+                                break;
+                            case "ћой уровень":
+                            case "/my_level":
+                                answer = "¬ы на " + users[fromId].userLevel + " уровне.";
+                                break;
+                            case "»зменить уровень":
+                            case "/change_level":
+                                ChangingLevel_Start(fromId);
                                 return;
-                            }
-                            else answer = ACCESS_IS_DENIED;
-                            break;
-                        default:
-                            var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (ss.Length == 2)
-                            {
-                                if (ss[0] == "/пример")
-                                    foreach (var s in GetSentenceExemples(ss[1]))
-                                    {
-                                        SendMessage(fromId, s);
-                                    }
+                            case "»гра кроссворд":
+                            case "/crossword":
+                                Games.Crossvord_start(fromId);
                                 return;
-                            }
-                            else if (ss.Length == 1) answer = Translation(text);
-                            // answer = SendInfo(eventArgs.Message);
-                            // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
-                            //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
-                            //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
-                            break;
+                            case "/example":
+                                answer = "ј к чему пример то?)";
+                                break;
+                            case "admin::getCommands":
+                                if (adminIDs.Contains(fromId))
+                                    answer = "getId, ...";
+                                else answer = ACCESS_IS_DENIED;
+                                return;
+                            case "admin::getId":
+                                if (adminIDs.Contains(fromId))
+                                    answer = fromId.ToString();
+                                else answer = ACCESS_IS_DENIED;
+                                break;
+                            case "admin::wantTest":
+                                if (adminIDs.Contains(fromId))
+                                {
+                                    users[fromId].on_Test = true;
+                                    Testing_Start(fromId);
+                                    return;
+                                }
+                                else 
+                                    answer = ACCESS_IS_DENIED;
+                                break;
+                            default:
+                                answer = Translation(text);
+                                // answer = SendInfo(eventArgs.Message);
+                                // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
+                                //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
+                                //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
+                                break;
+                        }
                     }
                 }
             }

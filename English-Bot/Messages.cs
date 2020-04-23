@@ -374,6 +374,10 @@ namespace English_Bot
             //HashSet<string> s_Exs = new HashSet<string>();
             List<string> s_Exs = new List<string>();
             //if (dictionary.GetRusWordIds(word).Count > 0)
+
+            if (word[0] >= 'а' && word[0] <= 'я')       //заглушка
+                return new List<string>() { "Я ожидал английское слово." };
+
             {
                 try
                 {
