@@ -71,7 +71,7 @@ namespace English_Bot
 
         static string Translation(string word)
         {
-            word = word.Trim().ToLower(); 
+            word = GetFormatedWord(word); 
             string an = "Я не знаю такого слова :(";
             if (word[0] >= 'A' && word[0] <= 'z')
             {
@@ -79,13 +79,20 @@ namespace English_Bot
                 {
                     if (!dictionary.eng_ids.ContainsKey(word))
                         return an;
-                    else
-                    {
-                        if (dictionary[dictionary.eng_ids[word]].mean_rus == null)
-                            return "Перевод отсуттвует"; 
-                        else 
-                            return string.Join(", ", from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
-                    }
+                    if (dictionary[dictionary.eng_ids[word]].mean_rus == null)
+                        return "Перевод отсутствует";
+                    if (dictionary[dictionary.eng_ids[word]].mean_rus.def.Count == 0)
+                        return "Перевод отсутствует";
+                    /*
+                    string res = "";
+                    foreach (var def in dictionary[dictionary.eng_ids[word]].mean_rus.def)
+                        res = res + ", " + def.tr[0].text;
+                    return res;
+                    */
+                    string res = string.Join(", ", from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
+                    if (res == string.Empty)
+                        return "Перевод отсутствует";
+                    return res;
                 }
                 catch(Exception e)
                 {
@@ -97,9 +104,16 @@ namespace English_Bot
             {
                 try
                 {
-                    word = string.Join("", word.Select(x => x == 'ё' ? 'е' : x));
-                    var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
-                    return (list == null || list.Count == 0) ? an : string.Join(", ", list.Select(x => dictionary[x]?.eng));
+                    //word = string.Join("", word.Select(x => x == 'ё' ? 'е' : x));
+                    List<long> list = null;
+                    if (dictionary.rus_ids.ContainsKey(word))
+                        list = dictionary.rus_ids[word];
+                    //var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
+                    if (list == null || list.Count == 0)
+                        return an;
+                    else
+                        return string.Join(", ", list.Select(x => dictionary[x].eng));
+                    //return (list == null || list.Count == 0) ? an : string.Join(", ", list.Select(x => dictionary[x]?.eng));
                 }
                 catch(Exception e)
                 {

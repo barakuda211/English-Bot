@@ -55,7 +55,7 @@ namespace English_Bot
         }
 
         ///delete upper registr and del ё
-        public static string GetFormatedWord(string word) => string.Join("", word.Select(x => char.ToLower(x))).Replace('ё', 'е');
+        public static string GetFormatedWord(string word) => string.Join("", word.Trim().Select(x => char.ToLower(x))).Replace('ё', 'е');
 
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
