@@ -64,6 +64,8 @@ namespace English_Bot
 
         private static bool TryToAddEnglishWord(string word)
         {
+            if (dictionary.eng_ids.ContainsKey(word))
+                return false;
             try
             {
                 string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=en-en&text=" + word;
@@ -142,6 +144,8 @@ namespace English_Bot
                                 if (tr.syn != null)
                                     foreach (var syn in tr.syn)
                                     {
+                                        if (!dictionary.eng_ids.ContainsKey(syn.text) )
+                                            TryToAddEnglishWord(syn.text);
                                         if (dictionary.eng_ids.ContainsKey(syn.text))
                                         {
                                             dictionary.rus_ids[word].Add(dictionary.eng_ids[syn.text]);
