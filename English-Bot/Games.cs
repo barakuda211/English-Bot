@@ -130,6 +130,11 @@ namespace English_Bot
             }
             EngBot.SendMessage(userID, "Правильно, поздравляю!");
             return true;
+        } 
+
+        static void SendMessage(Gallows gal)
+        {
+
         }
 
         static void SendMessage(SimpleCross scw)
