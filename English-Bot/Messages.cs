@@ -21,6 +21,145 @@ namespace English_Bot
 {
     partial class EngBot
     {
+        public static string tr_key = "dict.1.1.20191110T125921Z.2e938b8f1af39304.8ce369b76d519181943a5643717495fb5cacec21";
+
+        private static bool AddRusIds(Word word)
+        {
+            try
+            {
+                if (word.mean_rus == null)
+                    return false;
+                else
+                    foreach (var def in word.mean_rus.def)
+                        if (def.tr != null)
+                            foreach (var tr in def.tr)
+                            {
+                                if (!dictionary.rus_ids.ContainsKey(tr.text))
+                                {
+                                    dictionary.rus_ids.Add(tr.text, new List<long> { word.id });
+                                }
+                                else
+                                    dictionary.rus_ids[tr.text].Add(word.id);
+                                if (tr.syn != null)
+                                    foreach (var syn in tr.syn)
+                                    {
+                                        if (!dictionary.rus_ids.ContainsKey(syn.text))
+                                        {
+                                            dictionary.rus_ids.Add(syn.text, new List<long> { word.id });
+                                        }
+                                        else
+                                            dictionary.rus_ids[syn.text].Add(word.id);
+                                    }
+                            }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error with adding values to rus ids");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false; 
+            }
+        }
+
+        private static bool TryToAddEnglishWord(string word)
+        {
+            try
+            {
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=en-en&text=" + word;
+                string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=en-ru&text=" + word;
+
+                string response1 = Methods.Request(request1);
+                string response2 = Methods.Request(request2);
+
+                SpaceYandexEnEn.YandexEnEn mean_eng = Methods.DeSerializationObjFromStr<SpaceYandexEnEn.YandexEnEn>(response1);
+                SpaceYandexEnRu.YandexEnRu mean_rus = Methods.DeSerializationObjFromStr<SpaceYandexEnRu.YandexEnRu>(response2);
+
+                if (mean_eng.def.Count == 0 && mean_rus.def.Count == 0)
+                {
+                    return false;
+                }
+
+                Word add_word;
+                long add_id = dictionary.GetKeys().Max() + 1;
+
+                if (mean_rus.def.Count > 0 && mean_eng.def.Count == 0)
+                    add_word = new Word(add_id, word, mean_rus.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "rus_only" });
+                else if (mean_rus.def.Count == 0 && mean_eng.def.Count > 0)
+                    add_word = new Word(add_id, word, mean_eng.def[0].ts, null, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "eng_only" });
+                else add_word = new Word(add_id, word, mean_eng.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, null);
+
+                bool add_good = dictionary.AddWord(add_word);
+                if (!add_good)
+                    return false;
+
+                dictionary.eng_ids.Add(word, add_id);
+
+                if (add_word.mean_rus != null)
+                {
+                    bool b = AddRusIds(add_word);
+                    if (!b)
+                        add_word.tags.Add("no_in_rus_ids");
+                }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in adding english word: " + word);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false;
+            }
+        }
+
+        private static bool TryToAddRussianWord(string word)
+        {
+            try
+            {
+                if (dictionary.rus_ids.ContainsKey(word))
+                {
+                    return false;
+                }
+
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=ru-en&text=" + word;
+
+                string response1 = Methods.Request(request1);
+
+                SpaceYandexRuEn.YandexRuEn rus_mean = Methods.DeSerializationObjFromStr<SpaceYandexRuEn.YandexRuEn>(response1);
+
+                dictionary.rus_ids.Add(word, new List<long>());
+
+                if (rus_mean.def != null)
+                    foreach (var def in rus_mean.def)
+                    {
+                        if (def.tr != null)
+                            foreach (var tr in def.tr)
+                            {
+                                if (dictionary.eng_ids.ContainsKey(tr.text))
+                                {
+                                    dictionary.rus_ids[word].Add(dictionary.eng_ids[tr.text]);
+                                }
+                                if (tr.syn != null)
+                                    foreach (var syn in tr.syn)
+                                    {
+                                        if (dictionary.eng_ids.ContainsKey(syn.text))
+                                        {
+                                            dictionary.rus_ids[word].Add(dictionary.eng_ids[syn.text]);
+                                        }
+                                    }
+                            }
+                    }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with adding rus word");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false; 
+            }
+        }
+
         /// <summary>
         /// Отправляет пользователю полную информацию о слове по его ID
         /// </summary>
@@ -72,23 +211,33 @@ namespace English_Bot
         static string Translation(string word)
         {
             word = GetFormatedWord(word); 
-            string an = "Я не знаю такого слова :(";
+
+            string no_word = "Я не знаю такого слова :(";
+            string no_tr = "Перевод отсутствует";
+
             if (word[0] >= 'A' && word[0] <= 'z')
             {
                 try
                 {
                     if (!dictionary.eng_ids.ContainsKey(word))
-                        return an;
+                    {
+                        bool success = TryToAddEnglishWord(word);
+                        if (!success)
+                            return no_word; 
+                    }
+
                     if (dictionary[dictionary.eng_ids[word]].mean_rus == null)
-                        return "Перевод отсутствует";
+                        return no_tr;
                     if (dictionary[dictionary.eng_ids[word]].mean_rus.def.Count == 0)
-                        return "Перевод отсутствует";
+                        return no_tr;
+
                     /*
                     string res = "";
                     foreach (var def in dictionary[dictionary.eng_ids[word]].mean_rus.def)
                         res = res + ", " + def.tr[0].text;
                     return res;
                     */
+
                     string res = string.Join(", ", from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
                     if (res == string.Empty)
                         return "Перевод отсутствует";
@@ -106,11 +255,18 @@ namespace English_Bot
                 {
                     //word = string.Join("", word.Select(x => x == 'ё' ? 'е' : x));
                     List<long> list = null;
+                    if (!dictionary.rus_ids.ContainsKey(word))
+                    {
+                        bool success = TryToAddRussianWord(word);
+                        if (!success)
+                            return no_word;
+                    }
+
                     if (dictionary.rus_ids.ContainsKey(word))
                         list = dictionary.rus_ids[word];
                     //var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
                     if (list == null || list.Count == 0)
-                        return an;
+                        return no_word;
                     else
                         return string.Join(", ", list.Select(x => dictionary[x].eng));
                     //return (list == null || list.Count == 0) ? an : string.Join(", ", list.Select(x => dictionary[x]?.eng));
@@ -121,7 +277,7 @@ namespace English_Bot
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            return an; 
+            return no_word; 
         }
 
         static bool SendPicture(long id, long word)
