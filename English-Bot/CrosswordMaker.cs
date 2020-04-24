@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using English_Bot.Properties;
 using System.Drawing;
 using System.IO;
 using System.Drawing.Drawing2D;
@@ -251,6 +249,9 @@ namespace Crossword
         //id пользователя, границы размера основного слова, максимальная высота поля
         public SimpleCross(long id, int min_sz = 4, int max_sz = 10, int area_height = 11)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
             down_height = area_height / 2;
             up_height = area_height / 2;
             border = 200;
@@ -288,6 +289,9 @@ namespace Crossword
 
             correct_height();
             init_legend();
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for creating Crossword: " + stp.ElapsedMilliseconds);
 
             DrawPicture();
             //for (int i = 0; i < words.Count; i++)
@@ -468,6 +472,9 @@ namespace Crossword
         //Рисует указанное слово
         public void DrawWord(int n)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
             if (n < 0 || n >= words.Count)
                 throw new IndexOutOfRangeException();
 
@@ -495,6 +502,11 @@ namespace Crossword
                 y += 200;
             }
 
+            stp.Stop();
+            Console.WriteLine("Elapsed for drawing word: "+stp.ElapsedMilliseconds);
+
+            stp.Reset();
+            stp.Start();
 
             bmp.Save(@"users\" + id + @"\cross_temp.jpg", ImageFormat.Jpeg);
             g.Dispose();
@@ -502,6 +514,9 @@ namespace Crossword
 
             File.Delete(@"users\" + id + @"\cross.jpg");
             File.Move(@"users\" + id + @"\cross_temp.jpg", @"users\" + id + @"\cross.jpg");
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for saving drawn word: " + stp.ElapsedMilliseconds);
         }
 
         //Рисует все ненарисованные слова
@@ -548,6 +563,9 @@ namespace Crossword
         //Рисует пустой кроссворд
         private void DrawPicture()
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
             int height = (up_height + down_height + 1) * 200;
             int width = words.Count * 200 + 400;
             if (width < height - 300)
@@ -588,13 +606,22 @@ namespace Crossword
                     y += 200;
                 }
             }
-            //g.Save();
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for drawing Crossword: " + stp.ElapsedMilliseconds);
+
+            stp.Reset();
+            stp.Start();
+
             if (!Directory.Exists("users"))
                 Directory.CreateDirectory("users");
             if (!Directory.Exists(@"users\"+id.ToString()))
                 Directory.CreateDirectory(@"users\" + id.ToString());
             bmp.Save(@"users\"+id+@"\cross.jpg",ImageFormat.Jpeg);
             bmp.Dispose();
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for saving Crossword: " + stp.ElapsedMilliseconds);
         }
     }
 }
