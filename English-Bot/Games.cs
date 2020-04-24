@@ -125,6 +125,8 @@ namespace English_Bot
                             SendMessage(scw);
                             break;
                         }
+                    if (scw.is_all_answered)
+                        break;
                     continue;
                 }
 
@@ -256,15 +258,30 @@ namespace English_Bot
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
             var photos = EngBot.bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
-            EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            try
             {
-                RandomId = Environment.TickCount64,
-                UserId = id,
-                Message = legend,
-                Attachments = photos
-            });
+                EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Message = legend,
+                    Attachments = photos
+                });
 
-            stp.Stop();
+                stp.Stop();
+            }
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            {
+                Console.WriteLine("VK poshel v zhopu");
+            }
+            catch (VkNet.Exception.PublicServerErrorException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
             Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }
 
