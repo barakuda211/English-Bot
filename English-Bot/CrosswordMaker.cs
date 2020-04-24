@@ -352,7 +352,7 @@ namespace Crossword
                     continue;
                 if (cur_word.Length > area_height)
                     continue;
-                if (EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only"))
+                if (EngBot.dictionary[x].tags != null && (EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only")))
                     continue;
                 int front_end = rand.Next(0, 1); //спереди или сзади
                 for (int j = 0; j < words.Count; j++)
@@ -405,7 +405,7 @@ namespace Crossword
                     continue;
                 if (cur_word.Length > area_height)
                     continue;
-                if (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only"))
+                if (EngBot.dictionary[x.Current].tags != null && (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only")))
                     continue;
                 int front_end = rand.Next(0, 1); //спереди или сзади
                 for (int j = 0; j < words.Count; j++)
@@ -452,7 +452,7 @@ namespace Crossword
                 string cur_word = EngBot.dictionary[x].eng;
                 if (cur_word.Length < min_sz || cur_word.Length > max_sz)
                     continue;
-                if (EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only"))
+                if (EngBot.dictionary[x].tags != null &&(EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only")))
                     continue;                
                 main_word = (cur_word, x);
                 f = true;
@@ -475,7 +475,7 @@ namespace Crossword
                 string cur_word = EngBot.dictionary[x.Current].eng;
                 if (cur_word.Length < min_sz || cur_word.Length > max_sz)
                     continue;
-                if (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only"))
+                if (EngBot.dictionary[x.Current].tags != null && (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only")))
                     continue;
                 main_word = (cur_word, x.Current);
                 break;
