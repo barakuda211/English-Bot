@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using English_Bot.Properties;
 using System.Drawing;
 using System.IO;
 using System.Drawing.Drawing2D;
@@ -236,6 +234,7 @@ namespace Crossword
         private int up_height { get; set; }
         private int down_height { get; set; }
         private int border { get; set; }
+        private int block_sz { get; set; }
         private Random rand = new Random();
         //Слово на английском, которое открывается при решении, его id
         private (string, long) main_word { get; set; }
@@ -251,9 +250,13 @@ namespace Crossword
         //id пользователя, границы размера основного слова, максимальная высота поля
         public SimpleCross(long id, int min_sz = 4, int max_sz = 10, int area_height = 11)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
+            block_sz = 100;
             down_height = area_height / 2;
             up_height = area_height / 2;
-            border = 200;
+            border = block_sz;
             this.id = id;
             
             var user = EngBot.users[id];
@@ -287,7 +290,16 @@ namespace Crossword
                     init_words(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), area_height);
 
             correct_height();
-            init_legend();
+            try
+            {
+                init_legend();
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("init_legend null ref!");
+            }
+            stp.Stop();
+            Console.WriteLine("Elapsed for creating Crossword: " + stp.ElapsedMilliseconds);
 
             DrawPicture();
             //for (int i = 0; i < words.Count; i++)
@@ -340,6 +352,8 @@ namespace Crossword
                     continue;
                 if (cur_word.Length > area_height)
                     continue;
+                if (EngBot.dictionary[x].tags != null && (EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only")))
+                    continue;
                 int front_end = rand.Next(0, 1); //спереди или сзади
                 for (int j = 0; j < words.Count; j++)
                 {
@@ -391,6 +405,8 @@ namespace Crossword
                     continue;
                 if (cur_word.Length > area_height)
                     continue;
+                if (EngBot.dictionary[x.Current].tags != null && (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only")))
+                    continue;
                 int front_end = rand.Next(0, 1); //спереди или сзади
                 for (int j = 0; j < words.Count; j++)
                 {
@@ -436,6 +452,8 @@ namespace Crossword
                 string cur_word = EngBot.dictionary[x].eng;
                 if (cur_word.Length < min_sz || cur_word.Length > max_sz)
                     continue;
+                if (EngBot.dictionary[x].tags != null &&(EngBot.dictionary[x].tags.Contains("rus_only") || EngBot.dictionary[x].tags.Contains("eng_only")))
+                    continue;                
                 main_word = (cur_word, x);
                 f = true;
                 break;
@@ -457,6 +475,8 @@ namespace Crossword
                 string cur_word = EngBot.dictionary[x.Current].eng;
                 if (cur_word.Length < min_sz || cur_word.Length > max_sz)
                     continue;
+                if (EngBot.dictionary[x.Current].tags != null && (EngBot.dictionary[x.Current].tags.Contains("rus_only") || EngBot.dictionary[x.Current].tags.Contains("eng_only")))
+                    continue;
                 main_word = (cur_word, x.Current);
                 break;
             }
@@ -468,6 +488,9 @@ namespace Crossword
         //Рисует указанное слово
         public void DrawWord(int n)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
             if (n < 0 || n >= words.Count)
                 throw new IndexOutOfRangeException();
 
@@ -483,18 +506,23 @@ namespace Crossword
             Bitmap bmp = new Bitmap(@"users\" + id + @"\cross.jpg");
             Graphics g = Graphics.FromImage(bmp);
 
-            int y = up_height * 200 - words[n].Item3 * 200;
-            int x = border + n * 200;
+            int y = up_height * block_sz - words[n].Item3 * block_sz;
+            int x = border + n * block_sz;
             Font f = new Font("Comic Sans Ms", 150);
             Brush bb = Brushes.Black;
 
 
             foreach (var letter in words[n].Item1)
             {
-                g.DrawString(letter.ToString(), f, bb, x + 30, y - 20);
-                y += 200;
+                g.DrawString(letter.ToString(), f, bb, x + 20, y - 10);
+                y += block_sz;
             }
 
+            stp.Stop();
+            Console.WriteLine("Elapsed for drawing word: "+stp.ElapsedMilliseconds);
+
+            stp.Reset();
+            stp.Start();
 
             bmp.Save(@"users\" + id + @"\cross_temp.jpg", ImageFormat.Jpeg);
             g.Dispose();
@@ -502,6 +530,9 @@ namespace Crossword
 
             File.Delete(@"users\" + id + @"\cross.jpg");
             File.Move(@"users\" + id + @"\cross_temp.jpg", @"users\" + id + @"\cross.jpg");
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for saving drawn word: " + stp.ElapsedMilliseconds);
         }
 
         //Рисует все ненарисованные слова
@@ -526,13 +557,13 @@ namespace Crossword
                     if (!b)
                         is_all_answered = b;
 
-                int y = up_height * 200 - words[n].Item3 * 200;
-                int x = border + n * 200;
+                int y = up_height * block_sz - words[n].Item3 * block_sz;
+                int x = border + n * block_sz;
 
                 foreach (var letter in words[n].Item1)
                 {
-                    g.DrawString(letter.ToString(), f, bb, x + 30, y - 20);
-                    y += 200;
+                    g.DrawString(letter.ToString(), f, bb, x + 20, y-10);
+                    y += block_sz;
                 }
             }
 
@@ -548,53 +579,65 @@ namespace Crossword
         //Рисует пустой кроссворд
         private void DrawPicture()
         {
-            int height = (up_height + down_height + 1) * 200;
-            int width = words.Count * 200 + 400;
-            if (width < height - 300)
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
+            int height = (up_height + down_height + 1) * block_sz;
+            int width = words.Count * block_sz + block_sz*2;
+            if (width < height - (block_sz+ block_sz/2))
             {
-                width = height - 300;
-                border = (width - words.Count * 200) / 2;
+                width = height - (block_sz + block_sz / 2);
+                border = (width - words.Count * block_sz) / 2;
             }
 
-            
+            int resolution = block_sz/3;
             
             Bitmap bmp = new Bitmap(width, height);
-            bmp.SetResolution(72, 72);
+            bmp.SetResolution(resolution, resolution);
             Graphics g = Graphics.FromImage(bmp);
 
-            Pen p = new Pen(Color.Black, 10.0f);
+            Pen p = new Pen(Color.Black, block_sz/20);
             Font f = new Font("Impact", 150);
             Brush bb = Brushes.Black;
 
             g.FillRectangle(Brushes.White, 0, 0, width, height);
-            g.DrawRectangle(new Pen(Color.Black,20.0f), 0, 0, width, height);
+            //g.DrawRectangle(new Pen(Color.Black,20.0f), 0, 0, width, height);
 
             {
-                int x = border; int y = up_height * 200;
+                int x = border; int y = up_height * block_sz;
                 for (int i = 0; i < words.Count; i++)
                 {
-                    g.FillRectangle(Brushes.Yellow, x, y, 200, 200);
-                    x += 200;
+                    g.FillRectangle(Brushes.Yellow, x, y, block_sz, block_sz);
+                    x += block_sz;
                 }
             }
             for (int i = 0; i<words.Count;i++)
             {
-                int x = border + i*200; int y = up_height*200 - words[i].Item3*200 - 200;
-                g.DrawString((i + 1).ToString(), f, bb, x+30, y);
-                y += 200;
+                int x = border + i* block_sz; int y = up_height* block_sz - words[i].Item3* block_sz - block_sz;
+                g.DrawString((i + 1).ToString(), f, bb, x+20, y);
+                y += block_sz;
                 for (int j = 0; j < words[i].Item1.Length; j++)
                 {
-                    g.DrawRectangle(p, x, y, 200, 200);
-                    y += 200;
+                    g.DrawRectangle(p, x, y, block_sz, block_sz);
+                    y += block_sz;
                 }
             }
-            //g.Save();
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for drawing Crossword: " + stp.ElapsedMilliseconds);
+
+            stp.Reset();
+            stp.Start();
+
             if (!Directory.Exists("users"))
                 Directory.CreateDirectory("users");
             if (!Directory.Exists(@"users\"+id.ToString()))
                 Directory.CreateDirectory(@"users\" + id.ToString());
             bmp.Save(@"users\"+id+@"\cross.jpg",ImageFormat.Jpeg);
             bmp.Dispose();
+
+            stp.Stop();
+            Console.WriteLine("Elapsed for saving Crossword: " + stp.ElapsedMilliseconds);
         }
     }
 }

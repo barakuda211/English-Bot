@@ -3,12 +3,39 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Crossword;
+using System.Diagnostics;
 using System.Net;
 using English_Bot.Properties;
 using static English_Bot.Timers;
 
 namespace English_Bot
 {
+    public class Stopwatch
+    {
+        private DateTime start { get; set; }
+        private DateTime stop { get; set; }
+
+        public double ElapsedMilliseconds => (stop - start).TotalMilliseconds;
+
+        public void Start()
+        {
+            start = DateTime.UtcNow;
+        }
+
+        public void Stop()
+        {
+            stop = DateTime.UtcNow;
+        }
+
+        public void Reset()
+        {
+            start = DateTime.MinValue;
+            stop = DateTime.MinValue;
+        }
+        public Stopwatch() => Reset();
+
+
+    }
     public static class Games
     {
         public static void Gallows_Start(long user_id)
@@ -44,7 +71,9 @@ namespace English_Bot
             EngBot.SendMessage(id, "Полученное слово, выделенное жёлтым, требуется перевести на русский.");
             EngBot.SendMessage(id, "Жду переводы по-порядку или ответы в виде:\n цифра перевод ");
             EngBot.SendMessage(id, "Если что, пиши /help");
+
             SendMessage(scw);
+
 
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;
@@ -96,6 +125,8 @@ namespace English_Bot
                             SendMessage(scw);
                             break;
                         }
+                    if (scw.is_all_answered)
+                        break;
                     continue;
                 }
 
@@ -110,6 +141,8 @@ namespace English_Bot
                 if (words.Length == 1)
                 {
                     int i = scw.is_answered.FindIndex(x => !x);
+                    if (i >= scw.words.Count || i < 0)
+                        break;
                     if (text != scw.words[i].Item1)
                     {
                         EngBot.SendMessage(userID, "Ошибочка, попробуй ещё раз.");
@@ -152,8 +185,9 @@ namespace English_Bot
                 }
                 EngBot.SendMessage(userID, "Отлично");
                 scw.DrawWord(num - 1);
-                SendMessage(scw);
 
+                SendMessage(scw);
+     
                 if (scw.is_all_answered)
                     break;
             }
@@ -207,6 +241,9 @@ namespace English_Bot
 
         static void SendMessage(SimpleCross scw)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
+
             long id = scw.id;
             string legend = "";
             for (int i = 0; i < scw.words.Count; i++)
@@ -221,13 +258,31 @@ namespace English_Bot
             var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
             // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
             var photos = EngBot.bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
-            EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            try
             {
-                RandomId = Environment.TickCount64,
-                UserId = id,
-                Message = legend,
-                Attachments = photos
-            });
+                EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Message = legend,
+                    Attachments = photos
+                });
+
+                stp.Stop();
+            }
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            {
+                Console.WriteLine("VK poshel v zhopu");
+            }
+            catch (VkNet.Exception.PublicServerErrorException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }
 
         public static void PlayCrossword(long user_id)
