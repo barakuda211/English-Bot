@@ -104,5 +104,14 @@ namespace English_Bot.Properties {
                 return ResourceManager.GetString("groupUrl2", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на dict.1.1.20191110T125921Z.2e938b8f1af39304.8ce369b76d519181943a5643717495fb5cacec21.
+        /// </summary>
+        internal static string tr_key {
+            get {
+                return ResourceManager.GetString("tr_key", resourceCulture);
+            }
+        }
     }
 }

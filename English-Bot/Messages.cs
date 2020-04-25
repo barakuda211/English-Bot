@@ -21,7 +21,6 @@ namespace English_Bot
 {
     partial class EngBot
     {
-                                                                                                                                                                                                                                        public static string tr_key = "dict.1.1.20191110T125921Z.2e938b8f1af39304.8ce369b76d519181943a5643717495fb5cacec21";
         private static bool AddRusIds(Word word)
         {
             try
@@ -67,8 +66,8 @@ namespace English_Bot
                 return false;
             try
             {
-                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=en-en&text=" + word;
-                string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=en-ru&text=" + word;
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=en-en&text=" + word;
+                string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=en-ru&text=" + word;
 
                 string response1 = Methods.Request(request1);
                 string response2 = Methods.Request(request2);
