@@ -21,8 +21,7 @@ namespace English_Bot
 {
     partial class EngBot
     {
-        public static string tr_key = "dict.1.1.20191110T125921Z.2e938b8f1af39304.8ce369b76d519181943a5643717495fb5cacec21";
-
+                                                                                                                                                                                                                                        public static string tr_key = "dict.1.1.20191110T125921Z.2e938b8f1af39304.8ce369b76d519181943a5643717495fb5cacec21";
         private static bool AddRusIds(Word word)
         {
             try
@@ -284,6 +283,17 @@ namespace English_Bot
             return no_word; 
         }
 
+        static string MultipleTranslation(string[] text)
+        {
+            string answer = "";
+            foreach (var word in text)
+            {
+                if (dictionary.eng_ids.ContainsKey(word))
+                    answer += word + " -> " + Translation(word) + "\n";
+            }
+            return answer;
+        }
+
         static bool SendPicture(long id, long word)
         {
             try
@@ -307,6 +317,7 @@ namespace English_Bot
 
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
+                graphImage.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
                 // Определяем шрифт, а также сохраняем ширину и длину изображения
                 Random r = new Random(17);
@@ -356,6 +367,7 @@ namespace English_Bot
 
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
+                uint pixSize = (uint)Math.Floor((double)width / 100 * 10); // 65 % ширины картинки будет занимать текст
                 //int size = (int)(125 / graphImage.DpiX);
                 // float maxf = System.Single.MaxValue;
                 
@@ -366,7 +378,7 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, /*emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
@@ -376,10 +388,10 @@ namespace English_Bot
                 // Пишем транскрипцию 
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
                 if (text.Length == 2)
-                    goto Translation; 
+                    goto Translation;
                 graphImage.DrawString(
                     @text,
-                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, /*emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
@@ -393,7 +405,7 @@ namespace English_Bot
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif), /* emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
@@ -487,40 +499,51 @@ namespace English_Bot
 
         static void SendSound(long id, long word)
         {
-            SpeechSynthesizer speechSynth = new SpeechSynthesizer();
-            speechSynth.Volume = 50;
-            PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
-            p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
-            //speechSynth.Speak(p);
-            string file_name = word + "_sound";
-            speechSynth.SetOutputToWaveFile(file_name + ".wav");
-
-            /*
-            using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+            try
             {
-                // :3
+                SpeechSynthesizer speechSynth = new SpeechSynthesizer();
+                string file_name = word + "_sound";
+                {
+                    speechSynth.SetOutputToWaveFile(file_name + ".wav");
+                    speechSynth.Volume = 50;
+                    PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
+                    // p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
+                    var list = GetSentenceExemples(dictionary[word].eng);
+                    p.AppendText((list != null && list.Count > 0) ? list[0] : (dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". ")));
+                    speechSynth.Speak(p);
+                }
+                /*
+                using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+                {
+                    // :3
+                }
+                */
+
+                file_name = ToOgg(file_name + ".wav");
+
+                string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
+
+                var uploader = new WebClient();
+                var uploadResponseInBytes = uploader.UploadFile(url, file_name);
+                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+                // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
+                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                var mess = (System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)bot.Api.Docs.Save(uploadResponseInString, "voice" + word).Select(x => x.Instance);
+                //(System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)
+
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Attachments = mess
+                });
             }
-            */
-
-            file_name = ToOgg(file_name + ".wav");
-
-            string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
-
-            var uploader = new WebClient();
-            var uploadResponseInBytes = uploader.UploadFile(url, file_name);
-            var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-            // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
-            // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
-            
-            /*
-            bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            catch (Exception e)
             {
-                RandomId = Environment.TickCount64,
-                UserId = id,
-                Attachments = mess
-            });
-            */
+                Console.WriteLine("Something wrong in Sending Sound");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
         } 
 
         static void SendRecognition(EventArgs message)

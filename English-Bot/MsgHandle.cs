@@ -49,6 +49,7 @@ namespace English_Bot
 
                     var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (ss.Length == 2)
+                    {
                         if (ss[0] == "/example")
                         {
                             foreach (var s in GetSentenceExemples(ss[1]))
@@ -57,6 +58,13 @@ namespace English_Bot
                             }
                             return;
                         }
+                        else if (ss[0] == "/sound")
+                        {
+                            if (dictionary.eng_ids.ContainsKey(ss[1]))
+                                SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                        }
+                    }
+                    // ----------------------------------------------------------------------------
                     {
                         switch (text)
                         {
@@ -86,7 +94,7 @@ namespace English_Bot
                                 break;
                             case "admin::getCommands":
                                 if (adminIDs.Contains(fromId))
-                                    answer = "getId, ...";
+                                    answer = "getId, wantTest, getCommands...";
                                 else answer = ACCESS_IS_DENIED;
                                 return;
                             case "admin::getId":
@@ -105,7 +113,10 @@ namespace English_Bot
                                     answer = ACCESS_IS_DENIED;
                                 break;
                             default:
-                                answer = Translation(text);
+                                if (ss.Length == 1)
+                                    answer = Translation(text);
+                                else
+                                    answer = MultipleTranslation(ss);
                                 // answer = SendInfo(eventArgs.Message);
                                 // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                                 //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));

@@ -53,6 +53,12 @@ namespace English_Bot
             //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
             //SendPicture(210036813, dictionary.GetEngWordId("car"));
 
+            /*
+            SendSound(203654426, dictionary.eng_ids["working"]);
+            SendSound(203654426, dictionary.eng_ids["good"]);
+            SendSound(203654426, dictionary.eng_ids["staff"]);
+            */
+
             WriteLine("Bot started!");
         }
 

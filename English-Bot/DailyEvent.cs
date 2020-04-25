@@ -59,7 +59,7 @@ namespace English_Bot
             var TimeNowHour = DateTime.Now.Hour;
             while (true)
             {
-                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 20) && !Sending_Words_Goes)
+                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 23) && !Sending_Words_Goes)
                     WordsSender();
                 TimeNowHour = DateTime.Now.Hour;
                 Thread.Sleep(3600000);
@@ -108,14 +108,14 @@ namespace English_Bot
             Sending_Words_Goes = true; 
             Random r = new Random();
             int TimesOfWork = Users.UNLearned;
-            int sleeptime = 3600000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
+            int sleeptime = 36000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
                 //var temp = new Dictionary<long, User>();
                 //foreach (var elem in users.Dbase)
                 //temp.Append(elem);
                 //if (temp.Count != 0)
-                foreach (var user in users.Dbase.Values /*.Where(x => x.userId == 203654426)*/)
+                foreach (var user in users.Dbase.Values.Where(x => x.userId == 203654426))
                 {
                     if (user.on_Test)
                         continue;
