@@ -287,8 +287,8 @@ namespace English_Bot
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word))
-                    answer += word + " -> " + Translation(word) + "\n";
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
+                    answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
             return answer;
         }
