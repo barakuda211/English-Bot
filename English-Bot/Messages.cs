@@ -362,8 +362,6 @@ namespace English_Bot
                 TextureBrush tBrush = new TextureBrush(t); 
                 */
 
-                Console.WriteLine( "Sending photo to " + id /*graphImage.DpiX + " " + graphImage.DpiY*/ );
-
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
                 uint pixSize = (uint)Math.Floor((double)width / 100 * 10); // 65 % ширины картинки будет занимать текст
@@ -377,7 +375,7 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
@@ -390,7 +388,7 @@ namespace English_Bot
                     goto Translation;
                 graphImage.DrawString(
                     @text,
-                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
@@ -404,7 +402,7 @@ namespace English_Bot
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif),  emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif),  emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
@@ -451,6 +449,7 @@ namespace English_Bot
                 Console.WriteLine(e.StackTrace);
                 return false;
             }
+            Console.WriteLine("Photo sent to " + id /*graphImage.DpiX + " " + graphImage.DpiY*/ );
         }
 
         

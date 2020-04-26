@@ -98,7 +98,7 @@ namespace English_Bot
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
-                                return;
+                                break;
                             case "admin::getId":
                                 if (adminIDs.Contains(fromId))
                                     answer = fromId.ToString();
