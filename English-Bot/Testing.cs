@@ -43,6 +43,10 @@ namespace English_Bot
                     ForwardMessages = msgIDs
                 });
             }
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            {
+                WriteLine("VK poshel v zhopu");
+            }
             catch (VkNet.Exception.PublicServerErrorException e)
             {
                 WriteLine("Server error with sending message!");
