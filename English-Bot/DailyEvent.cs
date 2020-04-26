@@ -15,6 +15,10 @@ namespace English_Bot
 {
     public partial class EngBot
     {
+        // Один час
+        public const int OneHour = 3600000;
+
+        // True, если идет рассылка сообщений пользователям
         public static bool Sending_Words_Goes; 
 
         /// <summary>
@@ -59,10 +63,12 @@ namespace English_Bot
             var TimeNowHour = DateTime.Now.Hour;
             while (true)
             {
-                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 23) && !Sending_Words_Goes)
+                if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 20) && !Sending_Words_Goes)
                     WordsSender();
+                if (TimeNowHour == 23)
+                    users.Save(); 
                 TimeNowHour = DateTime.Now.Hour;
-                Thread.Sleep(3600000);
+                Thread.Sleep(OneHour);
             }
         }
 
@@ -80,7 +86,6 @@ namespace English_Bot
                         foreach (var user in users.Dbase.Values)
                             if (!user.on_Test)
                                 Testing_Start(user.userId);
-                    users.Save();
                 }
                 /*
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)
@@ -94,7 +99,7 @@ namespace English_Bot
                         users[user.userId].week_words = 0;
                     }
                 }*/ 
-                Thread.Sleep(3600000);
+                Thread.Sleep(OneHour);
                 Time = DateTime.Now.Hour;
             }
         }
@@ -108,14 +113,14 @@ namespace English_Bot
             Sending_Words_Goes = true; 
             Random r = new Random();
             int TimesOfWork = Users.UNLearned;
-            int sleeptime = 36000; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
+            int sleeptime = OneHour; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
             for (int i = 0; i < TimesOfWork; i++)
             {
                 //var temp = new Dictionary<long, User>();
                 //foreach (var elem in users.Dbase)
                 //temp.Append(elem);
                 //if (temp.Count != 0)
-                foreach (var user in users.Dbase.Values.Where(x => x.userId == 203654426))
+                foreach (var user in users.Dbase.Values /* .Where(x => x.userId == 203654426) */ )
                 {
                     if (user.on_Test)
                         continue;

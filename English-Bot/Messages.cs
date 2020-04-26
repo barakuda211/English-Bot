@@ -121,7 +121,7 @@ namespace English_Bot
                     return false;
                 }
 
-                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + tr_key + @"&lang=ru-en&text=" + word;
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=ru-en&text=" + word;
 
                 string response1 = Methods.Request(request1);
 
@@ -142,8 +142,8 @@ namespace English_Bot
                                 if (tr.syn != null)
                                     foreach (var syn in tr.syn)
                                     {
-                                        if (!dictionary.eng_ids.ContainsKey(syn.text) )
-                                            TryToAddEnglishWord(syn.text);
+                                        //if (!dictionary.eng_ids.ContainsKey(syn.text) )
+                                            //TryToAddEnglishWord(syn.text);
                                         if (dictionary.eng_ids.ContainsKey(syn.text))
                                         {
                                             dictionary.rus_ids[word].Add(dictionary.eng_ids[syn.text]);
@@ -206,7 +206,7 @@ namespace English_Bot
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-            SendMessage(userId, message == "" ? "Ошибка" : message);
+            SendMessage(userId, message == "" ? "Произошла ошибка" : message);
             //return message; 
         } 
 
@@ -362,7 +362,7 @@ namespace English_Bot
                 TextureBrush tBrush = new TextureBrush(t); 
                 */
 
-                Console.WriteLine(graphImage.DpiX + " " + graphImage.DpiY);
+                Console.WriteLine( "Sending photo to " + id /*graphImage.DpiX + " " + graphImage.DpiY*/ );
 
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
@@ -377,7 +377,7 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, /*emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
@@ -390,7 +390,7 @@ namespace English_Bot
                     goto Translation;
                 graphImage.DrawString(
                     @text,
-                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, /*emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
@@ -404,7 +404,7 @@ namespace English_Bot
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif), /* emSize / (text.Length < 7 ? 7 : text.Length)*/ pixSize /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
+                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif),  emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular, GraphicsUnit.Pixel),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,

@@ -62,6 +62,7 @@ namespace English_Bot
                         {
                             if (dictionary.eng_ids.ContainsKey(ss[1]))
                                 SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                            return;
                         }
                     }
                     // ----------------------------------------------------------------------------
@@ -75,7 +76,8 @@ namespace English_Bot
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
                                          "\'слово на русском\' - перевод на английский\n" +
-                                         "\'слово на английском\' - перевод на русский\n";
+                                         "\'слово на английском\' - перевод на русский\n" + 
+                                         "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                                 break;
                             case "Мой уровень":
                             case "/my_level":
@@ -94,12 +96,17 @@ namespace English_Bot
                                 break;
                             case "admin::getCommands":
                                 if (adminIDs.Contains(fromId))
-                                    answer = "getId, wantTest, getCommands...";
+                                    answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
                                 return;
                             case "admin::getId":
                                 if (adminIDs.Contains(fromId))
                                     answer = fromId.ToString();
+                                else answer = ACCESS_IS_DENIED;
+                                break;
+                            case "admin::usersCount":
+                                if (adminIDs.Contains(fromId))
+                                    answer = "" + users.Dbase.Count;
                                 else answer = ACCESS_IS_DENIED;
                                 break;
                             case "admin::wantTest":

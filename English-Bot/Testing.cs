@@ -51,7 +51,7 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
-            WriteLine("Word sent");
+            WriteLine("Message sent to " + userID);
         }
 
         ///delete upper registr and del ё
