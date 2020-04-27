@@ -10,6 +10,7 @@
     <FileVersion>1.0.0.3</FileVersion>
     <Version>1.0.3</Version>
     <PackageProjectUrl></PackageProjectUrl>
+    <ApplicationIcon>english.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

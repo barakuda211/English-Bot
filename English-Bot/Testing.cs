@@ -55,11 +55,10 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
-            
-            WriteLine("Word sent");
+            WriteLine("Message sent to " + userID);
         }
 
-        ///delete upper registr and del ё
+        /// reduce upper register and deleting 'ё'
         public static string GetFormatedWord(string word) => string.Join("", word.Trim().Select(x => char.ToLower(x))).Replace('ё', 'е');
 
         //ждет ответа !определенного! ответа от юзера, 

@@ -49,6 +49,7 @@ namespace English_Bot
 
                     var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (ss.Length == 2)
+                    {
                         if (ss[0] == "/example")
                         {
                             foreach (var s in GetSentenceExemples(ss[1]))
@@ -57,6 +58,14 @@ namespace English_Bot
                             }
                             return;
                         }
+                        else if (ss[0] == "/sound")
+                        {
+                            if (dictionary.eng_ids.ContainsKey(ss[1]))
+                                SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                            return;
+                        }
+                    }
+                    // ----------------------------------------------------------------------------
                     {
                         switch (text)
                         {
@@ -67,7 +76,8 @@ namespace English_Bot
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
                                          "\'слово на русском\' - перевод на английский\n" +
-                                         "\'слово на английском\' - перевод на русский\n";
+                                         "\'слово на английском\' - перевод на русский\n" + 
+                                         "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                                 break;
                             case "Мой уровень":
                             case "/my_level":
@@ -86,12 +96,17 @@ namespace English_Bot
                                 break;
                             case "admin::getCommands":
                                 if (adminIDs.Contains(fromId))
-                                    answer = "getId, ...";
+                                    answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
-                                return;
+                                break;
                             case "admin::getId":
                                 if (adminIDs.Contains(fromId))
                                     answer = fromId.ToString();
+                                else answer = ACCESS_IS_DENIED;
+                                break;
+                            case "admin::usersCount":
+                                if (adminIDs.Contains(fromId))
+                                    answer = "" + users.Dbase.Count;
                                 else answer = ACCESS_IS_DENIED;
                                 break;
                             case "admin::wantTest":
@@ -105,7 +120,10 @@ namespace English_Bot
                                     answer = ACCESS_IS_DENIED;
                                 break;
                             default:
-                                answer = Translation(text);
+                                if (ss.Length == 1)
+                                    answer = Translation(text);
+                                else
+                                    answer = MultipleTranslation(ss);
                                 // answer = SendInfo(eventArgs.Message);
                                 // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                                 //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));

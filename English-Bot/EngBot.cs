@@ -21,7 +21,7 @@ namespace English_Bot
         //public const string Url = @"https://vk.com/club188523184";
         //public const string Token = "41df7d2e30314de0f847a51c4f8beaaf8d287eda3e31527d44a3d7aa17dac4928b9dc16be8ee476c64916";
 
-        //менять только для смены паблика!
+        //менять только для смены паблика
         public static string Token = Resources.AccessToken2;
         public static string Url = Resources.groupUrl2;
 
@@ -53,8 +53,13 @@ namespace English_Bot
             //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
             //SendPicture(210036813, dictionary.GetEngWordId("car"));
 
-            WriteLine("Bot started!");
+            /*
+            SendSound(203654426, dictionary.eng_ids["working"]);
+            SendSound(203654426, dictionary.eng_ids["good"]);
+            SendSound(203654426, dictionary.eng_ids["staff"]);
+            */
 
+            WriteLine("Bot started!");
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)

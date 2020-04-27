@@ -21,6 +21,147 @@ namespace English_Bot
 {
     partial class EngBot
     {
+        private static bool AddRusIds(Word word)
+        {
+            try
+            {
+                if (word.mean_rus == null)
+                    return false;
+                else
+                    foreach (var def in word.mean_rus.def)
+                        if (def.tr != null)
+                            foreach (var tr in def.tr)
+                            {
+                                if (!dictionary.rus_ids.ContainsKey(tr.text))
+                                {
+                                    dictionary.rus_ids.Add(tr.text, new List<long> { word.id });
+                                }
+                                else
+                                    dictionary.rus_ids[tr.text].Add(word.id);
+                                if (tr.syn != null)
+                                    foreach (var syn in tr.syn)
+                                    {
+                                        if (!dictionary.rus_ids.ContainsKey(syn.text))
+                                        {
+                                            dictionary.rus_ids.Add(syn.text, new List<long> { word.id });
+                                        }
+                                        else
+                                            dictionary.rus_ids[syn.text].Add(word.id);
+                                    }
+                            }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error with adding values to rus ids");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false; 
+            }
+        }
+
+        private static bool TryToAddEnglishWord(string word)
+        {
+            if (dictionary.eng_ids.ContainsKey(word))
+                return false;
+            try
+            {
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=en-en&text=" + word;
+                string request2 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=en-ru&text=" + word;
+
+                string response1 = Methods.Request(request1);
+                string response2 = Methods.Request(request2);
+
+                SpaceYandexEnEn.YandexEnEn mean_eng = Methods.DeSerializationObjFromStr<SpaceYandexEnEn.YandexEnEn>(response1);
+                SpaceYandexEnRu.YandexEnRu mean_rus = Methods.DeSerializationObjFromStr<SpaceYandexEnRu.YandexEnRu>(response2);
+
+                if (mean_eng.def.Count == 0 && mean_rus.def.Count == 0)
+                {
+                    return false;
+                }
+
+                Word add_word;
+                long add_id = dictionary.GetKeys().Max() + 1;
+
+                if (mean_rus.def.Count > 0 && mean_eng.def.Count == 0)
+                    add_word = new Word(add_id, word, mean_rus.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "rus_only" });
+                else if (mean_rus.def.Count == 0 && mean_eng.def.Count > 0)
+                    add_word = new Word(add_id, word, mean_eng.def[0].ts, null, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "eng_only" });
+                else add_word = new Word(add_id, word, mean_eng.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, null);
+
+                bool add_good = dictionary.AddWord(add_word);
+                if (!add_good)
+                    return false;
+
+                dictionary.eng_ids.Add(word, add_id);
+
+                if (add_word.mean_rus != null)
+                {
+                    bool b = AddRusIds(add_word);
+                    if (!b)
+                        add_word.tags.Add("no_in_rus_ids");
+                }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in adding english word: " + word);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false;
+            }
+        }
+
+        private static bool TryToAddRussianWord(string word)
+        {
+            try
+            {
+                if (dictionary.rus_ids.ContainsKey(word))
+                {
+                    return false;
+                }
+
+                string request1 = @"https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=" + Resources.tr_key + @"&lang=ru-en&text=" + word;
+
+                string response1 = Methods.Request(request1);
+
+                SpaceYandexRuEn.YandexRuEn rus_mean = Methods.DeSerializationObjFromStr<SpaceYandexRuEn.YandexRuEn>(response1);
+
+                dictionary.rus_ids.Add(word, new List<long>());
+
+                if (rus_mean.def != null)
+                    foreach (var def in rus_mean.def)
+                    {
+                        if (def.tr != null)
+                            foreach (var tr in def.tr)
+                            {
+                                if (dictionary.eng_ids.ContainsKey(tr.text))
+                                {
+                                    dictionary.rus_ids[word].Add(dictionary.eng_ids[tr.text]);
+                                }
+                                if (tr.syn != null)
+                                    foreach (var syn in tr.syn)
+                                    {
+                                        //if (!dictionary.eng_ids.ContainsKey(syn.text) )
+                                            //TryToAddEnglishWord(syn.text);
+                                        if (dictionary.eng_ids.ContainsKey(syn.text))
+                                        {
+                                            dictionary.rus_ids[word].Add(dictionary.eng_ids[syn.text]);
+                                        }
+                                    }
+                            }
+                    }
+                return true; 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with adding rus word");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false; 
+            }
+        }
+
         /// <summary>
         /// Отправляет пользователю полную информацию о слове по его ID
         /// </summary>
@@ -65,30 +206,40 @@ namespace English_Bot
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-            SendMessage(userId, message == "" ? "Ошибка" : message);
+            SendMessage(userId, message == "" ? "Произошла ошибка" : message);
             //return message; 
         } 
 
         static string Translation(string word)
         {
             word = GetFormatedWord(word); 
-            string an = "Я не знаю такого слова :(";
+
+            string no_word = "Я не знаю такого слова :(";
+            string no_tr = "Перевод отсутствует";
+
             if (word[0] >= 'A' && word[0] <= 'z')
             {
                 try
                 {
                     if (!dictionary.eng_ids.ContainsKey(word))
-                        return an;
+                    {
+                        bool success = TryToAddEnglishWord(word);
+                        if (!success)
+                            return no_word; 
+                    }
+
                     if (dictionary[dictionary.eng_ids[word]].mean_rus == null)
-                        return "Перевод отсутствует";
+                        return no_tr;
                     if (dictionary[dictionary.eng_ids[word]].mean_rus.def.Count == 0)
-                        return "Перевод отсутствует";
+                        return no_tr;
+
                     /*
                     string res = "";
                     foreach (var def in dictionary[dictionary.eng_ids[word]].mean_rus.def)
                         res = res + ", " + def.tr[0].text;
                     return res;
                     */
+
                     string res = string.Join(", ", from def in dictionary[dictionary.eng_ids[word]].mean_rus.def select def.tr[0].text);
                     if (res == string.Empty)
                         return "Перевод отсутствует";
@@ -106,11 +257,18 @@ namespace English_Bot
                 {
                     //word = string.Join("", word.Select(x => x == 'ё' ? 'е' : x));
                     List<long> list = null;
+                    if (!dictionary.rus_ids.ContainsKey(word))
+                    {
+                        bool success = TryToAddRussianWord(word);
+                        if (!success)
+                            return no_word;
+                    }
+
                     if (dictionary.rus_ids.ContainsKey(word))
                         list = dictionary.rus_ids[word];
                     //var list = dictionary.rus_ids.ContainsKey(word) ? dictionary.rus_ids[word] : null;
                     if (list == null || list.Count == 0)
-                        return an;
+                        return no_word;
                     else
                         return string.Join(", ", list.Select(x => dictionary[x].eng));
                     //return (list == null || list.Count == 0) ? an : string.Join(", ", list.Select(x => dictionary[x]?.eng));
@@ -121,7 +279,18 @@ namespace English_Bot
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            return an; 
+            return no_word; 
+        }
+
+        static string MultipleTranslation(string[] text)
+        {
+            string answer = "";
+            foreach (var word in text)
+            {
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
+                    answer += word + " -> " + Translation(word.ToLower()) + "\n";
+            }
+            return answer;
         }
 
         static bool SendPicture(long id, long word)
@@ -147,6 +316,7 @@ namespace English_Bot
 
                 //string text = dictionary[word].eng + "\n" + dictionary[word].mean_eng.def[0].ts + "\n" + dictionary[word].rus;
                 Graphics graphImage = Graphics.FromImage(bitmap);
+                graphImage.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
                 // Определяем шрифт, а также сохраняем ширину и длину изображения
                 Random r = new Random(17);
@@ -192,10 +362,9 @@ namespace English_Bot
                 TextureBrush tBrush = new TextureBrush(t); 
                 */
 
-                Console.WriteLine(graphImage.DpiX + " " + graphImage.DpiY);
-
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
+                uint pixSize = (uint)Math.Floor((double)width / 100 * 10); // 65 % ширины картинки будет занимать текст
                 //int size = (int)(125 / graphImage.DpiX);
                 // float maxf = System.Single.MaxValue;
                 
@@ -206,7 +375,7 @@ namespace English_Bot
                 string text = dictionary[word].eng;
                 graphImage.DrawString(
                     text,
-                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),                   
                     tBrush,
                     new Point(width / 2,
@@ -216,10 +385,10 @@ namespace English_Bot
                 // Пишем транскрипцию 
                 text = "[" + ((dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")) ? dictionary[word].mean_eng.def[0].ts : dictionary[word].mean_rus.def[0].ts) + "]";
                 if (text.Length == 2)
-                    goto Translation; 
+                    goto Translation;
                 graphImage.DrawString(
                     @text,
-                    new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                    new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif)/*FontFamily.Families[font].Name*/, emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                     //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                     tBrush,
                     new Point(width / 2,
@@ -233,7 +402,7 @@ namespace English_Bot
                     text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
-                        new Font(FontFamily.Families[font].Name, emSize / (text.Length < 7 ? 7 : text.Length)/*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular),
+                        new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif),  emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
                         //new SolidBrush(ColorTranslator.FromHtml("#FFFFFF")),
                         tBrush,
                         new Point(width / 2,
@@ -280,6 +449,7 @@ namespace English_Bot
                 Console.WriteLine(e.StackTrace);
                 return false;
             }
+            Console.WriteLine("Photo sent to " + id /*graphImage.DpiX + " " + graphImage.DpiY*/ );
         }
 
         
@@ -327,40 +497,51 @@ namespace English_Bot
 
         static void SendSound(long id, long word)
         {
-            SpeechSynthesizer speechSynth = new SpeechSynthesizer();
-            speechSynth.Volume = 50;
-            PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
-            p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
-            //speechSynth.Speak(p);
-            string file_name = word + "_sound";
-            speechSynth.SetOutputToWaveFile(file_name + ".wav");
-
-            /*
-            using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+            try
             {
-                // :3
+                SpeechSynthesizer speechSynth = new SpeechSynthesizer();
+                string file_name = word + "_sound";
+                {
+                    speechSynth.SetOutputToWaveFile(file_name + ".wav");
+                    speechSynth.Volume = 50;
+                    PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
+                    // p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
+                    var list = GetSentenceExemples(dictionary[word].eng);
+                    p.AppendText((list != null && list.Count > 0) ? list[0] : (dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". ")));
+                    speechSynth.Speak(p);
+                }
+                /*
+                using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
+                {
+                    // :3
+                }
+                */
+
+                file_name = ToOgg(file_name + ".wav");
+
+                string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
+
+                var uploader = new WebClient();
+                var uploadResponseInBytes = uploader.UploadFile(url, file_name);
+                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+                // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
+                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                var mess = (System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)bot.Api.Docs.Save(uploadResponseInString, "voice" + word).Select(x => x.Instance);
+                //(System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)
+
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = id,
+                    Attachments = mess
+                });
             }
-            */
-
-            file_name = ToOgg(file_name + ".wav");
-
-            string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
-
-            var uploader = new WebClient();
-            var uploadResponseInBytes = uploader.UploadFile(url, file_name);
-            var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-            // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
-            // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-            var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + word);
-            
-            /*
-            bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+            catch (Exception e)
             {
-                RandomId = Environment.TickCount64,
-                UserId = id,
-                Attachments = mess
-            });
-            */
+                Console.WriteLine("Something wrong in Sending Sound");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
         } 
 
         static void SendRecognition(EventArgs message)
