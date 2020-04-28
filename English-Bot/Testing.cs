@@ -94,17 +94,32 @@ namespace English_Bot
             long userID = (long)IDobj;
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
-                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
-                                "Жду вашей команды: \"Готов\". ",null,true);
+                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. ");
+            if (users[userID].unLearnedWords.Count == 15)
+                SendMessage(userID, "Жду вашей команды: \"Готов\". ", null, true);
+            else
+                SendMessage(userID, "Жду вашей команды: \"Готов\" или \"Не готов\". ", null, true);
             List<string> agree = new List<string>();
             agree.Add("готов");
             agree.Add("да");
             agree.Add("точно");
-            if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 30, "Ладно, протестируемся потом."))
+
+
+            if (users[userID].unLearnedWords.Count == 15)
             {
-                users[userID].on_Test = false;
-                return;
-            } 
+                if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { }, 15, "Ладно, пиши, когда будешь готов."))
+                {
+                    users.DeleteUser(userID);
+                    users.Save();
+                    return;
+                }
+            }
+            else 
+                if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 60, "Ладно, протестируемся потом."))
+                {
+                    users[userID].on_Test = false;
+                    return;
+                } 
 
             var rand = new Random();
             /*
@@ -309,12 +324,13 @@ namespace English_Bot
 
             var ind = Timers.IndicatorTimer(wait_time);
             long ident_msg = user.lastMsg.Item3;
-            //while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) 
             while (true)
             {
                 if (ind.x)
                 {
-                    SendMessage(userID, wait_message);
+                    if (user.unLearnedWords.Count != 15)
+                        user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, wait_message,null,true);
                     return false;
                 }
                 if (ident_msg == user.lastMsg.Item3)
@@ -329,7 +345,8 @@ namespace English_Bot
                     break;
                 if (deny.Any(x => x == text))
                 {
-                    SendMessage(userID, wait_message);
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, wait_message,null,true);
                     return false;
                 }
             }
