@@ -40,6 +40,12 @@ namespace English_Bot
         /// Сколько слов пользователь выучил за неделю
         /// </summary>
         public int week_words { get; set; }
+        public Keyboard keyb { get; set; }
+
+
+        public static Keyboard Ready_Keyboard = new Keyboard( new Button[] { new Button("Готов","primary")  },true);
+        public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
+        public static Keyboard Main_Keyboard = new Keyboard(new Button[] { new Button("Команды бота", "primary") }, false);
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -65,6 +71,7 @@ namespace English_Bot
             week_words = 0;
             // vk_User = vk_user;
             lastMsg = ("", false, 0);
+            keyb = Ready_Keyboard;
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
@@ -99,6 +106,7 @@ namespace English_Bot
             lastMsg = ("", true, 0);
             on_Test = false;
             ch_lvl_id =0;
+            keyb = Ready_Keyboard;
         }
 
         public User() { }

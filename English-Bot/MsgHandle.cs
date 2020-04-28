@@ -38,7 +38,7 @@ namespace English_Bot
                 if (!users.HasUser(fromId) || users[fromId].regId != 1)
                 {
                     Registration(eventArgs.Message);
-                    goto Finn;
+                    return;
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace English_Bot
                         switch (text)
                         {
                             case "Команды бота":
-                            case "/commands":
+                            case "/help":
                                 answer = "/change_level - изменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
@@ -138,9 +138,9 @@ namespace English_Bot
             {
                 RandomId = Environment.TickCount,
                 PeerId = eventArgs.Message.PeerId,
-                Message = answer
+                Message = answer,
+                Keyboard = User.Main_Keyboard.ToMessageKeyboard()
             });
-        Finn:;
         }
 
 

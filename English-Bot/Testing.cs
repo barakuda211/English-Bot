@@ -6,6 +6,7 @@ using System.Linq;
 using static System.Console;
 using System.Threading;
 using Project_Word;
+using VkApi;
 using static System.Math;
 
 namespace English_Bot
@@ -31,7 +32,7 @@ namespace English_Bot
         */
 
         //отправляет сообщение юзеру
-        public static void SendMessage(long userID, string message, long[] msgIDs = null)
+        public static void SendMessage(long userID, string message, long[] msgIDs = null, bool need_kb = false)
         {
             try
             {
@@ -40,7 +41,8 @@ namespace English_Bot
                     RandomId = Environment.TickCount64,
                     UserId = userID,
                     Message = message,
-                    ForwardMessages = msgIDs
+                    ForwardMessages = msgIDs,
+                    Keyboard = need_kb ? users[userID].keyb.ToMessageKeyboard() : null
                 });
             }
             catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
@@ -93,12 +95,11 @@ namespace English_Bot
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
-                                "Жду вашей команды: \"Готов\". ");
+                                "Жду вашей команды: \"Готов\". ",null,true);
             List<string> agree = new List<string>();
             agree.Add("готов");
             agree.Add("да");
             agree.Add("точно");
-            //WaitWordFromUser(userID, agree.ToArray(), true, -1);
             if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 30, "Ладно, протестируемся потом."))
             {
                 users[userID].on_Test = false;
@@ -257,7 +258,8 @@ namespace English_Bot
                 else if (users[userID].userLevel == -1)
                 {
                     SendMessage(userID, "Невероятно! Вы изучили все слова, которые знает бот!!!");
-                    goto Fin;
+                    Fin(userID);
+                    return;
                 }
                 else
                 {
@@ -280,15 +282,23 @@ namespace English_Bot
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
             }
             Console.WriteLine("Words added to 10 ---------------");
+            Fin(userID);
+        }
 
-        Fin:
-            users[userID].on_Test = false;
+        static void Fin(long id)
+        {
+            users[id].on_Test = false;
             users.Save();
+            users[id].keyb = User.Main_Keyboard;
+            SendMessage(id, "В следующий раз продолжим.", null, true);
         }
 
         static void Testing_Start(long id)
         {
-            users[id].on_Test = true;
+            var user = users[id];
+            user.on_Test = true;
+            if (user.keyb == User.Main_Keyboard)
+                user.keyb = User.ReadyOrNot_Keyboard;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }
