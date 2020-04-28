@@ -71,7 +71,7 @@ namespace English_Bot
                         {
                             case "Команды бота":
                             case "/help":
-                                answer = "/change_level - изменить свой уровень\n" +
+                                answer = "/change_level - сменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
@@ -83,7 +83,7 @@ namespace English_Bot
                             case "/my_level":
                                 answer = "Вы на " + users[fromId].userLevel + " уровне.";
                                 break;
-                            case "Изменить уровень":
+                            case "Сменить уровень":
                             case "/change_level":
                                 ChangingLevel_Start(fromId);
                                 return;

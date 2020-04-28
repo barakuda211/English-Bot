@@ -45,7 +45,10 @@ namespace English_Bot
 
         public static Keyboard Ready_Keyboard = new Keyboard(new Button[] { new Button("Готов", "primary") }, true);
         public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
-        public static Keyboard Main_Keyboard = new Keyboard(new Button[] { new Button("Команды бота", "primary") }, false);
+        public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
+            new Button[] { new Button("Команды бота") },
+            new Button[] { new Button("Мой уровень"), new Button("Сменить уровень") },
+            new Button[] { new Button("Игра кроссворд") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
             new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
