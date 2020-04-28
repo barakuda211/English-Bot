@@ -8,7 +8,7 @@ namespace English_Bot
 {
     public class User
     {
-       public long userId { get; set; }
+        public long userId { get; set; }
         //Уровень пользователя (1,2,3,4,5,-1)
         public int userLevel { get; set; }
         //для корректной регистрации
@@ -35,7 +35,7 @@ namespace English_Bot
         /// </summary>
         public bool on_Test { get; set; }
         //Для смены уровня пользователя 
-        public int ch_lvl_id {get; set;}
+        public int ch_lvl_id { get; set; }
         /// <summary>
         /// Сколько слов пользователь выучил за неделю
         /// </summary>
@@ -43,9 +43,12 @@ namespace English_Bot
         public Keyboard keyb { get; set; }
 
 
-        public static Keyboard Ready_Keyboard = new Keyboard( new Button[] { new Button("Готов","primary")  },true);
+        public static Keyboard Ready_Keyboard = new Keyboard(new Button[] { new Button("Готов", "primary") }, true);
         public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
         public static Keyboard Main_Keyboard = new Keyboard(new Button[] { new Button("Команды бота", "primary") }, false);
+        public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
+            new Button[] { new Button("1"),new Button("2"), new Button("3")},
+            new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
 
         public User(VkUser vk_user, WordsDictionary dict)
         {

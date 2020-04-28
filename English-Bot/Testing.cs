@@ -318,7 +318,7 @@ namespace English_Bot
             testingThread.Start(id);
         }
 
-        static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message)
+        static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message, string wrong_ans = "Не понял")
         {
             var user = users.GetUser(userID);
 
@@ -338,7 +338,7 @@ namespace English_Bot
                     Thread.Sleep(100);  //ожидание согласия
                     continue;
                 }
-
+                ident_msg = user.lastMsg.Item3;
                 string text = GetFormatedWord(user.lastMsg.Item1);
 
                 if (agree.Any(x => x == text)) 
@@ -349,6 +349,7 @@ namespace English_Bot
                     SendMessage(userID, wait_message,null,true);
                     return false;
                 }
+                SendMessage(userID, wrong_ans,null,true);
             }
             user.lastMsg.Item2 = true;
             WriteLine($"Get \"Ready\" from {userID}");

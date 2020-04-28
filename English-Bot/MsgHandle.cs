@@ -158,10 +158,13 @@ namespace English_Bot
                            "4 - занималс€ с репетитором\n"+
                            "5 - уверенный носитель €зыка\n"+
                            "-1 - ну точно иностранец";
-            SendMessage(id,text);
-            var x = WaitWordFromUser_with_Comments(id,new string[] {"1","2","3","4","5","-1"});
+            SendMessage(id,text,null,true);
+            var x = WaitWordFromUser_with_Comments(id,new string[] {"1","2","3","4","5","-1"},1);
+            if (x == "time")
+                return;
             user.ChangeLevel(int.Parse(x));
-             SendMessage(id,"√отово!");
+            user.keyb = User.Main_Keyboard;
+            SendMessage(id,"√отово!",null,true);
             user.on_Test = false;
             users.Save();
         }
@@ -169,32 +172,43 @@ namespace English_Bot
         static void ChangingLevel_Start(long id)
         {
             users[id].on_Test = true;
+            users[id].keyb = User.ChangingLevel_Keyboard;
             Thread changing_thread = new Thread(new ParameterizedThreadStart(ChangeLevel));
             changing_thread.Start(id);
         }
 
         //ждет ответа !определенного! ответа от юзера, 
         //ѕросит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Ётого € не ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Ћадно, потом сменим уровень.",string error_msg = "Ётого € не ждал!")
         {
             var user = users.GetUser(userID);
-            string text = user.lastMsg.Item1.ToLower();
+            var ind = Timers.IndicatorTimer(wait_time);
+
+            long ident_msg = user.lastMsg.Item3;
             while (true)
             {
-                if (text != user.lastMsg.Item1.ToLower())
+                if (ind.x)
                 {
-                    text = user.lastMsg.Item1.ToLower();
-                    foreach (var w in words)
-                    {
-                        if (w == text)
-                        {
-                            user.lastMsg.Item2 = true;
-                            return w;
-                        }
-                    }
-                    SendMessage(userID,error_msg);
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, time_error_msg,null,true);
+                    return "time";
                 }
-                Thread.Sleep(100);
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);  //ожидание согласи€
+                    continue;
+                }
+                ident_msg = user.lastMsg.Item3;
+                var text = user.lastMsg.Item1.ToLower();
+                foreach (var w in words)
+                {
+                    if (w == text)
+                    { 
+                        user.lastMsg.Item2 = true;
+                        return w;
+                    }
+                }
+                SendMessage(userID,error_msg);
             }
         }
 
