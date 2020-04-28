@@ -61,19 +61,17 @@ namespace English_Bot
             crossvord_thread.Start(id);
         }
 
-
         static void Crossvord_thread_start(object Idobj)
         {
             long id = (long)Idobj;
 
             var scw = new SimpleCross(id);
+            EngBot.users[id].keyb = User.Crossword1_Keyboard;
             EngBot.SendMessage(id, "Итак, твоя задача - перевести пронумерованные слова на английский.");
             EngBot.SendMessage(id, "Полученное слово, выделенное жёлтым, требуется перевести на русский.");
-            EngBot.SendMessage(id, "Жду переводы по-порядку или ответы в виде:\n цифра перевод ");
-            EngBot.SendMessage(id, "Если что, пиши /help");
+            EngBot.SendMessage(id, "Жду переводы по-порядку или ответы в виде:\n цифра перевод ",null,true);
 
             SendMessage(scw);
-
 
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;
@@ -92,7 +90,8 @@ namespace English_Bot
             {
                 if (ind.x)
                 {
-                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...",null,true);
                     return false;
                 }
                 if (ident_msg == user.lastMsg.Item3)
@@ -107,15 +106,15 @@ namespace English_Bot
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (text == "/help")
+                /*
+                if (text == "/help" )
                 {
                     EngBot.SendMessage(userID, "/hint - подсказка\n" +
                                                "/give_up - сдаться\n");
                     continue;
                 }
-
-                if (text == "/hint")
+                */
+                if (text == "/hint" || text == "подсказать слово")
                 {
                     EngBot.SendMessage(userID, @"Ну как хочешь :-\");
                     for (int i = 0; i < scw.is_answered.Count; i++)
@@ -130,9 +129,10 @@ namespace English_Bot
                     continue;
                 }
 
-                if (text == "/give_up")
+                if (text == "/give_up" || text == "я сдаюсь")
                 {
-                    EngBot.SendMessage(userID, @"Ну как хочешь :-\");
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(userID, @"Ну как хочешь :-\",null,true);
                     scw.DrawWords();
                     SendMessage(scw);
                     return false;
@@ -192,7 +192,8 @@ namespace English_Bot
                     break;
             }
 
-            EngBot.SendMessage(userID, "Супер, так что же такое "+scw.MainWord.Item1+"?");
+            user.keyb = User.Crossword2_Keyboard;
+            EngBot.SendMessage(userID, "Супер, так что же такое "+scw.MainWord.Item1+"?",null,true);
 
             string ans = EngBot.dictionary[scw.MainWord.Item2].rus;
             
@@ -200,7 +201,8 @@ namespace English_Bot
             {
                 if (ind.x)
                 {
-                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...");
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(userID, "Ладно, тогда потом поиграем...",null,true);
                     return false;
                 }
                 if (ident_msg == user.lastMsg.Item3)
@@ -214,17 +216,18 @@ namespace English_Bot
 
                 ident_msg = user.lastMsg.Item3;
                 text = user.lastMsg.Item1.ToLower();
-
+                /*
                 if (text == "/help")
                 {
                     EngBot.SendMessage(userID, "/give_up - сдаться\n");
                     continue;
                 }
-
-                if (text == "/give_up")
+                */
+                if (text == "/give_up" || text == "я сдаюсь")
                 {
+                    user.keyb = User.Main_Keyboard;
                     EngBot.SendMessage(userID, $"Стыдно не знать, это же \"{ans}\"");
-                    EngBot.SendMessage(userID, $"В следующий раз повтори слова тщательней)");
+                    EngBot.SendMessage(userID, $"В следующий раз повтори слова тщательней)",null,true);
                     return false;
                 }
 
@@ -235,7 +238,8 @@ namespace English_Bot
                 }
                 break;
             }
-            EngBot.SendMessage(userID, "Правильно, поздравляю!");
+            user.keyb = User.Main_Keyboard;
+            EngBot.SendMessage(userID, "Правильно, поздравляю!",null,true);
             return true;
         } 
 
