@@ -10,6 +10,7 @@ using English_Bot.Properties;
 using static System.Console;
 using System.Threading;
 using VkNet.Enums.Filters;
+using Dictionary;
 
 namespace English_Bot
 {
@@ -37,6 +38,7 @@ namespace English_Bot
             try
             {
                 string message = "Поздравляем! За неделю Вы выучили " + users[userID].week_words + "\n";
+                // Methods.DeSerializationObjFromStr<>(VkApi.VkRequests.Request("https://api.vk.com/method/friends.get?user_id=" + 122402184)); 
                 List<(long id, string name)> friends = bot.Api.Friends.Get(new FriendsGetParams { UserId = userID }, true).Where(x => users.Dbase.Keys.Contains(x.Id)).Select(x => (x.Id, x.FirstName + " " + x.LastName)).ToList();
                 message += "Вот топ пять пользователей среди Вас и ваших друзей по итогам недели: \n";
                 friends.Add((userID, "Вы"));
