@@ -55,6 +55,8 @@ namespace English_Bot
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
+            Wait_answers_gallows(gal);
+            EngBot.users[user_id].on_Test = false;
         }
 
         public static void Crossvord_start(long id)
