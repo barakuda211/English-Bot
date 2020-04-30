@@ -9,6 +9,8 @@ namespace English_Bot
     {
         public const int UNLearned = 10;
 
+        public enum Mode { Easy, Medium, Hard };
+
         public Dictionary<long, User> Dbase;
         //индексатор
         public User this[long index]

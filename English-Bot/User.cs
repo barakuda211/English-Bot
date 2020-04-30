@@ -40,6 +40,10 @@ namespace English_Bot
         /// Сколько слов пользователь выучил за неделю
         /// </summary>
         public int week_words { get; set; }
+        /// <summary>
+        /// Сложность 
+        /// </summary>
+        public Users.Mode mode { get; set; }
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
@@ -65,6 +69,7 @@ namespace English_Bot
             week_words = 0;
             // vk_User = vk_user;
             lastMsg = ("", false, 0);
+            mode = Users.Mode.Easy;
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
