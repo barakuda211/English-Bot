@@ -179,7 +179,6 @@ namespace English_Bot
                     SendMessage(gal);
                 }
             }
-            return true; 
         }
 
         static bool Wait_normal_answers(SimpleCross scw)
@@ -416,15 +415,15 @@ namespace English_Bot
 
                 stp.Stop();
             }
-            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
             {
                 Console.WriteLine("VK poshel v zhopu");
             }
-            catch (VkNet.Exception.PublicServerErrorException e)
+            catch (VkNet.Exception.PublicServerErrorException)
             {
                 Console.WriteLine("Server error with sending message!");
             }
-            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            catch (VkNet.Exception.CannotSendToUserFirstlyException)
             {
                 Console.WriteLine("Server error with sending message!");
             }

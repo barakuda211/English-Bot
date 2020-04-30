@@ -294,7 +294,7 @@ namespace Crossword
             {
                 init_legend();
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 Console.WriteLine("init_legend null ref!");
             }
@@ -344,7 +344,7 @@ namespace Crossword
         private bool init_words(List<long> w, int area_height)
         {
             int half_area = area_height / 2;
-            bool is_inited = false;
+            // bool is_inited = false;
             foreach (var x in w)
             {
                 string cur_word = EngBot.dictionary[x].eng;

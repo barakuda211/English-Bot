@@ -8,7 +8,6 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json;
-using System.Net; 
 
 namespace Dictionary
 {
