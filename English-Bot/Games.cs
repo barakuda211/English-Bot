@@ -161,7 +161,7 @@ namespace English_Bot
                     continue;
                 }
 
-                char c = words[0][0];
+                char c = words[0].ToLower()[0];
 
                 if (gal.used.Contains(c))
                 {
@@ -175,7 +175,11 @@ namespace English_Bot
                     SendMessage(gal);
                 }
                 else
+                {
                     EngBot.SendMessage(gal.user_id, "Такой буквы в слове нет");
+                    --gal.attempts_remain;
+                    SendMessage(gal);
+                }
             }
             return true; 
         }
@@ -353,9 +357,9 @@ namespace English_Bot
 
             string message = "Слово: " + string.Join("", gal.show) + "\n" +
                 "Количество попыток: " + gal.attempts_remain + "\n" +
-                "Использованные буквы:" + string.Join(',', gal.used) + "\n" +
+                "Использованные буквы: " + string.Join(", ", gal.used) + "\n" +
                 // "Часть речи: " + EngBot.dictionary[gal.word_id]; 
-                "Перевод: " + string.Join(',', gal.tr); 
+                "Перевод: " + string.Join(", ", gal.tr); 
 
 
             try

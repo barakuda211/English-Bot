@@ -68,6 +68,7 @@ namespace English_Bot
                         {
                             if (dictionary.eng_ids.ContainsKey(ss[1]))
                                 SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
+                            return;
                         }
                     }
                     // ----------------------------------------------------------------------------
@@ -108,6 +109,9 @@ namespace English_Bot
                             case "/example":
                                 answer = "А к чему пример то?)";
                                 break;
+                            case "/description":
+                                answer = "Нужно написать и само слово";
+                                break; 
                             case "/easy":
                                 if (users.Dbase.ContainsKey(fromId))
                                 {
