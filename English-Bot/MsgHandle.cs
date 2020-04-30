@@ -38,7 +38,7 @@ namespace English_Bot
                 if (!users.HasUser(fromId) || users[fromId].regId != 1)
                 {
                     Registration(eventArgs.Message);
-                    goto Finn;
+                    return;
                 }
                 else
                 {
@@ -70,8 +70,8 @@ namespace English_Bot
                         switch (text)
                         {
                             case "Команды бота":
-                            case "/commands":
-                                answer = "/change_level - изменить свой уровень\n" +
+                            case "/help":
+                                answer = "/change_level - сменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
@@ -83,7 +83,7 @@ namespace English_Bot
                             case "/my_level":
                                 answer = "Вы на " + users[fromId].userLevel + " уровне.";
                                 break;
-                            case "Изменить уровень":
+                            case "Сменить уровень":
                             case "/change_level":
                                 ChangingLevel_Start(fromId);
                                 return;
@@ -138,9 +138,9 @@ namespace English_Bot
             {
                 RandomId = Environment.TickCount,
                 PeerId = eventArgs.Message.PeerId,
-                Message = answer
+                Message = answer,
+                Keyboard = User.Main_Keyboard.ToMessageKeyboard()
             });
-        Finn:;
         }
 
 
@@ -158,10 +158,13 @@ namespace English_Bot
                            "4 - занимался с репетитором\n"+
                            "5 - уверенный носитель языка\n"+
                            "-1 - ну точно иностранец";
-            SendMessage(id,text);
-            var x = WaitWordFromUser_with_Comments(id,new string[] {"1","2","3","4","5","-1"});
+            SendMessage(id,text,null,true);
+            var x = WaitWordFromUser_with_Comments(id,new string[] {"1","2","3","4","5","-1"},1);
+            if (x == "time")
+                return;
             user.ChangeLevel(int.Parse(x));
-             SendMessage(id,"Готово!");
+            user.keyb = User.Main_Keyboard;
+            SendMessage(id,"Готово!",null,true);
             user.on_Test = false;
             users.Save();
         }
@@ -169,32 +172,43 @@ namespace English_Bot
         static void ChangingLevel_Start(long id)
         {
             users[id].on_Test = true;
+            users[id].keyb = User.ChangingLevel_Keyboard;
             Thread changing_thread = new Thread(new ParameterizedThreadStart(ChangeLevel));
             changing_thread.Start(id);
         }
 
         //ждет ответа !определенного! ответа от юзера, 
         //Просит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, string error_msg = "Этого я не ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Ладно, потом сменим уровень.",string error_msg = "Этого я не ждал!")
         {
             var user = users.GetUser(userID);
-            string text = user.lastMsg.Item1.ToLower();
+            var ind = Timers.IndicatorTimer(wait_time);
+
+            long ident_msg = user.lastMsg.Item3;
             while (true)
             {
-                if (text != user.lastMsg.Item1.ToLower())
+                if (ind.x)
                 {
-                    text = user.lastMsg.Item1.ToLower();
-                    foreach (var w in words)
-                    {
-                        if (w == text)
-                        {
-                            user.lastMsg.Item2 = true;
-                            return w;
-                        }
-                    }
-                    SendMessage(userID,error_msg);
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, time_error_msg,null,true);
+                    return "time";
                 }
-                Thread.Sleep(100);
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);  //ожидание согласия
+                    continue;
+                }
+                ident_msg = user.lastMsg.Item3;
+                var text = user.lastMsg.Item1.ToLower();
+                foreach (var w in words)
+                {
+                    if (w == text)
+                    { 
+                        user.lastMsg.Item2 = true;
+                        return w;
+                    }
+                }
+                SendMessage(userID,error_msg);
             }
         }
 

@@ -84,6 +84,8 @@ namespace English_Bot
 
             foreach (var key in Dbase.Keys)
                 Dbase[key].on_Test = false;
+            foreach (var key in Dbase.Keys)
+                Dbase[key].keyb = User.Main_Keyboard;
         }
 
         public void Save()

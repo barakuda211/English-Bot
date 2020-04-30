@@ -6,6 +6,7 @@ using System.Linq;
 using static System.Console;
 using System.Threading;
 using Project_Word;
+using VkApi;
 using static System.Math;
 
 namespace English_Bot
@@ -31,7 +32,7 @@ namespace English_Bot
         */
 
         //отправляет сообщение юзеру
-        public static void SendMessage(long userID, string message, long[] msgIDs = null)
+        public static void SendMessage(long userID, string message, long[] msgIDs = null, bool need_kb = false)
         {
             try
             {
@@ -40,7 +41,8 @@ namespace English_Bot
                     RandomId = Environment.TickCount64,
                     UserId = userID,
                     Message = message,
-                    ForwardMessages = msgIDs
+                    ForwardMessages = msgIDs,
+                    Keyboard = need_kb ? users[userID].keyb.ToMessageKeyboard() : null
                 });
             }
             catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
@@ -92,18 +94,32 @@ namespace English_Bot
             long userID = (long)IDobj;
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
-                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
-                                "Жду вашей команды: \"Готов\". ");
+                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. ");
+            if (users[userID].unLearnedWords.Count == 15)
+                SendMessage(userID, "Жду вашей команды: \"Готов\". ", null, true);
+            else
+                SendMessage(userID, "Жду вашей команды: \"Готов\" или \"Не готов\". ", null, true);
             List<string> agree = new List<string>();
             agree.Add("готов");
             agree.Add("да");
             agree.Add("точно");
-            //WaitWordFromUser(userID, agree.ToArray(), true, -1);
-            if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 30, "Ладно, протестируемся потом."))
+
+
+            if (users[userID].unLearnedWords.Count == 15)
             {
-                users[userID].on_Test = false;
-                return;
-            } 
+                if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { }, 15, "Ладно, пиши, когда будешь готов."))
+                {
+                    users.DeleteUser(userID);
+                    users.Save();
+                    return;
+                }
+            }
+            else 
+                if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 60, "Ладно, протестируемся потом."))
+                {
+                    users[userID].on_Test = false;
+                    return;
+                } 
 
             var rand = new Random();
             /*
@@ -257,7 +273,8 @@ namespace English_Bot
                 else if (users[userID].userLevel == -1)
                 {
                     SendMessage(userID, "Невероятно! Вы изучили все слова, которые знает бот!!!");
-                    goto Fin;
+                    Fin(userID);
+                    return;
                 }
                 else
                 {
@@ -280,31 +297,40 @@ namespace English_Bot
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
             }
             Console.WriteLine("Words added to 10 ---------------");
+            Fin(userID);
+        }
 
-        Fin:
-            users[userID].on_Test = false;
+        static void Fin(long id)
+        {
+            users[id].on_Test = false;
             users.Save();
+            users[id].keyb = User.Main_Keyboard;
+            SendMessage(id, "В следующий раз продолжим.", null, true);
         }
 
         static void Testing_Start(long id)
         {
-            users[id].on_Test = true;
+            var user = users[id];
+            user.on_Test = true;
+            if (user.keyb == User.Main_Keyboard)
+                user.keyb = User.ReadyOrNot_Keyboard;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start(id);
         }
 
-        static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message)
+        static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message, string wrong_ans = "Не понял")
         {
             var user = users.GetUser(userID);
 
             var ind = Timers.IndicatorTimer(wait_time);
             long ident_msg = user.lastMsg.Item3;
-            //while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) 
             while (true)
             {
                 if (ind.x)
                 {
-                    SendMessage(userID, wait_message);
+                    if (user.unLearnedWords.Count != 15)
+                        user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, wait_message,null,true);
                     return false;
                 }
                 if (ident_msg == user.lastMsg.Item3)
@@ -312,16 +338,18 @@ namespace English_Bot
                     Thread.Sleep(100);  //ожидание согласия
                     continue;
                 }
-
+                ident_msg = user.lastMsg.Item3;
                 string text = GetFormatedWord(user.lastMsg.Item1);
 
                 if (agree.Any(x => x == text)) 
                     break;
                 if (deny.Any(x => x == text))
                 {
-                    SendMessage(userID, wait_message);
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(userID, wait_message,null,true);
                     return false;
                 }
+                SendMessage(userID, wrong_ans,null,true);
             }
             user.lastMsg.Item2 = true;
             WriteLine($"Get \"Ready\" from {userID}");
