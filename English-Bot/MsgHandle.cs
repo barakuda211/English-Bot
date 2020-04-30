@@ -75,6 +75,9 @@ namespace English_Bot
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
+                                         "/easy - простой режим сложности\n" +
+                                         "/medium - средний режим сложности\n" +
+                                         "/hard - высокий режим сложности\n" +
                                          "\'слово на русском\' - перевод на английский\n" +
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -93,6 +96,18 @@ namespace English_Bot
                                 return;
                             case "/example":
                                 answer = "А к чему пример то?)";
+                                break;
+                            case "/easy":
+                                if (users.Dbase.ContainsKey(fromId))
+                                    users[fromId].mode = Users.Mode.Easy;
+                                break;
+                            case "/medium":
+                                if (users.Dbase.ContainsKey(fromId))
+                                    users[fromId].mode = Users.Mode.Medium;
+                                break;
+                            case "/hard":
+                                if (users.Dbase.ContainsKey(fromId))
+                                    users[fromId].mode = Users.Mode.Hard;
                                 break;
                             case "admin::getCommands":
                                 if (adminIDs.Contains(fromId))
