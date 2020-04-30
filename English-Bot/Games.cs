@@ -50,9 +50,9 @@ namespace English_Bot
             long user_id = (long)obj_id;
 
             // var g = new Gallows(user_id);
+            EngBot.users[user_id].keyb = User.Gallows_KeyBoard;
             EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать английское слово за ограниченное количество попыток!");
             EngBot.SendMessage(user_id, "Присылай мне по одной букве", null, true);
-            EngBot.users[user_id].keyb = User.Gallows_KeyBoard; 
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
@@ -130,14 +130,12 @@ namespace English_Bot
                 {
                     EngBot.SendMessage(gal.user_id, @"Вот подсказка ;)");
                     for (int i = 0; i < gal.word.Length; i++)
-                        if (gal.show[i] == '*')
+                        if (gal.show[i] == '?')
                         {
                             gal.OpenLetter(gal.word[i], true);
                             SendMessage(gal);
                             break;
                         }
-                    if (gal.success)
-                        break;
                     continue;
                 }
 
