@@ -51,7 +51,9 @@ namespace English_Bot
 
             // var g = new Gallows(user_id);
             EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать слова за ограниченное количество попыток!");
+            var gal = new Gallows(user_id);
 
+            SendMessage(gal);
         }
 
         public static void Crossvord_start(long id)
@@ -75,6 +77,103 @@ namespace English_Bot
 
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;
+        }
+
+        static bool Wait_answers_gallows(Gallows gal)
+        {
+            int wait_time = 10;
+            var ind = IndicatorTimer(wait_time);
+            var user = EngBot.users[gal.user_id];
+
+            string text = user.lastMsg.Item1.ToLower();
+            long ident_msg = user.lastMsg.Item3; 
+
+            while (true)
+            {
+                if (gal.attempts_remain == 0)
+                {
+                    EngBot.SendMessage(gal.user_id, "Попытки закончились :(\nЗагаданное слово: " + gal.word);
+                    break; 
+                }
+
+                if (gal.success)
+                {
+                    EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!");
+                    break; 
+                }
+
+                if (ind.x)
+                {
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(gal.user_id, "Ладно, тогда поиграем позже...", null, true);
+                    return false; 
+                }
+
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);
+                    continue; 
+                }
+
+                ind.x = true;
+                ind = IndicatorTimer(wait_time);
+
+                ident_msg = user.lastMsg.Item3;
+                text = EngBot.GetFormatedWord(user.lastMsg.Item1);
+                var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (text == "/hint" || text == "подсказать букву")
+                {
+                    EngBot.SendMessage(gal.user_id, @"Вот подсказка ;)");
+                    for (int i = 0; i < gal.word.Length; i++)
+                        if (gal.show[i] == '*')
+                        {
+                            gal.OpenLetter(gal.word[i], true);
+                            SendMessage(gal);
+                            break;
+                        }
+                    if (gal.success)
+                        break;
+                    continue;
+                }
+
+                if (text == "/give_up" || text == "я сдаюсь")
+                {
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(gal.user_id, @"Ну как хочешь :-\", null, true);
+                    EngBot.SendMessage(gal.user_id, "Было загадано слово:\n" + gal.word.ToUpper());
+                    return false;
+                }
+
+                if (words.Length > 1)
+                {
+                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    continue;
+                }
+
+                if (words[0].Length > 1)
+                {
+                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    continue;
+                }
+
+                char c = words[0][0];
+
+                if (gal.used.Contains(c))
+                {
+                    EngBot.SendMessage(gal.user_id, "Эта буква уже отгадана!");
+                    continue; 
+                }
+
+                if (gal.word.IndexOf(c) >= 0)
+                {
+                    gal.OpenLetter(c);
+                    SendMessage(gal);
+                }
+                else
+                    EngBot.SendMessage(gal.user_id, "Такой буквы в слове нет");
+            }
+            return true; 
         }
 
         static bool Wait_normal_answers(SimpleCross scw)
@@ -245,7 +344,37 @@ namespace English_Bot
 
         static void SendMessage(Gallows gal)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
 
+            string message = "Слово: " + string.Join("", gal.show) + "\n" +
+                "Количество попыток: " + gal.attempts_remain + "\n" +
+                "Использованные буквы:" + string.Join(',', gal.used); 
+
+
+            try
+            {
+                EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = gal.user_id,
+                    Message = message
+                });
+                stp.Stop();
+            }
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            {
+                Console.WriteLine("VK poshel v zhopu");
+            }
+            catch (VkNet.Exception.PublicServerErrorException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }
 
         static void SendMessage(SimpleCross scw)
