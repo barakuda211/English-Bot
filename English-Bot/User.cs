@@ -118,6 +118,7 @@ namespace English_Bot
             lastMsg = ("", true, 0);
             on_Test = false;
             ch_lvl_id =0;
+            mode = Users.Mode.Easy; 
             keyb = Ready_Keyboard;
         }
 
