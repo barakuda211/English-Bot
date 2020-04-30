@@ -99,15 +99,24 @@ namespace English_Bot
                                 break;
                             case "/easy":
                                 if (users.Dbase.ContainsKey(fromId))
+                                {
                                     users[fromId].mode = Users.Mode.Easy;
+                                    answer = "¬ключен низкий уровень сложности";
+                                }
                                 break;
                             case "/medium":
                                 if (users.Dbase.ContainsKey(fromId))
+                                {
                                     users[fromId].mode = Users.Mode.Medium;
+                                    answer = "¬ключен средний уровень сложности";
+                                }
                                 break;
                             case "/hard":
                                 if (users.Dbase.ContainsKey(fromId))
+                                {
                                     users[fromId].mode = Users.Mode.Hard;
+                                    answer = "¬ключен высокий уровень сложности";
+                                }
                                 break;
                             case "admin::getCommands":
                                 if (adminIDs.Contains(fromId))
