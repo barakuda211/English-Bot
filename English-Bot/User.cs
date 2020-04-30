@@ -52,12 +52,14 @@ namespace English_Bot
         public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Команды бота") },
             new Button[] { new Button("Мой уровень"), new Button("Сменить уровень") },
-            new Button[] { new Button("Игра кроссворд") }}, false);
+            new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
             new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
         public static Keyboard Crossword1_Keyboard = new Keyboard(new Button[] { new Button("Подсказать слово", "positive"), new Button("Я сдаюсь", "negative") }, false);
         public static Keyboard Crossword2_Keyboard = new Keyboard(new Button[] {  new Button("Я сдаюсь", "negative") }, false);
+        public static Keyboard Gallows_KeyBoard = new Keyboard(new Button[] { new Button("Подсказать букву", "positive"), new Button("Я сдаюсь", "negative") }, false);
+        // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;

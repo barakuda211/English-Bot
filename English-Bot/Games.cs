@@ -45,13 +45,14 @@ namespace English_Bot
             gallows_thread.Start(user_id);
         } 
 
-        private static void Gallows_Thread_Start(object obj_id)
+        static void Gallows_Thread_Start(object obj_id)
         {
             long user_id = (long)obj_id;
 
             // var g = new Gallows(user_id);
             EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать английское слово за ограниченное количество попыток!");
-            EngBot.SendMessage(user_id, "Присылай мне по одной букве"); 
+            EngBot.SendMessage(user_id, "Присылай мне по одной букве", null, true);
+            EngBot.users[user_id].keyb = User.Gallows_KeyBoard; 
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
@@ -367,15 +368,15 @@ namespace English_Bot
                 });
                 stp.Stop();
             }
-            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
             {
                 Console.WriteLine("VK poshel v zhopu");
             }
-            catch (VkNet.Exception.PublicServerErrorException e)
+            catch (VkNet.Exception.PublicServerErrorException)
             {
                 Console.WriteLine("Server error with sending message!");
             }
-            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            catch (VkNet.Exception.CannotSendToUserFirstlyException)
             {
                 Console.WriteLine("Server error with sending message!");
             }

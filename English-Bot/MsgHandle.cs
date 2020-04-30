@@ -101,6 +101,7 @@ namespace English_Bot
                             case "/crossword":
                                 Games.Crossvord_start(fromId);
                                 return;
+                            case "игра виселица":
                             case "/gallows":
                                 Games.Gallows_Start(fromId);
                                 return; 
