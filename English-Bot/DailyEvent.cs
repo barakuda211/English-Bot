@@ -60,14 +60,14 @@ namespace English_Bot
         ///</summary>
         public static void StartTimer()
         {
-            var TimeNowHour = DateTime.Now.Hour;
+            int TimeNowHour;
             while (true)
             {
+                TimeNowHour = DateTime.Now.Hour;
                 if /*(TimeNowHour == 10)*/ ((TimeNowHour >= 10) && (TimeNowHour < 20) && !Sending_Words_Goes)
                     WordsSender();
                 if (TimeNowHour == 23)
                     users.Save(); 
-                TimeNowHour = DateTime.Now.Hour;
                 Thread.Sleep(OneHour);
             }
         }
