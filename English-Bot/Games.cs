@@ -50,7 +50,8 @@ namespace English_Bot
             long user_id = (long)obj_id;
 
             // var g = new Gallows(user_id);
-            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать слова за ограниченное количество попыток!");
+            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать английское слово за ограниченное количество попыток!");
+            EngBot.SendMessage(user_id, "Присылай мне по одной букве"); 
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
@@ -349,7 +350,9 @@ namespace English_Bot
 
             string message = "Слово: " + string.Join("", gal.show) + "\n" +
                 "Количество попыток: " + gal.attempts_remain + "\n" +
-                "Использованные буквы:" + string.Join(',', gal.used); 
+                "Использованные буквы:" + string.Join(',', gal.used) + "\n" +
+                // "Часть речи: " + EngBot.dictionary[gal.word_id]; 
+                "Перевод: " + string.Join(',', gal.tr); 
 
 
             try
