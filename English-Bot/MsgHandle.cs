@@ -20,7 +20,7 @@ namespace English_Bot
             VkBot instanse = sender as VkBot;
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
-            var text = eventArgs.Message.Text;
+            var text = eventArgs.Message.Text.ToLower();
             var answer = "Sorry, there is an empty answer :-(";
 
             /*
@@ -69,7 +69,7 @@ namespace English_Bot
                     {
                         switch (text)
                         {
-                            case "Команды бота":
+                            case "команды бота":
                             case "/help":
                                 answer = "/change_level - сменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
@@ -82,15 +82,15 @@ namespace English_Bot
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                                 break;
-                            case "Мой уровень":
+                            case "мой уровень":
                             case "/my_level":
                                 answer = "Вы на " + users[fromId].userLevel + " уровне.";
                                 break;
-                            case "Сменить уровень":
+                            case "сменить уровень":
                             case "/change_level":
                                 ChangingLevel_Start(fromId);
                                 return;
-                            case "Игра кроссворд":
+                            case "игра кроссворд":
                             case "/crossword":
                                 Games.Crossvord_start(fromId);
                                 return;
@@ -118,22 +118,22 @@ namespace English_Bot
                                     answer = "Включен высокий уровень сложности";
                                 }
                                 break;
-                            case "admin::getCommands":
+                            case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::getId":
+                            case "admin::getid":
                                 if (adminIDs.Contains(fromId))
                                     answer = fromId.ToString();
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::usersCount":
+                            case "admin::userscount":
                                 if (adminIDs.Contains(fromId))
                                     answer = "" + users.Dbase.Count;
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::wantTest":
+                            case "admin::wanttest":
                                 if (adminIDs.Contains(fromId))
                                 {
                                     users[fromId].on_Test = true;
