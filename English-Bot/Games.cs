@@ -96,13 +96,15 @@ namespace English_Bot
             {
                 if (gal.attempts_remain == 0)
                 {
-                    EngBot.SendMessage(gal.user_id, "Попытки закончились :(\nЗагаданное слово: " + gal.word);
+                    user.keyb = User.Main_Keyboard; 
+                    EngBot.SendMessage(gal.user_id, "Попытки закончились :(\nЗагаданное слово: " + gal.word, null, true);
                     return false;  
                 }
 
                 if (gal.success)
                 {
-                    EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!");
+                    user.keyb = User.Main_Keyboard; 
+                    EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!", null, true);
                     return true;
                 }
 
@@ -128,7 +130,7 @@ namespace English_Bot
 
                 if (text == "/hint" || text == "подсказать букву")
                 {
-                    EngBot.SendMessage(gal.user_id, @"Вот подсказка ;)");
+                    EngBot.SendMessage(gal.user_id, "Вот подсказка ;)");
                     for (int i = 0; i < gal.word.Length; i++)
                         if (gal.show[i] == '?')
                         {
@@ -142,8 +144,8 @@ namespace English_Bot
                 if (text == "/give_up" || text == "я сдаюсь")
                 {
                     user.keyb = User.Main_Keyboard;
-                    EngBot.SendMessage(gal.user_id, @"Ну как хочешь :-\", null, true);
-                    EngBot.SendMessage(gal.user_id, "Было загадано слово:\n" + gal.word.ToUpper());
+                    EngBot.SendMessage(gal.user_id, @"Ну как хочешь :-\");
+                    EngBot.SendMessage(gal.user_id, "Было загадано слово:\n" + gal.word.ToUpper(), null, true);
                     return false;
                 }
 
@@ -160,6 +162,12 @@ namespace English_Bot
                 }
 
                 char c = words[0].ToLower()[0];
+
+                if (!char.IsLetter(c))
+                {
+                    EngBot.SendMessage(gal.user_id, @"Это не буква :-/");
+                    continue;
+                }
 
                 if (gal.used.Contains(c))
                 {
