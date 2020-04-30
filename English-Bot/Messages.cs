@@ -364,7 +364,7 @@ namespace English_Bot
 
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
-                uint pixSize = (uint)Math.Floor((double)width / 100 * 10); // 65 % ширины картинки будет занимать текст
+                uint pixSize = (uint)Math.Floor((double)width / 10); // 10 % ширины картинки будет занимать текст
                 //int size = (int)(125 / graphImage.DpiX);
                 // float maxf = System.Single.MaxValue;
                 
@@ -440,7 +440,6 @@ namespace English_Bot
                     Console.WriteLine("Error with deleting photo");
                     Console.WriteLine(ex.Message);
                 }
-                return true;
             }
             catch (Exception e)
             {
@@ -450,6 +449,7 @@ namespace English_Bot
                 return false;
             }
             Console.WriteLine("Photo sent to " + id /*graphImage.DpiX + " " + graphImage.DpiY*/ );
+            return true;
         }
 
         
