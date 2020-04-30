@@ -64,6 +64,11 @@ namespace English_Bot
                                 SendSound(fromId, dictionary.eng_ids[ss[1]]);
                             return;
                         }
+                        else if (ss[0] == "/description")
+                        {
+                            if (dictionary.eng_ids.ContainsKey(ss[1]))
+                                SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
+                        }
                     }
                     // ----------------------------------------------------------------------------
                     {
@@ -75,9 +80,11 @@ namespace English_Bot
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
+                                         "/gallows - сыграть в \"виселицу\"" +
                                          "/easy - простой режим сложности\n" +
                                          "/medium - средний режим сложности\n" +
                                          "/hard - высокий режим сложности\n" +
+                                         "/description \'слово\' - описание слова" +
                                          "\'слово на русском\' - перевод на английский\n" +
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -94,6 +101,9 @@ namespace English_Bot
                             case "/crossword":
                                 Games.Crossvord_start(fromId);
                                 return;
+                            case "/gallows":
+                                Games.Gallows_Start(fromId);
+                                return; 
                             case "/example":
                                 answer = "А к чему пример то?)";
                                 break;
