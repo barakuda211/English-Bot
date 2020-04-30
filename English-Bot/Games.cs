@@ -97,13 +97,13 @@ namespace English_Bot
                 if (gal.attempts_remain == 0)
                 {
                     EngBot.SendMessage(gal.user_id, "Попытки закончились :(\nЗагаданное слово: " + gal.word);
-                    break; 
+                    return false;  
                 }
 
                 if (gal.success)
                 {
                     EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!");
-                    break; 
+                    return true;
                 }
 
                 if (ind.x)
