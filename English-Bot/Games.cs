@@ -45,13 +45,19 @@ namespace English_Bot
             gallows_thread.Start(user_id);
         } 
 
-        private static void Gallows_Thread_Start(object obj_id)
+        static void Gallows_Thread_Start(object obj_id)
         {
             long user_id = (long)obj_id;
 
             // var g = new Gallows(user_id);
-            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать слова за ограниченное количество попыток!");
+            EngBot.users[user_id].keyb = User.Gallows_KeyBoard;
+            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать английское слово за ограниченное количество попыток!");
+            EngBot.SendMessage(user_id, "Присылай мне по одной букве", null, true);
+            var gal = new Gallows(user_id);
 
+            SendMessage(gal);
+            Wait_answers_gallows(gal);
+            EngBot.users[user_id].on_Test = false;
         }
 
         public static void Crossvord_start(long id)
@@ -75,6 +81,112 @@ namespace English_Bot
 
             Wait_normal_answers(scw);
             EngBot.users[id].on_Test = false;
+        }
+
+        static bool Wait_answers_gallows(Gallows gal)
+        {
+            int wait_time = 10;
+            var ind = IndicatorTimer(wait_time);
+            var user = EngBot.users[gal.user_id];
+
+            string text = user.lastMsg.Item1.ToLower();
+            long ident_msg = user.lastMsg.Item3; 
+
+            while (true)
+            {
+                if (gal.attempts_remain == 0)
+                {
+                    user.keyb = User.Main_Keyboard; 
+                    EngBot.SendMessage(gal.user_id, "Попытки закончились :(\nЗагаданное слово: " + gal.word, null, true);
+                    return false;  
+                }
+
+                if (gal.success)
+                {
+                    user.keyb = User.Main_Keyboard; 
+                    EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!", null, true);
+                    return true;
+                }
+
+                if (ind.x)
+                {
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(gal.user_id, "Ладно, тогда поиграем позже...", null, true);
+                    return false; 
+                }
+
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);
+                    continue; 
+                }
+
+                ind.x = true;
+                ind = IndicatorTimer(wait_time);
+
+                ident_msg = user.lastMsg.Item3;
+                text = EngBot.GetFormatedWord(user.lastMsg.Item1);
+                var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (text == "/hint" || text == "подсказать букву")
+                {
+                    EngBot.SendMessage(gal.user_id, "Вот подсказка ;)");
+                    for (int i = 0; i < gal.word.Length; i++)
+                        if (gal.show[i] == '?')
+                        {
+                            gal.OpenLetter(gal.word[i], true);
+                            SendMessage(gal);
+                            break;
+                        }
+                    continue;
+                }
+
+                if (text == "/give_up" || text == "я сдаюсь")
+                {
+                    user.keyb = User.Main_Keyboard;
+                    EngBot.SendMessage(gal.user_id, @"Ну как хочешь :-\");
+                    EngBot.SendMessage(gal.user_id, "Было загадано слово:\n" + gal.word.ToUpper(), null, true);
+                    return false;
+                }
+
+                if (words.Length > 1)
+                {
+                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    continue;
+                }
+
+                if (words[0].Length > 1)
+                {
+                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    continue;
+                }
+
+                char c = words[0].ToLower()[0];
+
+                if (!char.IsLetter(c))
+                {
+                    EngBot.SendMessage(gal.user_id, @"Это не буква :-/");
+                    continue;
+                }
+
+                if (gal.used.Contains(c))
+                {
+                    EngBot.SendMessage(gal.user_id, "Эта буква уже отгадана!");
+                    continue; 
+                }
+
+                if (gal.word.IndexOf(c) >= 0)
+                {
+                    gal.OpenLetter(c);
+                    SendMessage(gal);
+                }
+                else
+                {
+                    EngBot.SendMessage(gal.user_id, "Такой буквы в слове нет");
+                    --gal.attempts_remain;
+                    SendMessage(gal);
+                }
+            }
         }
 
         static bool Wait_normal_answers(SimpleCross scw)
@@ -245,7 +357,39 @@ namespace English_Bot
 
         static void SendMessage(Gallows gal)
         {
+            Stopwatch stp = new Stopwatch();
+            stp.Start();
 
+            string message = "Слово: " + string.Join("", gal.show) + "\n" +
+                "Количество попыток: " + gal.attempts_remain + "\n" +
+                "Использованные буквы: " + string.Join(", ", gal.used) + "\n" +
+                // "Часть речи: " + EngBot.dictionary[gal.word_id]; 
+                "Перевод: " + string.Join(", ", gal.tr); 
+
+
+            try
+            {
+                EngBot.bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = gal.user_id,
+                    Message = message
+                });
+                stp.Stop();
+            }
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
+            {
+                Console.WriteLine("VK poshel v zhopu");
+            }
+            catch (VkNet.Exception.PublicServerErrorException)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            catch (VkNet.Exception.CannotSendToUserFirstlyException)
+            {
+                Console.WriteLine("Server error with sending message!");
+            }
+            Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }
 
         static void SendMessage(SimpleCross scw)
@@ -279,15 +423,15 @@ namespace English_Bot
 
                 stp.Stop();
             }
-            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
             {
                 Console.WriteLine("VK poshel v zhopu");
             }
-            catch (VkNet.Exception.PublicServerErrorException e)
+            catch (VkNet.Exception.PublicServerErrorException)
             {
                 Console.WriteLine("Server error with sending message!");
             }
-            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            catch (VkNet.Exception.CannotSendToUserFirstlyException)
             {
                 Console.WriteLine("Server error with sending message!");
             }
