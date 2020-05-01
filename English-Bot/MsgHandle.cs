@@ -20,7 +20,7 @@ namespace English_Bot
             VkBot instanse = sender as VkBot;
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
-            var text = eventArgs.Message.Text;
+            var text = eventArgs.Message.Text.ToLower();
             var answer = "Sorry, there is an empty answer :-(";
 
             /*
@@ -64,52 +64,91 @@ namespace English_Bot
                                 SendSound(fromId, dictionary.eng_ids[ss[1]]);
                             return;
                         }
+                        else if (ss[0] == "/description")
+                        {
+                            if (dictionary.eng_ids.ContainsKey(ss[1]))
+                                SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
+                            return;
+                        }
                     }
                     // ----------------------------------------------------------------------------
                     {
                         switch (text)
                         {
-                            case "Команды бота":
+                            case "команды бота":
                             case "/help":
                                 answer = "/change_level - сменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
+                                         "/gallows - сыграть в \"виселицу\"" +
+                                         "/easy - простой режим сложности\n" +
+                                         "/medium - средний режим сложности\n" +
+                                         "/hard - высокий режим сложности\n" +
+                                         "/description \'слово\' - описание слова" +
                                          "\'слово на русском\' - перевод на английский\n" +
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                                 break;
-                            case "Мой уровень":
+                            case "мой уровень":
                             case "/my_level":
                                 answer = "Вы на " + users[fromId].userLevel + " уровне.";
                                 break;
-                            case "Сменить уровень":
+                            case "сменить уровень":
                             case "/change_level":
                                 ChangingLevel_Start(fromId);
                                 return;
-                            case "Игра кроссворд":
+                            case "игра кроссворд":
                             case "/crossword":
                                 Games.Crossvord_start(fromId);
                                 return;
+                            case "игра виселица":
+                            case "/gallows":
+                                Games.Gallows_Start(fromId);
+                                return; 
                             case "/example":
                                 answer = "А к чему пример то?)";
                                 break;
-                            case "admin::getCommands":
+                            case "/description":
+                                answer = "Нужно написать и само слово";
+                                break; 
+                            case "/easy":
+                                if (users.Dbase.ContainsKey(fromId))
+                                {
+                                    users[fromId].mode = Users.Mode.Easy;
+                                    answer = "Включен низкий уровень сложности";
+                                }
+                                break;
+                            case "/medium":
+                                if (users.Dbase.ContainsKey(fromId))
+                                {
+                                    users[fromId].mode = Users.Mode.Medium;
+                                    answer = "Включен средний уровень сложности";
+                                }
+                                break;
+                            case "/hard":
+                                if (users.Dbase.ContainsKey(fromId))
+                                {
+                                    users[fromId].mode = Users.Mode.Hard;
+                                    answer = "Включен высокий уровень сложности";
+                                }
+                                break;
+                            case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::getId":
+                            case "admin::getid":
                                 if (adminIDs.Contains(fromId))
                                     answer = fromId.ToString();
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::usersCount":
+                            case "admin::userscount":
                                 if (adminIDs.Contains(fromId))
                                     answer = "" + users.Dbase.Count;
                                 else answer = ACCESS_IS_DENIED;
                                 break;
-                            case "admin::wantTest":
+                            case "admin::wanttest":
                                 if (adminIDs.Contains(fromId))
                                 {
                                     users[fromId].on_Test = true;

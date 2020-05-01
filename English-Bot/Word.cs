@@ -84,7 +84,7 @@ namespace Project_Word
             id = Id;
             eng = Eng.ToLower();
             trans = tr;
-            rus = Rus.ToLower();
+            rus = Rus?.ToLower();
             mean_eng = MeanE;
             mean_rus = MeanR;
             mean_rus_eng = MeanRE;

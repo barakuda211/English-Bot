@@ -45,15 +45,15 @@ namespace English_Bot
                     Keyboard = need_kb ? users[userID].keyb.ToMessageKeyboard() : null
                 });
             }
-            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException e)
+            catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
             {
                 WriteLine("VK poshel v zhopu");
             }
-            catch (VkNet.Exception.PublicServerErrorException e)
+            catch (VkNet.Exception.PublicServerErrorException)
             {
                 WriteLine("Server error with sending message!");
             }
-            catch (VkNet.Exception.CannotSendToUserFirstlyException e)
+            catch (VkNet.Exception.CannotSendToUserFirstlyException)
             {
                 WriteLine("Server error with sending message!");
             }
@@ -303,9 +303,9 @@ namespace English_Bot
         static void Fin(long id)
         {
             users[id].on_Test = false;
-            users.Save();
+            // users.Save();
             users[id].keyb = User.Main_Keyboard;
-            SendMessage(id, "В следующий раз продолжим.", null, true);
+            SendMessage(id, "Завтра продолжим :)", null, true);
         }
 
         static void Testing_Start(long id)

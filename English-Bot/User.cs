@@ -40,6 +40,10 @@ namespace English_Bot
         /// Сколько слов пользователь выучил за неделю
         /// </summary>
         public int week_words { get; set; }
+        /// <summary>
+        /// Сложность 
+        /// </summary>
+        public Users.Mode mode { get; set; }
         public Keyboard keyb { get; set; }
 
 
@@ -48,12 +52,14 @@ namespace English_Bot
         public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Команды бота") },
             new Button[] { new Button("Мой уровень"), new Button("Сменить уровень") },
-            new Button[] { new Button("Игра кроссворд") }}, false);
+            new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
             new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
         public static Keyboard Crossword1_Keyboard = new Keyboard(new Button[] { new Button("Подсказать слово", "positive"), new Button("Я сдаюсь", "negative") }, false);
         public static Keyboard Crossword2_Keyboard = new Keyboard(new Button[] {  new Button("Я сдаюсь", "negative") }, false);
+        public static Keyboard Gallows_KeyBoard = new Keyboard(new Button[] { new Button("Подсказать букву", "positive"), new Button("Я сдаюсь", "negative") }, false);
+        // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;
@@ -78,6 +84,7 @@ namespace English_Bot
             week_words = 0;
             // vk_User = vk_user;
             lastMsg = ("", false, 0);
+            mode = Users.Mode.Easy;
             keyb = Ready_Keyboard;
         }
 
@@ -113,6 +120,7 @@ namespace English_Bot
             lastMsg = ("", true, 0);
             on_Test = false;
             ch_lvl_id =0;
+            mode = Users.Mode.Easy; 
             keyb = Ready_Keyboard;
         }
 
