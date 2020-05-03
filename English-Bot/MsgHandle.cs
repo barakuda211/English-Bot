@@ -86,6 +86,8 @@ namespace English_Bot
                                          "/medium - средний режим сложности\n" +
                                          "/hard - высокий режим сложности\n" +
                                          "/description \'слово\' - описание слова" +
+                                         "/mute - бот не будет присылать слова и проводить тесты\n" + 
+                                         "/unmute - бот снова перейдЄт в стандартный режим\n" +
                                          "\'слово на русском\' - перевод на английский\n" +
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -133,6 +135,12 @@ namespace English_Bot
                                     answer = "¬ключен высокий уровень сложности";
                                 }
                                 break;
+                            case "/mute":
+                                users[fromId].bot_muted = true;
+                                break;
+                            case "/unmute":
+                                users[fromId].bot_muted = false;
+                                break;
                             case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
@@ -162,7 +170,7 @@ namespace English_Bot
                                 if (ss.Length == 1)
                                     answer = Translation(text);
                                 else
-                                    answer = MultipleTranslation(ss);
+                                    answer = MultipleTranslation(ss, users[fromId].mode);
                                 // answer = SendInfo(eventArgs.Message);
                                 // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                                 //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
