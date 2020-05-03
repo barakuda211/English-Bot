@@ -282,12 +282,12 @@ namespace English_Bot
             return no_word; 
         }
 
-        static string MultipleTranslation(string[] text)
+        static string MultipleTranslation(string[] text, Users.Mode m)
         {
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= (int)m || dictionary[dictionary.eng_ids[word]].level == -1))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
             return answer == "" ? "Не было найдено английских слов для перевода" : answer;
