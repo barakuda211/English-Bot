@@ -167,7 +167,8 @@ namespace English_Bot
                     else
                     {
                         EngBot.SendMessage(gal.user_id, @"Вы не угадали слово :(");
-                        gal.attempts_remain -= 1; 
+                        gal.attempts_remain -= 1;
+                        SendMessage(gal);
                     }
                     continue;
                 }
