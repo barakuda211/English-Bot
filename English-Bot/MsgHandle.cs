@@ -81,11 +81,13 @@ namespace English_Bot
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
                                          "/crossword - сыграть кроссворд\n" +
-                                         "/gallows - сыграть в \"виселицу\"" +
-                                         "/easy - простой режим сложности\n" +
-                                         "/medium - средний режим сложности\n" +
-                                         "/hard - высокий режим сложности\n" +
+                                         "/gallows - сыграть в \"виселицу\"\n" +
+                                         "/easy - низкий режим сложности теста\n" +
+                                         // "/medium - средний режим сложности\n" +
+                                         "/hard - высокий режим сложности теста\n" +
                                          "/description \'слово\' - описание слова" +
+                                         "/mute - бот не будет присылать слова и проводить тесты\n" + 
+                                         "/unmute - бот снова перейдёт в стандартный режим\n" +
                                          "\'слово на русском\' - перевод на английский\n" +
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -119,19 +121,27 @@ namespace English_Bot
                                     answer = "Включен низкий уровень сложности";
                                 }
                                 break;
-                            case "/medium":
+                            /*case "/medium":
                                 if (users.Dbase.ContainsKey(fromId))
                                 {
                                     users[fromId].mode = Users.Mode.Medium;
                                     answer = "Включен средний уровень сложности";
                                 }
-                                break;
+                                break;*/
                             case "/hard":
                                 if (users.Dbase.ContainsKey(fromId))
                                 {
                                     users[fromId].mode = Users.Mode.Hard;
                                     answer = "Включен высокий уровень сложности";
                                 }
+                                break;
+                            case "/mute":
+                                users[fromId].bot_muted = true;
+                                answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
+                                break;
+                            case "/unmute":
+                                users[fromId].bot_muted = false;
+                                answer = "Боты вернулся к стандартному режиму работы"; 
                                 break;
                             case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
@@ -162,7 +172,7 @@ namespace English_Bot
                                 if (ss.Length == 1)
                                     answer = Translation(text);
                                 else
-                                    answer = MultipleTranslation(ss);
+                                    answer = MultipleTranslation(ss, users[fromId].mode);
                                 // answer = SendInfo(eventArgs.Message);
                                 // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
                                 //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));

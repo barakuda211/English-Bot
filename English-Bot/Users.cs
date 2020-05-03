@@ -9,7 +9,7 @@ namespace English_Bot
     {
         public const int UNLearned = 10;
 
-        public enum Mode { Easy, Medium, Hard };
+        public enum Mode { Easy = 1, Medium = 3, Hard = 4 };
 
         public Dictionary<long, User> Dbase;
         //индексатор
