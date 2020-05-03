@@ -371,7 +371,7 @@ namespace English_Bot
             Stopwatch stp = new Stopwatch();
             stp.Start();
 
-            string message = "Слово: " + string.Join("", gal.show) + "\n" +
+            string message = "Слово: " + string.Join("", gal.show).ToUpper() + "\n" +
                 "Количество попыток: " + gal.attempts_remain + "\n" +
                 "Использованные буквы: " + string.Join(", ", gal.used) + "\n" +
                 // "Часть речи: " + EngBot.dictionary[gal.word_id]; 
