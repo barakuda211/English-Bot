@@ -62,7 +62,7 @@ namespace English_Bot
         public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
         public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Команды бота") },
-            new Button[] { new Button("Мой уровень"), new Button("Сменить уровень") },
+            new Button[] { new Button("Сменить уровень"), new Button("Сменить сложность") },
             new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
@@ -71,7 +71,7 @@ namespace English_Bot
         public static Keyboard Crossword2_Keyboard = new Keyboard(new Button[] {  new Button("Я сдаюсь", "negative") }, false);
         public static Keyboard Gallows_KeyBoard = new Keyboard(new Button[] { new Button("Подсказать букву", "positive"), new Button("Я сдаюсь", "negative") }, false);
         // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
-        public static Keyboard Complexity_Keyboard = new Keyboard(new Button[] {new Button("Лёгкий"), new Button("Сложный")},false);
+        public static Keyboard Complexity_Keyboard = new Keyboard(new Button[] {new Button("Лёгкий","positive"), new Button("Сложный","negative")},false);
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
