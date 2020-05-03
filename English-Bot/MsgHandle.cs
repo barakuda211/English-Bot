@@ -137,9 +137,11 @@ namespace English_Bot
                                 break;
                             case "/mute":
                                 users[fromId].bot_muted = true;
+                                answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
                                 break;
                             case "/unmute":
                                 users[fromId].bot_muted = false;
+                                answer = "Боты вернулся к стандартному режиму работы"; 
                                 break;
                             case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
