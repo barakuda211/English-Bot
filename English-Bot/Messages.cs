@@ -290,7 +290,7 @@ namespace English_Bot
                 if (dictionary.eng_ids.ContainsKey(word.ToLower()))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
-            return answer;
+            return answer == "" ? "Не было найдено английских слов для перевода" : answer;
         }
 
         static bool SendPicture(long id, long word)
