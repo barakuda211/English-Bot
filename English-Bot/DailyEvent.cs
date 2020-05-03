@@ -124,7 +124,7 @@ namespace English_Bot
                 //if (temp.Count != 0)
                 foreach (var user in users.Dbase.Values /* .Where(x => x.userId == 203654426) */ )
                 {
-                    if (user.on_Test || user.bot_muted)
+                    if (user.on_Test || user.bot_muted || i + 1 > user.day_words)
                         continue;
                     bool pic = r.Next(2) % 2 == 0;
                 Desc:
