@@ -71,6 +71,8 @@ namespace English_Bot
         public static Keyboard Crossword2_Keyboard = new Keyboard(new Button[] {  new Button("Я сдаюсь", "negative") }, false);
         public static Keyboard Gallows_KeyBoard = new Keyboard(new Button[] { new Button("Подсказать букву", "positive"), new Button("Я сдаюсь", "negative") }, false);
         // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
+        public static Keyboard Complexity_Keyboard = new Keyboard(new Button[] {new Button("Лёгкий"), new Button("Сложный")},false);
+
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;

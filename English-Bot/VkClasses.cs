@@ -134,7 +134,7 @@ namespace VkApi
 
     public class ButtonTypeException : Exception
     {
-        public override string Message => "Only reserved \"text\" and \"open_link\" types of buttons";
+        public override string Message => "Only reserved \"text\"  type of buttons";
     }
 
     [DataContract]
