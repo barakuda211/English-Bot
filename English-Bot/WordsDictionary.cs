@@ -43,6 +43,58 @@ namespace English_Bot
             get { return dict.ContainsKey(idex) ? dict[idex] : null; }
         }
 
+        /// <summary>
+        /// Возвращает список случайных слов одного уровня 
+        /// </summary>
+        /// <param name="count">Количество ключей</param>
+        /// <param name="level">Уровень слов</param>
+        /// <returns></returns>
+        public List<long> GetRandomEngWords(int count, int level)
+        {
+            if (count != -1 && count > 5 && count < 1)
+                throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
+            if (count < 1 || count > 50)
+                throw new ArgumentException("count should be > 0 and < 51");
+            List<long> keys = GetKeysByLevel(level);
+            List<long> result = new List<long>();
+            Random r = new Random(31);
+            while (result.Count < count)
+            {
+                long key = keys.ElementAt(r.Next(keys.Count));
+                if (result.Contains(key))
+                    continue;
+                else
+                    result.Add(key);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает случайные русские слова в виде строк
+        /// </summary>
+        /// <param name="count">Кол-во слов</param>
+        /// <param name="level">Уровень слов</param>
+        /// <returns></returns>
+        public List<string> GetRandomRusWords(int count, int level)
+        {
+            if (count != -1 && count > 5 && count < 1)
+                throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
+            if (count < 1 || count > 50)
+                throw new ArgumentException("count should be > 0 and < 51");
+            List<string> keys = rus_ids.Keys.ToList();
+            List<string> result = new List<string>();
+            Random r = new Random(31);
+            while (result.Count < count)
+            {
+                string key = keys.ElementAt(r.Next(keys.Count));
+                if (result.Contains(key))
+                    continue;
+                else
+                    result.Add(key);
+            }
+            return result;
+        }
+
         public List<long> GetKeys()
         {
             long[] arr = new long[dict.Keys.Count];
