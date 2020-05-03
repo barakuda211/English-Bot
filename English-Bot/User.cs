@@ -52,6 +52,10 @@ namespace English_Bot
         /// Если true, то боте не будет присылать слова и тесты
         /// </summary>
         public bool bot_muted { get; set; }
+        /// <summary>
+        /// Слова в день на изучение
+        /// </summary>
+        public int day_words { get; set; }
 
 
         public static Keyboard Ready_Keyboard = new Keyboard(new Button[] { new Button("Готов", "primary") }, true);
@@ -89,6 +93,7 @@ namespace English_Bot
             on_Test = false;
             ch_lvl_id = 0;
             week_words = 0;
+            day_words = 10;
             // vk_User = vk_user;
             lastMsg = ("", false, 0);
             mode = Users.Mode.Easy;
@@ -131,6 +136,8 @@ namespace English_Bot
             mode = Users.Mode.Easy; 
             keyb = Ready_Keyboard;
             bot_muted = false;
+            week_words = 0;
+            day_words = 10;
         }
 
         public User() { }
