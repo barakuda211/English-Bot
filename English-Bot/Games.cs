@@ -51,8 +51,8 @@ namespace English_Bot
 
             // var g = new Gallows(user_id);
             EngBot.users[user_id].keyb = User.Gallows_KeyBoard;
-            EngBot.SendMessage(user_id, "Это игра виселица, наобходимо отгадать английское слово за ограниченное количество попыток!");
-            EngBot.SendMessage(user_id, "Присылай мне по одной букве", null, true);
+            EngBot.SendMessage(user_id, "Это игра виселица, необходимо отгадать английское слово за ограниченное количество попыток!");
+            EngBot.SendMessage(user_id, "Присылай мне по одной букве или пришли всё слово, если уже отгадал его", null, true);
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
@@ -151,13 +151,25 @@ namespace English_Bot
 
                 if (words.Length > 1)
                 {
-                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством cлов :-\");
                     continue;
                 }
 
-                if (words[0].Length > 1)
+                if (words[0].Length != 1)
                 {
-                    EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    // EngBot.SendMessage(gal.user_id, @"Что-то не так с количеством букв :-\");
+                    if (gal.word == words[0].ToLower())
+                    {
+                        user.keyb = User.Main_Keyboard;
+                        EngBot.SendMessage(gal.user_id, @"Поздравляем! Вы выйграли!", null, true);
+                        return true;
+                    }
+                    else
+                    {
+                        EngBot.SendMessage(gal.user_id, @"Вы не угадали слово :(");
+                        gal.attempts_remain -= 1;
+                        SendMessage(gal);
+                    }
                     continue;
                 }
 
@@ -360,7 +372,7 @@ namespace English_Bot
             Stopwatch stp = new Stopwatch();
             stp.Start();
 
-            string message = "Слово: " + string.Join("", gal.show) + "\n" +
+            string message = "Слово: " + string.Join("", gal.show).ToUpper() + "\n" +
                 "Количество попыток: " + gal.attempts_remain + "\n" +
                 "Использованные буквы: " + string.Join(", ", gal.used) + "\n" +
                 // "Часть речи: " + EngBot.dictionary[gal.word_id]; 

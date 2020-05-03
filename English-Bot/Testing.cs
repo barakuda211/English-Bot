@@ -94,7 +94,8 @@ namespace English_Bot
             long userID = (long)IDobj;
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
-                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. ");
+                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " + 
+                                "Переводите слова наиболее близким по вашему мнению словом. ");
             if (users[userID].unLearnedWords.Count == 15)
                 SendMessage(userID, "Жду вашей команды: \"Готов\". ", null, true);
             else
@@ -171,9 +172,35 @@ namespace English_Bot
                 // 0 - Английское слово 
                 // 1 - Русское слово 
                 int r = rand.Next(2);
-                SendMessage(userID, ((r == 0 && word.mean_rus != null) ? word.eng : word.rus));
+
+                if (users[userID].mode == Users.Mode.Easy)
+                {
+                    if (r == 0 /* && word.mean_rus != null */)
+                    {
+                        var list = dictionary.GetRandomRusWords(3, users[userID].userLevel);
+                        list.Add(word.rus);
+                        list = list.OrderBy(x => rand.Next(10)).ToList();
+                        Keyboard Easy_Testing_Keyboard = new Keyboard(new Button[][] { new Button[] { new Button(list.ElementAt(0)), new Button(list.ElementAt(1)) }, new Button[] { new Button(list.ElementAt(2)), new Button(list.ElementAt(3)) } });
+                        users[userID].keyb = Easy_Testing_Keyboard;
+                        SendMessage(userID, word.eng, null, true);
+                    }
+                    else
+                    {
+                        var list = dictionary.GetRandomEngWords(3, users[userID].userLevel);
+                        list.Add(word.id);
+                        list = list.OrderBy(x => rand.Next(10)).ToList();
+                        Keyboard Easy_Testing_Keyboard = new Keyboard(new Button[][] { new Button[] { new Button(dictionary[list.ElementAt(0)].eng), new Button(dictionary[list.ElementAt(1)].eng) }, new Button[] { new Button(dictionary[list.ElementAt(2)].eng), new Button(dictionary[list.ElementAt(3)].eng) } });
+                        users[userID].keyb = Easy_Testing_Keyboard;
+                        SendMessage(userID, word.rus, null, true);
+                    }
+                }
+                else
+                {
+                    SendMessage(userID, (r == 0 /*&& word.mean_rus != null)*/ ? word.eng : word.rus));
+                }
+
                 List<string> wrds = new List<string>();
-                if (r == 1 || word.mean_rus == null)
+                if (r == 1 /*|| word.mean_rus == null*/)
                 { /*
                     wrds.Add(word.eng);
                     //if (word.mean_eng != null)
@@ -189,7 +216,7 @@ namespace English_Bot
                 else
                 {
                     //if (word.rus != null)
-                        wrds.Add(word.rus);
+                    wrds.Add(word.rus);
                     //if (word.mean_rus != null)
                     foreach (var def in word.mean_rus.def)
                         foreach (var tr in def.tr)
@@ -260,8 +287,7 @@ namespace English_Bot
                 goto First;
             }
 
-            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
-            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
+            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null).ToList();
 
             if (words_level.Count == 0 && users[userID].unLearnedWords.Count == 0)
             {
@@ -295,6 +321,7 @@ namespace English_Bot
                     break;
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
+                words_level.RemoveAt(value);
             }
             Console.WriteLine("Words added to 10 ---------------");
             Fin(userID);

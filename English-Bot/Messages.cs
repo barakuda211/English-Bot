@@ -282,15 +282,15 @@ namespace English_Bot
             return no_word; 
         }
 
-        static string MultipleTranslation(string[] text)
+        static string MultipleTranslation(string[] text, Users.Mode m)
         {
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= (int)m || dictionary[dictionary.eng_ids[word]].level == -1))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
-            return answer;
+            return answer == "" ? "Не было найдено английских слов для перевода" : answer;
         }
 
         static bool SendPicture(long id, long word)
@@ -301,15 +301,23 @@ namespace English_Bot
                 string answer = Methods.Request(@"https://pixabay.com/api/?key=15427273-eddca1835086f92624a5b62a0&q=" + dictionary[word].eng + @"&image_type=photo&pretty=true");
                 // Console.WriteLine(answer);
                 Pictures pics = Methods.DeSerializationObjFromStr<Pictures>(answer);
+                
+                // Выбираем картинку 
+                Random r = new Random(17);
+                int pic_num = r.Next(pics.hits.Count);
+                Hit pic = pics.hits[pic_num];
+
+                // Имя картинки юез текста
+                string name = word + "_" + pic_num + "_picture.jpg";
 
                 // Скачиваем картинку
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.DownloadFile(pics.hits[0].webformatURL, word + "_picture.jpg");
+                    webClient.DownloadFile(pic.webformatURL, name);
                 }
 
                 // Создаем обЪекты для рисования
-                Image bitmap = Image.FromFile(word + "_picture.jpg");
+                Image bitmap = Image.FromFile(name);
                 
                 //Bitmap pic = new Bitmap(bitmap);
                 //pic.SetResolution(300, 300);
@@ -319,10 +327,9 @@ namespace English_Bot
                 graphImage.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
                 // Определяем шрифт, а также сохраняем ширину и длину изображения
-                Random r = new Random(17);
                 int font = r.Next(0, FontFamily.Families.Length - 1);
-                int width = pics.hits[0].webformatWidth;
-                int height = pics.hits[0].webformatHeight;
+                int width = pic.webformatWidth;
+                int height = pic.webformatHeight;
 
                 // Затемняем фон
                 Color col = Color.FromArgb(63, 0, 0, 0);
@@ -399,7 +406,8 @@ namespace English_Bot
                 // Добавляем перевод 
                 if (!(dictionary[word].tags != null && dictionary[word].tags.Contains("eng_only")))
                 {
-                    text = dictionary[word].mean_rus.def[0].tr[0].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
+                    var def = dictionary[word].mean_rus.def[r.Next(dictionary[word].mean_rus.def.Count)];
+                    text = def.tr[r.Next(def.tr.Count)].text; //string.Join('/', dictionary[word].mean_rus.def.Select(x => x.tr[0].text));
                     graphImage.DrawString(
                         text,
                         new Font(new FontFamily(genericFamily: System.Drawing.Text.GenericFontFamilies.SansSerif),  emSize / (text.Length < 7 ? 7 : text.Length) /* pixSize */ /*Min((float)width / text.Length * size, 80)*/, FontStyle.Regular /* , GraphicsUnit.Pixel */ ),
@@ -410,15 +418,18 @@ namespace English_Bot
                         new StringFormat(stringFormat));
                 }
 
+                // Имя файла картинки с нанесенным текстом
+                string text_name = word + "_" + pic_num + "_picture_with_str.jpg";
+
                 // Сохраняем преобразованное изображение
-                bitmap.Save(word + "_picture_with_str.jpg");
+                bitmap.Save(text_name);
 
                 // System.Threading.Thread.Sleep(100); 
 
                 // Отправляем сообщение пользователю
                 string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
                 var uploader = new WebClient();
-                var uploadResponseInBytes = uploader.UploadFile(url, word + "_picture_with_str.jpg");
+                var uploadResponseInBytes = uploader.UploadFile(url, text_name);
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
                 // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
                 var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
@@ -429,10 +440,10 @@ namespace English_Bot
                     Attachments = photos
                 });
 
-                // Удаляем сохоаненные фотографии
+                // Удаляем сохраненные фотографии
                 try
                 {
-                    File.Delete(word + "_picture_with_str.jpg");
+                    File.Delete(text_name);
                     // File.Delete(word + "_picture.jpg");
                 }
                 catch (DirectoryNotFoundException ex)
