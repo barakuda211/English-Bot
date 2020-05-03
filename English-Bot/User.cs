@@ -160,8 +160,6 @@ namespace English_Bot
             return false;
         }
 
-       
-
         public bool AddTags(string[] s)
         {
             bool TagIsAdded = false;
@@ -194,7 +192,19 @@ namespace English_Bot
             return TagIsDeleted;
         }
 
-       
+        public void AddWords(string text)
+        {
+            string[] words = text.Split(new char[] { ',',' ' },StringSplitOptions.RemoveEmptyEntries);
+            List<long> new_words = new List<long>();
+            List<string> error_words = new List<string>();
+            foreach (var x in words)
+            {
+                if (EngBot.dictionary.eng_ids.ContainsKey(x))
+                    new_words.Add(EngBot.dictionary.GetEngWordId(x));
+                else
+                    error_words.Add(x);
+            }
+        }
 
     }
 }

@@ -137,6 +137,48 @@ namespace VkApi
         public override string Message => "Only reserved \"text\"  type of buttons";
     }
 
+    public class Size
+    {
+        public string url { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public string type { get; set; }
+    }
+
+    [DataContract]
+    public class VkAlbum
+    {
+        [DataMember]
+        public int id { get; set; }
+        [DataMember]
+        public int size { get; set; }
+    }
+
+    [DataContract]
+    public class VkPicture
+    {
+        [DataMember]
+        public int id { get; set; }
+        [DataMember]
+        public int album_id { get; set; }
+
+        [DataMember]
+        public int owner_id { get; set; }
+        [DataMember]
+        public int user_id { get; set; }
+        [DataMember]
+        public string text { get; set; }
+        [DataMember]
+        public int date { get; set; }
+        [DataMember]
+        public Size[] sizes { get; set; }
+        [DataMember]
+        public int width { get; set; }
+        [DataMember]
+        public int height { get; set; }
+    }
+
+
     [DataContract]
     public class VkUsers
     {
