@@ -51,13 +51,13 @@ namespace English_Bot
         /// <returns></returns>
         public List<long> GetRandomEngWords(int count, int level)
         {
-            if (count != -1 && count > 5 && count < 1)
+            if (level != -1 && level > 5 && level < 1)
                 throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
             if (count < 1 || count > 50)
                 throw new ArgumentException("count should be > 0 and < 51");
             List<long> keys = GetKeysByLevel(level);
             List<long> result = new List<long>();
-            Random r = new Random(31);
+            Random r = new Random();
             while (result.Count < count)
             {
                 long key = keys.ElementAt(r.Next(keys.Count));
@@ -77,13 +77,13 @@ namespace English_Bot
         /// <returns></returns>
         public List<string> GetRandomRusWords(int count, int level)
         {
-            if (count != -1 && count > 5 && count < 1)
+            if (level != -1 && level > 5 && level < 1)
                 throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
             if (count < 1 || count > 50)
                 throw new ArgumentException("count should be > 0 and < 51");
             List<string> keys = rus_ids.Keys.ToList();
             List<string> result = new List<string>();
-            Random r = new Random(31);
+            Random r = new Random();
             while (result.Count < count)
             {
                 string key = keys.ElementAt(r.Next(keys.Count));

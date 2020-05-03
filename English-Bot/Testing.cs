@@ -179,7 +179,7 @@ namespace English_Bot
                     {
                         var list = dictionary.GetRandomRusWords(3, users[userID].userLevel);
                         list.Add(word.rus);
-                        list.OrderBy(x => rand.Next(10)).ToList();
+                        list = list.OrderBy(x => rand.Next(10)).ToList();
                         Keyboard Easy_Testing_Keyboard = new Keyboard(new Button[][] { new Button[] { new Button(list.ElementAt(0)), new Button(list.ElementAt(1)) }, new Button[] { new Button(list.ElementAt(2)), new Button(list.ElementAt(3)) } });
                         users[userID].keyb = Easy_Testing_Keyboard;
                         SendMessage(userID, word.eng, null, true);
@@ -188,7 +188,7 @@ namespace English_Bot
                     {
                         var list = dictionary.GetRandomEngWords(3, users[userID].userLevel);
                         list.Add(word.id);
-                        list.OrderBy(x => rand.Next(10)).ToList();
+                        list = list.OrderBy(x => rand.Next(10)).ToList();
                         Keyboard Easy_Testing_Keyboard = new Keyboard(new Button[][] { new Button[] { new Button(dictionary[list.ElementAt(0)].eng), new Button(dictionary[list.ElementAt(1)].eng) }, new Button[] { new Button(dictionary[list.ElementAt(2)].eng), new Button(dictionary[list.ElementAt(3)].eng) } });
                         users[userID].keyb = Easy_Testing_Keyboard;
                         SendMessage(userID, word.rus, null, true);

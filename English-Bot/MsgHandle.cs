@@ -83,7 +83,7 @@ namespace English_Bot
                                          "/crossword - сыграть кроссворд\n" +
                                          "/gallows - сыграть в \"виселицу\"" +
                                          "/easy - простой режим сложности\n" +
-                                         "/medium - средний режим сложности\n" +
+                                         // "/medium - средний режим сложности\n" +
                                          "/hard - высокий режим сложности\n" +
                                          "/description \'слово\' - описание слова" +
                                          "/mute - бот не будет присылать слова и проводить тесты\n" + 
@@ -121,13 +121,13 @@ namespace English_Bot
                                     answer = "¬ключен низкий уровень сложности";
                                 }
                                 break;
-                            case "/medium":
+                            /*case "/medium":
                                 if (users.Dbase.ContainsKey(fromId))
                                 {
                                     users[fromId].mode = Users.Mode.Medium;
                                     answer = "¬ключен средний уровень сложности";
                                 }
-                                break;
+                                break;*/
                             case "/hard":
                                 if (users.Dbase.ContainsKey(fromId))
                                 {
