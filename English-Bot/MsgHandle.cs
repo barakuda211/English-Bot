@@ -23,16 +23,6 @@ namespace English_Bot
             var text = GetFormatedWord(eventArgs.Message.Text);
             var answer = "Извини, я понимаю только текстовые сообщения🤔";
 
-            /*
-            if (text == @"\cross")
-            {
-                Games.PlayCrossword(peerId);
-                return;
-            }
-            */
-
-            // if audio mess then regognize it
-
             if (text != null && text.Length != 0)
             {
                 if (!users.HasUser(fromId) || users[fromId].regId != 1)
@@ -77,6 +67,7 @@ namespace English_Bot
                         {
                             case "команды бота":
                             case "/help":
+                                users[fromId].keyb = User.Help_Keyboard;
                                 answer = "/change_level - сменить свой уровень\n" +
                                          "/my_level - мой уровень\n" +
                                          "/example \'слово\'- примеры использования\n" +
@@ -90,7 +81,7 @@ namespace English_Bot
                                          "\'слово на английском\' - перевод на русский\n" + 
                                          "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                                 break;
-                            case "мой уровень":
+                            case "моя статистика":
                             case "/my_level":
                                 answer = "Вы на " + users[fromId].userLevel + " уровне.";
                                 break;
@@ -115,15 +106,27 @@ namespace English_Bot
                                 break;
                             case "/description":
                                 answer = "Нужно написать и само слово";
-                                break; 
+                                break;
+                            case "хватит меня учить":
                             case "/mute":
                                 users[fromId].bot_muted = true;
                                 answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
                                 break;
+                            case "нет, учи меня":
                             case "/unmute":
                                 users[fromId].bot_muted = false;
                                 answer = "Боты вернулся к стандартному режиму работы"; 
                                 break;
+                            case "добавить слова":
+                            case "/my_list":
+                                AddingWords_Start(fromId);
+                                return;
+                            case "вернуться назад":
+                            case "/back":
+                                users[fromId].keyb = User.Main_Keyboard;
+                                answer = "Теперь ты в главном меню";
+                                break;
+
                             case "admin::getсommands":
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
@@ -169,9 +172,77 @@ namespace English_Bot
                 RandomId = Environment.TickCount,
                 PeerId = eventArgs.Message.PeerId,
                 Message = answer,
-                Keyboard = User.Main_Keyboard.ToMessageKeyboard()
+                Keyboard = users[fromId].keyb.ToMessageKeyboard()
             });
         }
+
+        static void AddingWords_Start(long id)
+        {
+            users[id].on_Test = true;
+            users[id].keyb = User.Back_Keyboard;
+            Thread AddingWordsthread = new Thread(new ParameterizedThreadStart(AddingWords));
+            AddingWordsthread.Start(id);
+        }
+
+        static void AddingWords(object Idobj)
+        {
+            long id = (long)Idobj;
+            var user = users[id];
+            SendMessage(id, "Эта функция позволит изучать заданные тобою английские слова.", null, true);
+            SendMessage(id, "Пришли мне слова на английском через запятую.", null, true);
+            WaitWords(id);
+            user.on_Test = false;
+        }
+
+        static void WaitWords(long id, int wait_time = 15, string error_msg = "Ладно, давай в другой раз")
+        {
+            var user = users.GetUser(id);
+            var ind = Timers.IndicatorTimer(wait_time);
+
+            long ident_msg = user.lastMsg.Item3;
+            while (true)
+            {
+                if (ind.x)
+                {
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(id, error_msg, null, true);
+                    return;
+                }
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);
+                    continue;
+                }
+                ident_msg = user.lastMsg.Item3;
+                var text = GetFormatedWord(user.lastMsg.Item1);
+                if (text == "вернуться назад")
+                {
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(id, error_msg, null, true);
+                    return;
+                }
+                var errors = user.AddWords(text);
+                user.keyb = User.Main_Keyboard;
+                if (errors.Item2 != 0)
+                    SendMessage(id, $"Добавлено слов: {errors.Item2}.",null,true);
+                if (errors.Item1.Length > 0)
+                {
+                    var str = "Данные слова я не распознал🙃: ";
+                    for (int i = 0; i < errors.Item1.Length; i++)
+                    {
+                        if (i + 1 == errors.Item1.Length)
+                            str += errors.Item1[i] + ".";
+                        else
+                            str += errors.Item1[i] + ", ";
+                    }
+                    SendMessage(id, str);
+                    SendMessage(id, "Убедитесь в правильности их написания и попробуйте их добавить ещё раз.",null,true);
+
+                }
+                return;
+            }
+        }
+
 
         static void ChangingComplexity_Start(long id)
         {
