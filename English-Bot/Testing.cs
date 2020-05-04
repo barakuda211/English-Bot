@@ -106,7 +106,7 @@ namespace English_Bot
             agree.Add("точно");
 
 
-            if (users[userID].unLearnedWords.Count == 15)
+            if (users[userID].learnedWords.Count == 0)
             {
                 if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { }, 15, "Ладно, пиши, когда будешь готов."))
                 {
