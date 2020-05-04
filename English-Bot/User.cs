@@ -107,6 +107,7 @@ namespace English_Bot
             mode = Users.Mode.Easy;
             keyb = Ready_Keyboard;
             bot_muted = false;
+            userLevel = 1;
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
@@ -128,6 +129,7 @@ namespace English_Bot
             {
                 unLearnedWords = new HashSet<long>(dict.eng_ids.Values.Where(x => Math.Sin(Math.Sqrt(x)) > 0).Take(10));
             }
+            
         }
         public User(long Userid, int rgId, string nm, int Uslev, HashSet<string> UsTags, HashSet<long> learWrds, HashSet<long> UnlearWrds)
         {
@@ -151,6 +153,7 @@ namespace English_Bot
         public User() 
         {
             words_to_learn = new List<long>();
+            userLevel = 1;
         }
 
         public override string ToString()

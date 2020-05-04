@@ -51,7 +51,7 @@ namespace English_Bot
         /// <returns></returns>
         public List<long> GetRandomEngWords(int count, int level)
         {
-            if (level != -1 && level > 5 && level < 1)
+            if (level != -1 && (level > 5 || level < 1))
                 throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
             if (count < 1 || count > 50)
                 throw new ArgumentException("count should be > 0 and < 51");
@@ -77,7 +77,7 @@ namespace English_Bot
         /// <returns></returns>
         public List<string> GetRandomRusWords(int count, int level)
         {
-            if (level != -1 && level > 5 && level < 1)
+            if (level != -1 && (level > 5 || level < 1))
                 throw new ArgumentException("level should be = -1, 1, 2, 3, 4, 5");
             if (count < 1 || count > 50)
                 throw new ArgumentException("count should be > 0 and < 51");
