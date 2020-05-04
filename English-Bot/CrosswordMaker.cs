@@ -324,7 +324,8 @@ namespace Crossword
         {
             for (int i=0;i<words.Count;i++)
             {
-                string w = char.ToUpper(EngBot.dictionary[words[i].Item2].rus[0]).ToString() + EngBot.dictionary[words[i].Item2].rus.Substring(1);
+                string x = EngBot.Translation(words[i].Item1);
+                string w = char.ToUpper(x[0]).ToString() + x.Substring(1);
                 legend[i] = (i+1).ToString() +") "+ w + "\n";
             }
         }
