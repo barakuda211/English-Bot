@@ -57,13 +57,18 @@ namespace English_Bot
         /// </summary>
         public int day_words { get; set; }
 
+        public List<long> words_to_learn { get; set; }
 
         public static Keyboard Ready_Keyboard = new Keyboard(new Button[] { new Button("Готов", "primary") }, true);
         public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
         public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Команды бота") },
-            new Button[] { new Button("Мой уровень"), new Button("Сменить уровень") },
             new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") }}, false);
+        public static Keyboard Help_Keyboard = new Keyboard(new Button[][] {
+            new Button[] { new Button("Моя статистика"), new Button("Добавить слова")},
+            new Button[] { new Button("Сменить уровень"), new Button("Сменить сложность") },
+            new Button[] { new Button("Хватит меня учить"), new Button("Нет, учи меня") },
+            new Button[] { new Button("Вернуться назад", "negative") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
             new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
@@ -71,6 +76,9 @@ namespace English_Bot
         public static Keyboard Crossword2_Keyboard = new Keyboard(new Button[] {  new Button("Я сдаюсь", "negative") }, false);
         public static Keyboard Gallows_KeyBoard = new Keyboard(new Button[] { new Button("Подсказать букву", "positive"), new Button("Я сдаюсь", "negative") }, false);
         // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
+        public static Keyboard Complexity_Keyboard = new Keyboard(new Button[] {new Button("Лёгкий","positive"), new Button("Сложный","negative")},false);
+        public static Keyboard Back_Keyboard = new Keyboard(new Button[] { new Button("Вернуться назад", "negative") });
+
         public User(VkUser vk_user, WordsDictionary dict)
         {
             regId = 0;
@@ -140,7 +148,10 @@ namespace English_Bot
             day_words = 10;
         }
 
-        public User() { }
+        public User() 
+        {
+            words_to_learn = new List<long>();
+        }
 
         public override string ToString()
         {
@@ -157,8 +168,6 @@ namespace English_Bot
             }
             return false;
         }
-
-       
 
         public bool AddTags(string[] s)
         {
@@ -192,7 +201,23 @@ namespace English_Bot
             return TagIsDeleted;
         }
 
-       
+        public (string[],int) AddWords(string text)
+        {
+            string[] words = text.Split(new char[] { ',',' ' },StringSplitOptions.RemoveEmptyEntries);
+            int added = 0;
+            List<string> error_words = new List<string>();
+            foreach (var x in words)
+            {
+                if (EngBot.dictionary.eng_ids.ContainsKey(x))
+                {
+                    words_to_learn.Add(EngBot.dictionary.GetEngWordId(x));
+                    added++;
+                }
+                else
+                    error_words.Add(x);
+            }
+            return (error_words.ToArray(),added);
+        }
 
     }
 }

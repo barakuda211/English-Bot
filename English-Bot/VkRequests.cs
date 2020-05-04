@@ -47,5 +47,6 @@ namespace VkApi
             url= url+ $"&v=5.89&access_token="+EngBot.Token;
             return ObjectFromStr<VkUsers>(Request(url)).response[0];
         }
+
     }
 }

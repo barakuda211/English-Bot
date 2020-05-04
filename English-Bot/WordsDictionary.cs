@@ -133,6 +133,7 @@ namespace English_Bot
             return eng_ids.ContainsKey(word) ? eng_ids[word] : -1;
         }
 
+
         /// <summary>
         /// получаем id русских слова  по нашему запросу  
         /// </summary>

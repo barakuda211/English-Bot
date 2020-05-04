@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+п»їusing Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using VkBotFramework;
@@ -20,18 +20,8 @@ namespace English_Bot
             VkBot instanse = sender as VkBot;
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
-            var text = eventArgs.Message.Text.ToLower();
-            var answer = "Sorry, there is an empty answer :-(";
-
-            /*
-            if (text == @"\cross")
-            {
-                Games.PlayCrossword(peerId);
-                return;
-            }
-            */
-
-            // if audio mess then regognize it
+            var text = GetFormatedWord(eventArgs.Message.Text);
+            var answer = "РР·РІРёРЅРё, СЏ РїРѕРЅРёРјР°СЋ С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚РѕРІС‹Рµ СЃРѕРѕР±С‰РµРЅРёСЏрџ¤”";
 
             if (text != null && text.Length != 0)
             {
@@ -42,7 +32,7 @@ namespace English_Bot
                 }
                 else
                 {
-                    users[fromId].lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
+                    users[fromId].lastMsg = (text, false, eventArgs.Message.ConversationMessageId.Value);
                         
                     if (users[fromId].on_Test)
                         return;
@@ -75,75 +65,69 @@ namespace English_Bot
                     {
                         switch (text)
                         {
-                            case "команды бота":
+                            case "РєРѕРјР°РЅРґС‹ Р±РѕС‚Р°":
                             case "/help":
-                                answer = "/change_level - сменить свой уровень\n" +
-                                         "/my_level - мой уровень\n" +
-                                         "/example \'слово\'- примеры использования\n" +
-                                         "/crossword - сыграть кроссворд\n" +
-                                         "/gallows - сыграть в \"виселицу\"\n" +
-                                         "/easy - низкий режим сложности теста\n" +
-                                         // "/medium - средний режим сложности\n" +
-                                         "/hard - высокий режим сложности теста\n" +
-                                         "/description \'слово\' - описание слова" +
-                                         "/mute - бот не будет присылать слова и проводить тесты\n" + 
-                                         "/unmute - бот снова перейдёт в стандартный режим\n" +
-                                         "\'слово на русском\' - перевод на английский\n" +
-                                         "\'слово на английском\' - перевод на русский\n" + 
-                                         "\'текст на английском\' - перевод всех известных боту слов на русский\n";
+                                users[fromId].keyb = User.Help_Keyboard;
+                                answer = "/change_level - СЃРјРµРЅРёС‚СЊ СЃРІРѕР№ СѓСЂРѕРІРµРЅСЊ\n" +
+                                         "/my_level - РјРѕР№ СѓСЂРѕРІРµРЅСЊ\n" +
+                                         "/example \'СЃР»РѕРІРѕ\'- РїСЂРёРјРµСЂС‹ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ\n" +
+                                         "/crossword - СЃС‹РіСЂР°С‚СЊ РєСЂРѕСЃСЃРІРѕСЂРґ\n" +
+                                         "/gallows - СЃС‹РіСЂР°С‚СЊ РІ \"РІРёСЃРµР»РёС†Сѓ\"\n" +
+                                         "/change_complexity - СЃРјРµРЅРёС‚СЊ СЃР»РѕР¶РЅРѕСЃС‚СЊ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ\n"+
+                                         "/description \'СЃР»РѕРІРѕ\' - РѕРїРёСЃР°РЅРёРµ СЃР»РѕРІР°" +
+                                         "/mute - Р±РѕС‚ РЅРµ Р±СѓРґРµС‚ РїСЂРёСЃС‹Р»Р°С‚СЊ СЃР»РѕРІР° Рё РїСЂРѕРІРѕРґРёС‚СЊ С‚РµСЃС‚С‹\n" + 
+                                         "/unmute - Р±РѕС‚ СЃРЅРѕРІР° РїРµСЂРµР№РґС‘С‚ РІ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ СЂРµР¶РёРј\n" +
+                                         "\'СЃР»РѕРІРѕ РЅР° СЂСѓСЃСЃРєРѕРј\' - РїРµСЂРµРІРѕРґ РЅР° Р°РЅРіР»РёР№СЃРєРёР№\n" +
+                                         "\'СЃР»РѕРІРѕ РЅР° Р°РЅРіР»РёР№СЃРєРѕРј\' - РїРµСЂРµРІРѕРґ РЅР° СЂСѓСЃСЃРєРёР№\n" + 
+                                         "\'С‚РµРєСЃС‚ РЅР° Р°РЅРіР»РёР№СЃРєРѕРј\' - РїРµСЂРµРІРѕРґ РІСЃРµС… РёР·РІРµСЃС‚РЅС‹С… Р±РѕС‚Сѓ СЃР»РѕРІ РЅР° СЂСѓСЃСЃРєРёР№\n";
                                 break;
-                            case "мой уровень":
+                            case "РјРѕСЏ СЃС‚Р°С‚РёСЃС‚РёРєР°":
                             case "/my_level":
-                                answer = "Вы на " + users[fromId].userLevel + " уровне.";
+                                answer = "Р’С‹ РЅР° " + users[fromId].userLevel + " СѓСЂРѕРІРЅРµ.";
                                 break;
-                            case "сменить уровень":
+                            case "СЃРјРµРЅРёС‚СЊ СѓСЂРѕРІРµРЅСЊ":
                             case "/change_level":
                                 ChangingLevel_Start(fromId);
                                 return;
-                            case "игра кроссворд":
+                            case "СЃРјРµРЅРёС‚СЊ СЃР»РѕР¶РЅРѕСЃС‚СЊ":
+                            case "/change_complexity":
+                                ChangingComplexity_Start(fromId);
+                                return;
+                            case "РёРіСЂР° РєСЂРѕСЃСЃРІРѕСЂРґ":
                             case "/crossword":
                                 Games.Crossvord_start(fromId);
                                 return;
-                            case "игра виселица":
+                            case "РёРіСЂР° РІРёСЃРµР»РёС†Р°":
                             case "/gallows":
                                 Games.Gallows_Start(fromId);
                                 return; 
                             case "/example":
-                                answer = "А к чему пример то?)";
+                                answer = "Рђ Рє С‡РµРјСѓ РїСЂРёРјРµСЂ С‚Рѕ?)";
                                 break;
                             case "/description":
-                                answer = "Нужно написать и само слово";
-                                break; 
-                            case "/easy":
-                                if (users.Dbase.ContainsKey(fromId))
-                                {
-                                    users[fromId].mode = Users.Mode.Easy;
-                                    answer = "Включен низкий уровень сложности";
-                                }
+                                answer = "РќСѓР¶РЅРѕ РЅР°РїРёСЃР°С‚СЊ Рё СЃР°РјРѕ СЃР»РѕРІРѕ";
                                 break;
-                            /*case "/medium":
-                                if (users.Dbase.ContainsKey(fromId))
-                                {
-                                    users[fromId].mode = Users.Mode.Medium;
-                                    answer = "Включен средний уровень сложности";
-                                }
-                                break;*/
-                            case "/hard":
-                                if (users.Dbase.ContainsKey(fromId))
-                                {
-                                    users[fromId].mode = Users.Mode.Hard;
-                                    answer = "Включен высокий уровень сложности";
-                                }
-                                break;
+                            case "С…РІР°С‚РёС‚ РјРµРЅСЏ СѓС‡РёС‚СЊ":
                             case "/mute":
                                 users[fromId].bot_muted = true;
-                                answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
+                                answer = "Р‘РѕС‚ РїРµСЂРµС€РµР» РІ СЂРµР¶РёРј РѕР¶РёРґР°РЅРёСЏ\nРћРЅ РЅРµ Р±СѓРґРµС‚ РїСЂРёСЃС‹Р»Р°С‚СЊ СЃР»РѕРІР° Рё С‚РµСЃС‚С‹, РЅРѕ РїРѕ РїСЂРµР¶РЅРµРјСѓ Р±СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЊ РєРѕРјР°РЅРґС‹";
                                 break;
+                            case "РЅРµС‚, СѓС‡Рё РјРµРЅСЏ":
                             case "/unmute":
                                 users[fromId].bot_muted = false;
-                                answer = "Боты вернулся к стандартному режиму работы"; 
+                                answer = "Р‘РѕС‚С‹ РІРµСЂРЅСѓР»СЃСЏ Рє СЃС‚Р°РЅРґР°СЂС‚РЅРѕРјСѓ СЂРµР¶РёРјСѓ СЂР°Р±РѕС‚С‹"; 
                                 break;
-                            case "admin::getсommands":
+                            case "РґРѕР±Р°РІРёС‚СЊ СЃР»РѕРІР°":
+                            case "/my_list":
+                                AddingWords_Start(fromId);
+                                return;
+                            case "РІРµСЂРЅСѓС‚СЊСЃСЏ РЅР°Р·Р°Рґ":
+                            case "/back":
+                                users[fromId].keyb = User.Main_Keyboard;
+                                answer = "РўРµРїРµСЂСЊ С‚С‹ РІ РіР»Р°РІРЅРѕРј РјРµРЅСЋ";
+                                break;
+
+                            case "admin::getСЃommands":
                                 if (adminIDs.Contains(fromId))
                                     answer = "getId, wantTest, getCommands, usersCount";
                                 else answer = ACCESS_IS_DENIED;
@@ -188,33 +172,132 @@ namespace English_Bot
                 RandomId = Environment.TickCount,
                 PeerId = eventArgs.Message.PeerId,
                 Message = answer,
-                Keyboard = User.Main_Keyboard.ToMessageKeyboard()
+                Keyboard = users[fromId].keyb.ToMessageKeyboard()
             });
         }
 
+        static void AddingWords_Start(long id)
+        {
+            users[id].on_Test = true;
+            users[id].keyb = User.Back_Keyboard;
+            Thread AddingWordsthread = new Thread(new ParameterizedThreadStart(AddingWords));
+            AddingWordsthread.Start(id);
+        }
 
+        static void AddingWords(object Idobj)
+        {
+            long id = (long)Idobj;
+            var user = users[id];
+            SendMessage(id, "Р­С‚Р° С„СѓРЅРєС†РёСЏ РїРѕР·РІРѕР»РёС‚ РёР·СѓС‡Р°С‚СЊ Р·Р°РґР°РЅРЅС‹Рµ С‚РѕР±РѕСЋ Р°РЅРіР»РёР№СЃРєРёРµ СЃР»РѕРІР°.", null, true);
+            SendMessage(id, "РџСЂРёС€Р»Рё РјРЅРµ СЃР»РѕРІР° РЅР° Р°РЅРіР»РёР№СЃРєРѕРј С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ.", null, true);
+            WaitWords(id);
+            user.on_Test = false;
+        }
+
+        static void WaitWords(long id, int wait_time = 15, string error_msg = "Р›Р°РґРЅРѕ, РґР°РІР°Р№ РІ РґСЂСѓРіРѕР№ СЂР°Р·")
+        {
+            var user = users.GetUser(id);
+            var ind = Timers.IndicatorTimer(wait_time);
+
+            long ident_msg = user.lastMsg.Item3;
+            while (true)
+            {
+                if (ind.x)
+                {
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(id, error_msg, null, true);
+                    return;
+                }
+                if (ident_msg == user.lastMsg.Item3)
+                {
+                    Thread.Sleep(100);
+                    continue;
+                }
+                ident_msg = user.lastMsg.Item3;
+                var text = GetFormatedWord(user.lastMsg.Item1);
+                if (text == "РІРµСЂРЅСѓС‚СЊСЃСЏ РЅР°Р·Р°Рґ")
+                {
+                    user.keyb = User.Main_Keyboard;
+                    SendMessage(id, error_msg, null, true);
+                    return;
+                }
+                var errors = user.AddWords(text);
+                user.keyb = User.Main_Keyboard;
+                if (errors.Item2 != 0)
+                    SendMessage(id, $"Р”РѕР±Р°РІР»РµРЅРѕ СЃР»РѕРІ: {errors.Item2}.",null,true);
+                if (errors.Item1.Length > 0)
+                {
+                    var str = "Р”Р°РЅРЅС‹Рµ СЃР»РѕРІР° СЏ РЅРµ СЂР°СЃРїРѕР·РЅР°Р»рџ™ѓ: ";
+                    for (int i = 0; i < errors.Item1.Length; i++)
+                    {
+                        if (i + 1 == errors.Item1.Length)
+                            str += errors.Item1[i] + ".";
+                        else
+                            str += errors.Item1[i] + ", ";
+                    }
+                    SendMessage(id, str);
+                    SendMessage(id, "РЈР±РµРґРёС‚РµСЃСЊ РІ РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РёС… РЅР°РїРёСЃР°РЅРёСЏ Рё РїРѕРїСЂРѕР±СѓР№С‚Рµ РёС… РґРѕР±Р°РІРёС‚СЊ РµС‰С‘ СЂР°Р·.",null,true);
+
+                }
+                return;
+            }
+        }
+
+
+        static void ChangingComplexity_Start(long id)
+        {
+            users[id].on_Test = true;
+            users[id].keyb = User.Complexity_Keyboard;
+            Thread changing_thread = new Thread(new ParameterizedThreadStart(ChangeComplexity));
+            changing_thread.Start(id);
+        }
+
+        static void ChangeComplexity(object Idobj)
+        {
+            long id = (long)Idobj;
+            var user = users[id];
+            SendMessage(id, "Р’С‹Р±РµСЂРёС‚Рµ РѕРґРёРЅ РёР· РІР°СЂРёР°РЅС‚РѕРІ:",null, true);
+            SendMessage(id, "Р›С‘РіРєРёР№ - РІС‹Р±РѕСЂ РёР· РїСЂРµРґР»РѕР¶РµРЅРЅС‹С… РІР°СЂРёР°РЅС‚РѕРІ РѕС‚РІРµС‚РѕРІ РЅР° С‚РµСЃС‚РёСЂРѕРІР°РЅРёРё.", null, true);
+            SendMessage(id, "РЎР»РѕР¶РЅС‹Р№ - РїРѕР»РЅРѕСЃС‚СЊСЋ СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґ СЃР»РѕРІ РЅР° С‚РµСЃС‚РёСЂРѕРІР°РЅРёРё.", null, true);
+            var x = WaitWordFromUser_with_Comments(id, new string[] { "Р»РµРіРєРёР№", "СЃР»РѕР¶РЅС‹Р№" }, 2,"Р›Р°РґРЅРѕ, РїРѕС‚РѕРј...");
+            user.keyb = User.Main_Keyboard;
+            user.on_Test = false;
+            if (x == "time") 
+                return;
+            if ((x == "Р»РµРіРєРёР№" && user.mode == Users.Mode.Easy)|| (x == "СЃР»РѕР¶РЅС‹Р№" && user.mode == Users.Mode.Hard))
+                SendMessage(id, "РЈ РІР°СЃ СѓР¶Рµ РІС‹Р±СЂР°РЅР° РґР°РЅРЅР°СЏ СЃР»РѕР¶РЅРѕСЃС‚СЊ.", null, true);
+            else
+            {
+                if (x == "Р»РµРіРєРёР№")
+                    user.mode = Users.Mode.Easy;
+                else
+                    user.mode = Users.Mode.Hard;
+                SendMessage(id, "Р“РѕС‚РѕРІРѕ!", null, true);
+            }
+            users.Save();
+        }
 
         static void ChangeLevel(object Idobj)
         {
             long id = (long)Idobj;
             var user = users[id];
             int userlevel = user.userLevel;
-            var text =     "Вы на "+userlevel+" уровне изучения.\n"+
-                           "Не нравится? Выберите один из следующих:\n"+
-                           "1 - учил в школе немецкий\n"+
-                           "2 - прогуливал английский\n"+
-                           "3 - хорошист по английскому\n"+
-                           "4 - занимался с репетитором\n"+
-                           "5 - уверенный носитель языка\n"+
-                           "-1 - ну точно иностранец";
+            var text =     "Р’С‹ РЅР° "+userlevel+" СѓСЂРѕРІРЅРµ РёР·СѓС‡РµРЅРёСЏ.\n"+
+                           "РќРµ РЅСЂР°РІРёС‚СЃСЏ? Р’С‹Р±РµСЂРёС‚Рµ РѕРґРёРЅ РёР· СЃР»РµРґСѓСЋС‰РёС…:\n"+
+                           "1 - СѓС‡РёР» РІ С€РєРѕР»Рµ РЅРµРјРµС†РєРёР№\n"+
+                           "2 - РїСЂРѕРіСѓР»РёРІР°Р» Р°РЅРіР»РёР№СЃРєРёР№\n"+
+                           "3 - С…РѕСЂРѕС€РёСЃС‚ РїРѕ Р°РЅРіР»РёР№СЃРєРѕРјСѓ\n"+
+                           "4 - Р·Р°РЅРёРјР°Р»СЃСЏ СЃ СЂРµРїРµС‚РёС‚РѕСЂРѕРј\n"+
+                           "5 - СѓРІРµСЂРµРЅРЅС‹Р№ РЅРѕСЃРёС‚РµР»СЊ СЏР·С‹РєР°\n"+
+                           "-1 - РЅСѓ С‚РѕС‡РЅРѕ РёРЅРѕСЃС‚СЂР°РЅРµС†";
             SendMessage(id,text,null,true);
-            var x = WaitWordFromUser_with_Comments(id,new string[] {"1","2","3","4","5","-1"},1);
+            var x = WaitWordFromUser_with_Comments(id,new string[] { "1", "2", "3", "4", "5", "-1" }, 3);
+            user.keyb = User.Main_Keyboard;
+            user.on_Test = false;
             if (x == "time")
                 return;
             user.ChangeLevel(int.Parse(x));
-            user.keyb = User.Main_Keyboard;
-            SendMessage(id,"Готово!",null,true);
-            user.on_Test = false;
+            SendMessage(id,"Р“РѕС‚РѕРІРѕ!",null,true);
             users.Save();
         }
 
@@ -226,9 +309,9 @@ namespace English_Bot
             changing_thread.Start(id);
         }
 
-        //ждет ответа !определенного! ответа от юзера, 
-        //Просит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Ладно, потом сменим уровень.",string error_msg = "Этого я не ждал!")
+        //Р¶РґРµС‚ РѕС‚РІРµС‚Р° !РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ! РѕС‚РІРµС‚Р° РѕС‚ СЋР·РµСЂР°, 
+        //РџСЂРѕСЃРёС‚ РїРѕРІС‚РѕСЂРёС‚СЊ РІРІРѕРґ
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Р›Р°РґРЅРѕ, РїРѕС‚РѕРј СЃРјРµРЅРёРј СѓСЂРѕРІРµРЅСЊ.",string error_msg = "Р­С‚РѕРіРѕ СЏ РЅРµ Р¶РґР°Р»!")
         {
             var user = users.GetUser(userID);
             var ind = Timers.IndicatorTimer(wait_time);
@@ -244,11 +327,11 @@ namespace English_Bot
                 }
                 if (ident_msg == user.lastMsg.Item3)
                 {
-                    Thread.Sleep(100);  //ожидание согласия
+                    Thread.Sleep(100);  //РѕР¶РёРґР°РЅРёРµ СЃРѕРіР»Р°СЃРёСЏ
                     continue;
                 }
                 ident_msg = user.lastMsg.Item3;
-                var text = user.lastMsg.Item1.ToLower();
+                var text = GetFormatedWord(user.lastMsg.Item1);
                 foreach (var w in words)
                 {
                     if (w == text)

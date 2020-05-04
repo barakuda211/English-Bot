@@ -230,14 +230,7 @@ namespace English_Bot
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                /*
-                if (text == "/help" )
-                {
-                    EngBot.SendMessage(userID, "/hint - подсказка\n" +
-                                               "/give_up - сдаться\n");
-                    continue;
-                }
-                */
+
                 if (text == "/hint" || text == "подсказать слово")
                 {
                     EngBot.SendMessage(userID, @"Ну как хочешь :-\");
@@ -319,8 +312,11 @@ namespace English_Bot
             user.keyb = User.Crossword2_Keyboard;
             EngBot.SendMessage(userID, "Супер, так что же такое "+scw.MainWord.Item1+"?",null,true);
 
-            string ans = EngBot.dictionary[scw.MainWord.Item2].rus;
-            
+            //string ans = EngBot.dictionary[scw.MainWord.Item2].rus;
+            List<string> ans = new List<string>();
+            foreach (var def in EngBot.dictionary[scw.MainWord.Item2].mean_rus.def)
+                ans.Add(def.tr[0].text);
+
             while (true)
             {
                 if (ind.x)
@@ -337,9 +333,8 @@ namespace English_Bot
 
                 ind.x = true;
                 ind = IndicatorTimer(wait_time);
-
                 ident_msg = user.lastMsg.Item3;
-                text = user.lastMsg.Item1.ToLower();
+                text = EngBot.GetFormatedWord(user.lastMsg.Item1);
                 /*
                 if (text == "/help")
                 {
@@ -355,7 +350,7 @@ namespace English_Bot
                     return false;
                 }
 
-                if (ans != text)
+                if (!ans.Contains(text))
                 {
                     EngBot.SendMessage(userID, "Ошибочка, попробуй ещё раз.");
                     continue;
