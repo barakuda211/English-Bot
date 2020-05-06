@@ -42,10 +42,12 @@ namespace English_Bot
                     {
                         if (ss[0] == "/example")
                         {
-                            foreach (var s in GetSentenceExemples(ss[1]))
-                            {
-                                SendMessage(fromId, s);
-                            }
+                            var lst = GetSentenceExemples(ss[1]);
+                            if ( lst == null || lst.Count != 0 )
+                                foreach (var s in lst)
+                                    SendMessage(fromId, s);
+                            else
+                                SendMessage(fromId, "Не могу привести пример с таким словом.");
                             return;
                         }
                         else if (ss[0] == "/sound")

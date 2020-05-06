@@ -161,7 +161,7 @@ namespace English_Bot
                     if (gal.word == words[0].ToLower())
                     {
                         user.keyb = User.Main_Keyboard;
-                        EngBot.SendMessage(gal.user_id, @"Поздравляем! Вы выйграли!", null, true);
+                        EngBot.SendMessage(gal.user_id, @"Поздравляем! Вы выиграли!", null, true);
                         return true;
                     }
                     else
