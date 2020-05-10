@@ -23,152 +23,151 @@ namespace English_Bot
             var text = GetFormatedWord(eventArgs.Message.Text);
             var answer = "Извини, я понимаю только текстовые сообщения🤔";
 
-            if (text != null && text.Length != 0)
+            if (!users.HasUser(fromId) || users[fromId].regId != 1)
             {
-                if (!users.HasUser(fromId) || users[fromId].regId != 1)
-                {
-                    Registration(eventArgs.Message);
-                    return;
-                }
-                else
-                {
-                    users[fromId].lastMsg = (text, false, eventArgs.Message.ConversationMessageId.Value);
-                        
-                    if (users[fromId].on_Test)
-                        return;
-
-                    var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (ss.Length == 2)
-                    {
-                        if (ss[0] == "/example")
-                        {
-                            var lst = GetSentenceExemples(ss[1]);
-                            if ( lst == null || lst.Count != 0 )
-                                foreach (var s in lst)
-                                    SendMessage(fromId, s);
-                            else
-                                SendMessage(fromId, "Не могу привести пример с таким словом.");
-                            return;
-                        }
-                        else if (ss[0] == "/sound")
-                        {
-                            if (dictionary.eng_ids.ContainsKey(ss[1]))
-                                SendSound(fromId, dictionary.eng_ids[ss[1]]);
-                            return;
-                        }
-                        else if (ss[0] == "/description")
-                        {
-                            if (dictionary.eng_ids.ContainsKey(ss[1]))
-                                SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
-                            return;
-                        }
-                    }
-                    // ----------------------------------------------------------------------------
-                    {
-                        switch (text)
-                        {
-                            case "команды бота":
-                            case "/help":
-                                users[fromId].keyb = User.Help_Keyboard;
-                                answer = "/change_level - сменить свой уровень\n" +
-                                         "/my_level - мой уровень\n" +
-                                         "/example \'слово\'- примеры использования\n" +
-                                         "/crossword - сыграть кроссворд\n" +
-                                         "/gallows - сыграть в \"виселицу\"\n" +
-                                         "/change_complexity - сменить сложность тестирования\n"+
-                                         "/description \'слово\' - описание слова" +
-                                         "/mute - бот не будет присылать слова и проводить тесты\n" + 
-                                         "/unmute - бот снова перейдёт в стандартный режим\n" +
-                                         "\'слово на русском\' - перевод на английский\n" +
-                                         "\'слово на английском\' - перевод на русский\n" + 
-                                         "\'текст на английском\' - перевод всех известных боту слов на русский\n";
-                                break;
-                            case "моя статистика":
-                            case "/my_level":
-                                answer = "Вы на " + users[fromId].userLevel + " уровне.";
-                                break;
-                            case "сменить уровень":
-                            case "/change_level":
-                                ChangingLevel_Start(fromId);
-                                return;
-                            case "сменить сложность":
-                            case "/change_complexity":
-                                ChangingComplexity_Start(fromId);
-                                return;
-                            case "игра кроссворд":
-                            case "/crossword":
-                                Games.Crossvord_start(fromId);
-                                return;
-                            case "игра виселица":
-                            case "/gallows":
-                                Games.Gallows_Start(fromId);
-                                return; 
-                            case "/example":
-                                answer = "А к чему пример то?)";
-                                break;
-                            case "/description":
-                                answer = "Нужно написать и само слово";
-                                break;
-                            case "хватит меня учить":
-                            case "/mute":
-                                users[fromId].bot_muted = true;
-                                answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
-                                break;
-                            case "нет, учи меня":
-                            case "/unmute":
-                                users[fromId].bot_muted = false;
-                                answer = "Боты вернулся к стандартному режиму работы"; 
-                                break;
-                            case "добавить слова":
-                            case "/my_list":
-                                AddingWords_Start(fromId);
-                                return;
-                            case "вернуться назад":
-                            case "/back":
-                                users[fromId].keyb = User.Main_Keyboard;
-                                answer = "Теперь ты в главном меню";
-                                break;
-
-                            case "admin::getсommands":
-                                if (adminIDs.Contains(fromId))
-                                    answer = "getId, wantTest, getCommands, usersCount";
-                                else answer = ACCESS_IS_DENIED;
-                                break;
-                            case "admin::getid":
-                                if (adminIDs.Contains(fromId))
-                                    answer = fromId.ToString();
-                                else answer = ACCESS_IS_DENIED;
-                                break;
-                            case "admin::userscount":
-                                if (adminIDs.Contains(fromId))
-                                    answer = "" + users.Dbase.Count;
-                                else answer = ACCESS_IS_DENIED;
-                                break;
-                            case "admin::wanttest":
-                                if (adminIDs.Contains(fromId))
-                                {
-                                    users[fromId].on_Test = true;
-                                    Testing_Start(fromId);
-                                    return;
-                                }
-                                else 
-                                    answer = ACCESS_IS_DENIED;
-                                break;
-                            default:
-                                if (ss.Length == 1)
-                                    answer = Translation(text);
-                                else
-                                    answer = MultipleTranslation(ss, users[fromId].mode);
-                                // answer = SendInfo(eventArgs.Message);
-                                // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
-                                //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
-                                //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
-                                break;
-                        }
-                    }
-                }
+                Registration(eventArgs.Message);
+                return;
             }
 
+            if (text == null && text.Length == 0)
+            {
+                SendMessage(fromId, answer, null, true);
+                return;
+            }
+ 
+            users[fromId].lastMsg = (text, false, eventArgs.Message.ConversationMessageId.Value);
+                        
+            if (users[fromId].on_Test)
+                return;
+
+            var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (ss.Length == 2)
+            {
+                if (ss[0] == "/example")
+                {
+                    var lst = GetSentenceExemples(ss[1]);
+                    if ( lst == null || lst.Count != 0 )
+                        foreach (var s in lst)
+                            SendMessage(fromId, s);
+                    else
+                        SendMessage(fromId, "Не могу привести пример с таким словом.");
+                    return;
+                }
+                else if (ss[0] == "/sound")
+                {
+                    if (dictionary.eng_ids.ContainsKey(ss[1]))
+                        SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                    return;
+                }
+                else if (ss[0] == "/description")
+                {
+                    if (dictionary.eng_ids.ContainsKey(ss[1]))
+                        SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
+                    return;
+                }
+            }
+            // ----------------------------------------------------------------------------
+            switch (text)
+            {
+                case "команды бота":
+                case "/help":
+                    users[fromId].keyb = User.Help_Keyboard;
+                    answer = "/change_level - сменить свой уровень\n" +
+                                "/my_level - мой уровень\n" +
+                                "/example \'слово\'- примеры использования\n" +
+                                "/crossword - сыграть кроссворд\n" +
+                                "/gallows - сыграть в \"виселицу\"\n" +
+                                "/change_complexity - сменить сложность тестирования\n"+
+                                "/description \'слово\' - описание слова" +
+                                "/mute - бот не будет присылать слова и проводить тесты\n" + 
+                                "/unmute - бот снова перейдёт в стандартный режим\n" +
+                                "\'слово на русском\' - перевод на английский\n" +
+                                "\'слово на английском\' - перевод на русский\n" + 
+                                "\'текст на английском\' - перевод всех известных боту слов на русский\n";
+                    break;
+                case "моя статистика":
+                case "/my_level":
+                    answer = "Вы на " + users[fromId].userLevel + " уровне.";
+                    break;
+                case "сменить уровень":
+                case "/change_level":
+                    ChangingLevel_Start(fromId);
+                    return;
+                case "сменить сложность":
+                case "/change_complexity":
+                    ChangingComplexity_Start(fromId);
+                    return;
+                case "игра кроссворд":
+                case "/crossword":
+                    Games.Crossvord_start(fromId);
+                    return;
+                case "игра виселица":
+                case "/gallows":
+                    Games.Gallows_Start(fromId);
+                    return; 
+                case "/example":
+                    answer = "А к чему пример то?)";
+                    break;
+                case "/description":
+                    answer = "Нужно написать и само слово";
+                    break;
+                case "хватит меня учить":
+                case "/mute":
+                    users[fromId].bot_muted = true;
+                    answer = "Бот перешел в режим ожидания\nОн не будет присылать слова и тесты, но по прежнему будет выполнять команды";
+                    break;
+                case "нет, учи меня":
+                case "/unmute":
+                    users[fromId].bot_muted = false;
+                    answer = "Боты вернулся к стандартному режиму работы"; 
+                    break;
+                case "добавить слова":
+                case "/my_list":
+                    AddingWords_Start(fromId);
+                    return;
+                case "вернуться назад":
+                case "/back":
+                    users[fromId].keyb = User.Main_Keyboard;
+                    answer = "Теперь ты в главном меню";
+                    break;
+
+                case "admin::getсommands":
+                    if (adminIDs.Contains(fromId))
+                        answer = "getId, wantTest, getCommands, usersCount";
+                    else answer = ACCESS_IS_DENIED;
+                    break;
+                case "admin::getid":
+                    if (adminIDs.Contains(fromId))
+                        answer = fromId.ToString();
+                    else answer = ACCESS_IS_DENIED;
+                    break;
+                case "admin::userscount":
+                    if (adminIDs.Contains(fromId))
+                        answer = "" + users.Dbase.Count;
+                    else answer = ACCESS_IS_DENIED;
+                    break;
+                case "admin::wanttest":
+                    if (adminIDs.Contains(fromId))
+                    {
+                        users[fromId].on_Test = true;
+                        Testing_Start(fromId);
+                        return;
+                    }
+                    else 
+                        answer = ACCESS_IS_DENIED;
+                    break;
+                default:
+                    if (ss.Length == 1)
+                        answer = Translation(text);
+                    else
+                        answer = MultipleTranslation(ss, users[fromId].mode);
+                    // answer = SendInfo(eventArgs.Message);
+                    // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
+                    //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
+                    //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
+                    break;
+            }  
+            /*
             instanse.Api.Messages.Send(new MessagesSendParams()
             {
                 RandomId = Environment.TickCount,
@@ -176,7 +175,10 @@ namespace English_Bot
                 Message = answer,
                 Keyboard = users[fromId].keyb.ToMessageKeyboard()
             });
+            */
+            SendMessage(fromId, answer, null, true);
         }
+
 
         static void AddingWords_Start(long id)
         {

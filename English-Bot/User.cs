@@ -108,6 +108,7 @@ namespace English_Bot
             keyb = Ready_Keyboard;
             bot_muted = false;
             userLevel = 1;
+            words_to_learn = new List<long>();
         }
 
         private void parseWordsFields(VkUser vk_user, WordsDictionary dict)
@@ -148,6 +149,7 @@ namespace English_Bot
             bot_muted = false;
             week_words = 0;
             day_words = 10;
+            words_to_learn = new List<long>();
         }
 
         public User() 
@@ -209,6 +211,10 @@ namespace English_Bot
             string[] words = text.Split(new char[] { ',',' ' },StringSplitOptions.RemoveEmptyEntries);
             int added = 0;
             List<string> error_words = new List<string>();
+
+            if (words_to_learn == null)
+                words_to_learn = new List<long>();
+
             foreach (var x in words)
             {
                 if (EngBot.dictionary.eng_ids.ContainsKey(x))
