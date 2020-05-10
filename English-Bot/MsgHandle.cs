@@ -133,7 +133,7 @@ namespace English_Bot
 
                 case "admin::getсommands":
                     if (adminIDs.Contains(fromId))
-                        answer = "getId, wantTest, getCommands, usersCount";
+                        answer = "getId, wantTest, getCommands, usersCount, forget_me";
                     else answer = ACCESS_IS_DENIED;
                     break;
                 case "admin::forget_me":

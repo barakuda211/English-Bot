@@ -56,6 +56,10 @@ namespace English_Bot
         /// Слова в день на изучение
         /// </summary>
         public int day_words { get; set; }
+        /// <summary>
+        /// Для определения кол-ва слов и клавиатуры
+        /// </summary>
+        public bool first_test_passed = false;
 
         public List<long> words_to_learn { get; set; }
 
