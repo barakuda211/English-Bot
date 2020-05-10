@@ -136,6 +136,10 @@ namespace English_Bot
                         answer = "getId, wantTest, getCommands, usersCount";
                     else answer = ACCESS_IS_DENIED;
                     break;
+                case "admin::forget_me":
+                    SendMessage(fromId, "Я тебя забыл.");
+                    users.DeleteUser(fromId);
+                    return;
                 case "admin::getid":
                     if (adminIDs.Contains(fromId))
                         answer = fromId.ToString();
