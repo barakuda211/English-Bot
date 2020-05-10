@@ -154,6 +154,7 @@ namespace English_Bot
 
         public User() 
         {
+            mode = Users.Mode.Easy;
             words_to_learn = new List<long>();
             userLevel = 1;
         }

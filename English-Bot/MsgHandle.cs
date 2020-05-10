@@ -87,7 +87,7 @@ namespace English_Bot
                     break;
                 case "моя статистика":
                 case "/my_level":
-                    answer = "Вы на " + users[fromId].userLevel + " уровне.";
+                    answer = GetStatics(fromId);
                     break;
                 case "сменить уровень":
                 case "/change_level":
@@ -177,6 +177,16 @@ namespace English_Bot
             });
             */
             SendMessage(fromId, answer, null, true);
+        }
+
+
+        static string GetStatics(long id)
+        {
+            var user = users[id];
+            string ans = $"Уровень: {user.userLevel}\n" +
+                         $"Режим изучения: {(user.mode == Users.Mode.Easy ? "лёгкий" : "сложный")}\n" +
+                         $"Слов изучено: {user.learnedWords.Count()}\n";
+            return ans;
         }
 
 
