@@ -227,6 +227,13 @@ namespace English_Bot
                 }
                 var errors = user.AddWords(text);
                 user.keyb = User.Main_Keyboard;
+
+                if (errors.Item1.Length == 0 && errors.Item2 == 0)
+                {
+                    SendMessage(id, "Я тут ничего не разобрал🙃",null,true);
+                    return;
+                }
+
                 if (errors.Item2 != 0)
                     SendMessage(id, $"Добавлено слов: {errors.Item2}.",null,true);
                 if (errors.Item1.Length > 0)
