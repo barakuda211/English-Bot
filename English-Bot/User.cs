@@ -57,9 +57,17 @@ namespace English_Bot
         /// </summary>
         public int day_words { get; set; }
         /// <summary>
-        /// Для определения кол-ва слов и клавиатуры
+        /// Кол-во пройденных тестов
         /// </summary>
-        public bool first_test_passed = false;
+        public int tests_passed = 0;
+        /// <summary>
+        /// Кол-во пройденных кроссвордов
+        /// </summary>
+        public int cross_passed = 0;
+        /// <summary>
+        /// Кол-во пройденных виселиц
+        /// </summary>
+        public int gall_passed = 0;
 
         public List<long> words_to_learn { get; set; }
 

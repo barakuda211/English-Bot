@@ -56,7 +56,8 @@ namespace English_Bot
             var gal = new Gallows(user_id);
 
             SendMessage(gal);
-            Wait_answers_gallows(gal);
+            if (Wait_answers_gallows(gal))
+                EngBot.users[user_id].gall_passed++;
             EngBot.users[user_id].on_Test = false;
         }
 
@@ -79,7 +80,8 @@ namespace English_Bot
 
             SendMessage(scw);
 
-            Wait_normal_answers(scw);
+            if (Wait_normal_answers(scw))
+                EngBot.users[id].cross_passed++;
             EngBot.users[id].on_Test = false;
         }
 

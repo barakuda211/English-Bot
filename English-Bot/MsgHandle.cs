@@ -187,9 +187,13 @@ namespace English_Bot
         static string GetStatics(long id)
         {
             var user = users[id];
-            string ans = $"Уровень: {user.userLevel}\n" +
+            string ans = $"Вы на {users.Place_in_rating(id)} месте по эффективности обучения.\n\n" +
+                         $"Уровень: {user.userLevel}\n" +
                          $"Режим изучения: {(user.mode == Users.Mode.Easy ? "лёгкий" : "сложный")}\n" +
-                         $"Слов изучено: {user.learnedWords.Count()}\n";
+                         $"Слов изучено: {user.learnedWords.Count()}\n" +
+                         $"Тестов пройдено: {user.tests_passed}\n" +
+                         $"Кроссвордов решено: {user.cross_passed}\n" +
+                         $"Виселиц решено: {user.gall_passed}\n";
             return ans;
         }
 

@@ -119,5 +119,23 @@ namespace English_Bot
         }
 
         public bool HasUser(long id) => Dbase == null ? false : Dbase.ContainsKey(id);
+
+        public int Place_in_rating(long id)
+        {
+            var user = Dbase[id];
+            if (user.tests_passed == 0)
+                return -1;
+            double rating = user.learnedWords.Count / user.tests_passed;
+            int place = 1;
+            foreach (var us in Dbase.Values)
+            {
+                if (us.tests_passed == 0)
+                    continue;
+                double r = us.learnedWords.Count / us.tests_passed;
+                if (r > rating)
+                    place++;
+            }
+            return place;
+        }
     }
 }
