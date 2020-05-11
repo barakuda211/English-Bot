@@ -28,7 +28,7 @@ namespace English_Bot
             Directory.CreateDirectory("users\\" + id);
             Console.WriteLine("Registered: " + user.name + " " + user.userId);
             users.Save(); 
-            Testing_Start(id);
+            Testing_Start(id, false);
             /*
             switch (user.regId++)
             {
