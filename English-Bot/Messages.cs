@@ -27,7 +27,7 @@ namespace English_Bot
         /// </summary>
         /// <param name="wordId">Идентификатор слова</param>
         /// <param name="userId">Идентификатор пользователя</param>
-        public static void SendWord(long wordId, long userId)
+        public static void SendWord(long userId, long wordId)
         {
             SendPicture(userId, wordId);
             SendFullWordDescription(userId, wordId);
@@ -630,10 +630,11 @@ namespace English_Bot
         public static bool SendExample(long userId, long wordId)
         {
             // Получаем пример
-            List<string> exams = GetSentenceExemples(dictionary[wordId].eng, 1);
+            List<string> exams = GetSentenceExemples(dictionary[wordId].eng, 5);
             if (exams == null || exams.Count == 0)
-                return false; 
-            string ex = exams[0];
+                return false;
+            Random r = new Random(); 
+            string ex = exams[r.Next(exams.Count)];
 
             // Получаем перевод 
             string translation = "";
@@ -656,7 +657,7 @@ namespace English_Bot
                 Process sound = new Process();
                 Console.WriteLine(Environment.CurrentDirectory);
                 sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
-                sound.StartInfo.Arguments = wordId + " \"" + translation + "\"";
+                sound.StartInfo.Arguments = wordId + " \"" + ex + "\"";
                 sound.Start();
 
                 sound.WaitForExit();
@@ -668,7 +669,7 @@ namespace English_Bot
                 var uploader = new WebClient();
                 var uploadResponseInBytes = uploader.UploadFile(url, file_name);
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-                var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + wordId);
+                var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + wordId + "_" + 0);
 
                 List<VkNet.Model.Attachments.MediaAttachment> atts = new List<VkNet.Model.Attachments.MediaAttachment>();
                 foreach (var a in mess)
@@ -690,6 +691,7 @@ namespace English_Bot
                 Console.WriteLine(e.StackTrace);
             }
 
+            Console.WriteLine("Sound example send to " + userId);
             return true; 
         }
     }

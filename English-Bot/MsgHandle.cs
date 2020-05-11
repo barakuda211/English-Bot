@@ -21,7 +21,7 @@ namespace English_Bot
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
             var text = GetFormatedWord(eventArgs.Message.Text);
-            var answer = "Извини, я понимаю только текстовые сообщения🤔";
+            var answer = "Извини, я понимаю только текстовые сообщения 🤔";
 
             if (!users.HasUser(fromId) || users[fromId].regId != 1)
             {
@@ -43,10 +43,10 @@ namespace English_Bot
             var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (ss.Length == 2)
             {
-                if (ss[0] == "/example")
+                if (ss[0] == "/examples")
                 {
                     var lst = GetSentenceExemples(ss[1]);
-                    if ( lst == null || lst.Count != 0 )
+                    if (lst == null || lst.Count != 0)
                         foreach (var s in lst)
                             SendMessage(fromId, s);
                     else
@@ -56,14 +56,18 @@ namespace English_Bot
                 else if (ss[0] == "/sound")
                 {
                     if (dictionary.eng_ids.ContainsKey(ss[1]))
-                        SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                        SendExample(fromId, dictionary.eng_ids[ss[1]]);
                     return;
                 }
                 else if (ss[0] == "/description")
                 {
                     if (dictionary.eng_ids.ContainsKey(ss[1]))
+                    {
                         SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
-                    return;
+                        return;
+                    }
+                    else
+                        answer = "Описание слова отсутствует";
                 }
             }
             // ----------------------------------------------------------------------------
@@ -74,12 +78,12 @@ namespace English_Bot
                     users[fromId].keyb = User.Help_Keyboard;
                     answer = "/change_level - сменить свой уровень\n" +
                                 "/my_level - мой уровень\n" +
-                                "/example \'слово\'- примеры использования\n" +
+                                "/examples \'слово\'- примеры использования\n" +
                                 "/crossword - сыграть кроссворд\n" +
                                 "/gallows - сыграть в \"виселицу\"\n" +
                                 "/change_complexity - сменить сложность тестирования\n"+
                                 "/description \'слово\' - описание слова\n" + 
-                                "/sound 'слово' - пример с озвучиванием\n" +
+                                "/sound \'слово\' - пример с озвучиванием\n" +
                                 "/mute - бот не будет присылать слова и проводить тесты\n" + 
                                 "/unmute - бот снова перейдёт в стандартный режим\n" +
                                 "/repeat - повторение изученных слов\n" +
@@ -107,7 +111,7 @@ namespace English_Bot
                 case "/gallows":
                     Games.Gallows_Start(fromId);
                     return; 
-                case "/example":
+                case "/examples":
                     answer = "А к чему пример то?)";
                     break;
                 case "/description":
