@@ -117,9 +117,10 @@ namespace English_Bot
             int sleeptime = OneHour; 
             for (int i = 0; i < TimesOfWork; i++)
             {
+                if (users.Dbase != null)
                 foreach (var user in users.Dbase.Values /* .Where(x => x.userId == 203654426) */ )
                 {
-                    if (user.on_Test || user.bot_muted || i + 1 > user.day_words)
+                    if (user.on_Test || user.bot_muted || i + 1 > user.day_words || i + 1 > user.learnedWords.Count)
                         continue; 
 
                     SendWord(user.userId, user.unLearnedWords.ElementAt(i));

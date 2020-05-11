@@ -194,7 +194,8 @@ namespace English_Bot
                          $"Слов изучено: {user.learnedWords.Count()}\n" +
                          $"Тестов пройдено: {user.tests_passed}\n" +
                          $"Кроссвордов решено: {user.cross_passed}\n" +
-                         $"Виселиц решено: {user.gall_passed}\n";
+                         $"Виселиц решено: {user.gall_passed}\n" +
+                         $"Кол-во слов в день: {user.day_words}\n" ;
             return ans;
         }
 

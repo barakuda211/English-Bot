@@ -82,10 +82,13 @@ namespace English_Bot
                 Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
             }
 
-            foreach (var key in Dbase.Keys)
-                Dbase[key].on_Test = false;
-            foreach (var key in Dbase.Keys)
-                Dbase[key].keyb = User.Main_Keyboard;
+            if (Dbase != null)
+            {
+                foreach (var key in Dbase.Keys)
+                    Dbase[key].on_Test = false;
+                foreach (var key in Dbase.Keys)
+                    Dbase[key].keyb = User.Main_Keyboard;
+            }
         }
 
         public void Save()

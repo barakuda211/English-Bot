@@ -283,7 +283,7 @@ namespace English_Bot
             else { goto Next; }
 
         First:
-            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null && !dictionary[x].tags.Contains("added")).ToList();
+            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null && dictionary[x].tags != null && !dictionary[x].tags.Contains("added")).ToList();
 
         Next:
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
