@@ -87,7 +87,7 @@ namespace English_Bot
                     if (users.Dbase != null && users.Dbase.Count != 0)
                         foreach (var user in users.Dbase.Values)
                             if (!user.on_Test && !user.bot_muted)
-                                Testing_Start(user.userId);
+                                Testing_Start(user.userId, false);
                 }
                 /*
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)
@@ -107,40 +107,23 @@ namespace English_Bot
         }
 
         ///<summary>
-        ///метод ,который будет вызывать н раз отправку картинок 
+        /// Отправляет пользователям картнку, описание и пример использования слова один раз в час 
         ///</summary>
-
         public static void WordsSender()
         {
             Sending_Words_Goes = true; 
             Random r = new Random();
             int TimesOfWork = Users.UNLearned;
-            int sleeptime = OneHour; //(int)Math.Ceiling((double)10 / TimesOfWork * 3600000);
+            int sleeptime = OneHour; 
             for (int i = 0; i < TimesOfWork; i++)
             {
-                //var temp = new Dictionary<long, User>();
-                //foreach (var elem in users.Dbase)
-                //temp.Append(elem);
-                //if (temp.Count != 0)
+                if (users.Dbase != null)
                 foreach (var user in users.Dbase.Values /* .Where(x => x.userId == 203654426) */ )
                 {
-                    if (user.on_Test || user.bot_muted || i + 1 > user.day_words)
-                        continue;
-                    bool pic = r.Next(2) % 2 == 0;
-                Desc:
-                    if (pic)
-                    {
-                        bool success = SendPicture(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
-                        if (!success)
-                        {
-                            pic = false;
-                            goto Desc;
-                        }
-                    }
-                    else
-                    {
-                        SendFullWordDescription(user.userId, user.unLearnedWords.ElementAt(i /*r.Next(user.unLearnedWords.Count)*/));
-                    }
+                    if (user.on_Test || user.bot_muted || i + 1 > user.day_words || i + 1 > user.learnedWords.Count)
+                        continue; 
+
+                    SendWord(user.userId, user.unLearnedWords.ElementAt(i));
                 }
                 if (DateTime.Now.Hour == 19)
                 {

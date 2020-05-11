@@ -90,4 +90,11 @@ namespace English_Bot
     {
         public List<Response> response { get; set; }
     }
+
+    public class YandexTranslation
+    {
+        public long code { get; set; }
+        public string lang { get; set; }
+        public string[] text { get; set; }
+    }
 }

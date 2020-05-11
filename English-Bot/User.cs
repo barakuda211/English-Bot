@@ -75,7 +75,8 @@ namespace English_Bot
         public static Keyboard ReadyOrNot_Keyboard = new Keyboard(new Button[] { new Button("Готов", "positive"), new Button("Не готов", "negative") }, true);
         public static Keyboard Main_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Команды бота") },
-            new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") }}, false);
+            new Button[] { new Button("Игра кроссворд"), new Button("Игра виселица") },
+            new Button[] { new Button("Повторить слова") } }, false);
         public static Keyboard Help_Keyboard = new Keyboard(new Button[][] {
             new Button[] { new Button("Моя статистика"), new Button("Добавить слова")},
             new Button[] { new Button("Сменить уровень"), new Button("Сменить сложность") },
@@ -102,7 +103,7 @@ namespace English_Bot
             Random r = new Random(); 
             for (int i = 1; i <= 5; ++i)
             {
-                var list = dict.GetKeysByLevel(i);
+                var list = dict.GetKeysByLevel(i).Where(x => EngBot.dictionary[x].mean_rus != null && EngBot.dictionary[x].tags != null && !EngBot.dictionary[x].tags.Contains("added")).ToList();
                 for (int j = 1; j <= 3; ++j)
                 {
                     unLearnedWords.Add(list.ElementAt(r.Next(list.Count)));
@@ -116,7 +117,7 @@ namespace English_Bot
             day_words = 10;
             // vk_User = vk_user;
             lastMsg = ("", false, 0);
-            mode = Users.Mode.Easy;
+            mode = Users.Mode.Hard;
             keyb = Ready_Keyboard;
             bot_muted = false;
             userLevel = 1;
@@ -155,8 +156,8 @@ namespace English_Bot
             unLearnedWords = UnlearWrds;
             lastMsg = ("", true, 0);
             on_Test = false;
-            ch_lvl_id =0;
-            mode = Users.Mode.Easy; 
+            ch_lvl_id = 0;
+            mode = Users.Mode.Hard; 
             keyb = Ready_Keyboard;
             bot_muted = false;
             week_words = 0;
@@ -169,6 +170,7 @@ namespace English_Bot
             mode = Users.Mode.Easy;
             words_to_learn = new List<long>();
             userLevel = 1;
+            day_words = 10;
         }
 
         public override string ToString()

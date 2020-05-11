@@ -21,7 +21,7 @@ namespace English_Bot
             var peerId = eventArgs.Message.PeerId.Value;
             var fromId = eventArgs.Message.FromId.Value;
             var text = GetFormatedWord(eventArgs.Message.Text);
-            var answer = "Извини, я понимаю только текстовые сообщения🤔";
+            var answer = "Извини, я понимаю только текстовые сообщения 🤔";
 
             if (!users.HasUser(fromId) || users[fromId].regId != 1)
             {
@@ -43,10 +43,10 @@ namespace English_Bot
             var ss = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (ss.Length == 2)
             {
-                if (ss[0] == "/example")
+                if (ss[0] == "/examples")
                 {
                     var lst = GetSentenceExemples(ss[1]);
-                    if ( lst == null || lst.Count != 0 )
+                    if (lst == null || lst.Count != 0)
                         foreach (var s in lst)
                             SendMessage(fromId, s);
                     else
@@ -56,14 +56,31 @@ namespace English_Bot
                 else if (ss[0] == "/sound")
                 {
                     if (dictionary.eng_ids.ContainsKey(ss[1]))
-                        SendSound(fromId, dictionary.eng_ids[ss[1]]);
+                        SendExample(fromId, dictionary.eng_ids[ss[1]]);
                     return;
                 }
                 else if (ss[0] == "/description")
                 {
                     if (dictionary.eng_ids.ContainsKey(ss[1]))
+                    {
                         SendFullWordDescription(fromId, dictionary.eng_ids[ss[1]]);
-                    return;
+                        return;
+                    }
+                    else
+                        answer = "Описание слова отсутствует";
+                    goto Answer;
+                }
+                else if (ss[0] == "/daywords")
+                {
+                    bool b = int.TryParse(ss[1], out int day_words);
+                    if (b && day_words > 0 && day_words < 11)
+                    {
+                        users[fromId].day_words = day_words;
+                        answer = "Количество слов изучаемых в день изменено";
+                    }
+                    else
+                        answer = "Можно задать кол-во слов от 1 до 10";
+                    goto Answer;
                 }
             }
             // ----------------------------------------------------------------------------
@@ -74,13 +91,16 @@ namespace English_Bot
                     users[fromId].keyb = User.Help_Keyboard;
                     answer = "/change_level - сменить свой уровень\n" +
                                 "/my_level - мой уровень\n" +
-                                "/example \'слово\'- примеры использования\n" +
+                                "/examples \'слово\'- примеры использования\n" +
                                 "/crossword - сыграть кроссворд\n" +
                                 "/gallows - сыграть в \"виселицу\"\n" +
                                 "/change_complexity - сменить сложность тестирования\n"+
-                                "/description \'слово\' - описание слова" +
+                                "/description \'слово\' - описание слова\n" + 
+                                "/sound \'слово\' - пример с озвучиванием\n" +
                                 "/mute - бот не будет присылать слова и проводить тесты\n" + 
                                 "/unmute - бот снова перейдёт в стандартный режим\n" +
+                                "/repeat - повторение изученных слов\n" + 
+                                "/daywords \'кол-во слов от 1 до 10\' - смена кол-ва слов в день\n" +
                                 "\'слово на русском\' - перевод на английский\n" +
                                 "\'слово на английском\' - перевод на русский\n" + 
                                 "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -105,7 +125,7 @@ namespace English_Bot
                 case "/gallows":
                     Games.Gallows_Start(fromId);
                     return; 
-                case "/example":
+                case "/examples":
                     answer = "А к чему пример то?)";
                     break;
                 case "/description":
@@ -125,6 +145,18 @@ namespace English_Bot
                 case "/my_list":
                     AddingWords_Start(fromId);
                     return;
+                case "/repeat":
+                case "повторить слова":
+                    if (users[fromId].learnedWords.Count < users[fromId].day_words)
+                    {
+                        answer = "Вы изучили недостаточно слов для проверки";
+                        break;
+                    }
+                    else
+                    {
+                        Testing_Start(fromId, true);
+                        return;
+                    }
                 case "вернуться назад":
                 case "/back":
                     users[fromId].keyb = User.Main_Keyboard;
@@ -154,7 +186,7 @@ namespace English_Bot
                     if (adminIDs.Contains(fromId))
                     {
                         users[fromId].on_Test = true;
-                        Testing_Start(fromId);
+                        Testing_Start(fromId, false);
                         return;
                     }
                     else 
@@ -164,22 +196,11 @@ namespace English_Bot
                     if (ss.Length == 1)
                         answer = Translation(text);
                     else
-                        answer = MultipleTranslation(ss, users[fromId].mode);
-                    // answer = SendInfo(eventArgs.Message);
-                    // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
-                    //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
-                    //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
+                        answer = MultipleTranslation(ss, users[fromId].userLevel);
                     break;
             }  
-            /*
-            instanse.Api.Messages.Send(new MessagesSendParams()
-            {
-                RandomId = Environment.TickCount,
-                PeerId = eventArgs.Message.PeerId,
-                Message = answer,
-                Keyboard = users[fromId].keyb.ToMessageKeyboard()
-            });
-            */
+
+            Answer:
             SendMessage(fromId, answer, null, true);
         }
 
@@ -193,7 +214,8 @@ namespace English_Bot
                          $"Слов изучено: {user.learnedWords.Count()}\n" +
                          $"Тестов пройдено: {user.tests_passed}\n" +
                          $"Кроссвордов решено: {user.cross_passed}\n" +
-                         $"Виселиц решено: {user.gall_passed}\n";
+                         $"Виселиц решено: {user.gall_passed}\n" +
+                         $"Кол-во слов в день: {user.day_words}\n" ;
             return ans;
         }
 

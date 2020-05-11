@@ -91,10 +91,12 @@ namespace English_Bot
         //тестирование пользователя по !10! последним неизученным словам
         static void Testing(object IDobj)
         {
-            long userID = (long)IDobj;
+            (long, bool) val = ((long, bool))IDobj;
+            long userID = val.Item1;
+            bool repeat = val.Item2;
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
-                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " + 
+                                "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
                                 "Переводите слова наиболее близким по вашему мнению словом. ");
             if (users[userID].tests_passed == 0)
                 SendMessage(userID, "Жду вашей команды: \"Готов\". ", null, true);
@@ -106,7 +108,7 @@ namespace English_Bot
             agree.Add("точно");
 
 
-            if (users[userID].tests_passed == 0 )
+            if (users[userID].tests_passed == 0)
             {
                 if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { }, 15, "Ладно, пиши, когда будешь готов."))
                 {
@@ -115,53 +117,23 @@ namespace English_Bot
                     return;
                 }
             }
-            else 
+            else
                 if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { "нет", "не готов", "потом" }, 60, "Ладно, протестируемся потом."))
-                {
-                    users[userID].on_Test = false;
-                    return;
-                } 
+            {
+                users[userID].on_Test = false;
+                return;
+            }
 
             var rand = new Random();
-            /*
-            //если слов меньше, то так тому и быть
-            List<long> lastULW = new List<long>();
-            var w = users.GetUser(userID).unLearnedWords.ToArray(); 
-            while (lastULW.Count < 5)
-            {
-                int i = rand.Next(w.Length);    
-                if (!lastULW.Contains(w[i]))
-                    lastULW.Add(w[i]);
-            } 
-            */
 
-            HashSet<long> lastULW = new HashSet<long>(); 
-            foreach (var word in users[userID].unLearnedWords) 
-            {
-                lastULW.Add(word);
-            }
-            /*
-            var w = users.GetUser(userID).unLearnedWords.ToArray();
-            int add_words = 0;
-            if (w.Count() < 5)
-                add_words = 5 - w.Count();
+            HashSet<long> lastULW = new HashSet<long>();
 
-            
-            for (int i = 0; i < w.Count(); i++)
-            {
-                int j = rand.Next(0,w.Count());      
-                if (!lastULW.Contains(w[j]))
-                    lastULW.Add(w[j]);
-            }
-
-            //дополнение списка слов
-            for (int i = 0; i < add_words; i++)             //TODO: заменить на слова нужного уровня, если возможно
-            {
-                int j = rand.Next(dictionary.Count());
-                if (!lastULW.Contains(dictionary.GetKeys().ElementAt(j)))
-                    lastULW.Add(dictionary.GetKeys().ElementAt(j));
-            }
-            */
+            if (repeat)
+                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(users[userID].day_words))
+                    lastULW.Add(id);
+            else
+                foreach (var word in users[userID].unLearnedWords)
+                    lastULW.Add(word);
 
             //лист для проверки ответов
             List<long> msgIDs = new List<long>();
@@ -201,14 +173,7 @@ namespace English_Bot
 
                 List<string> wrds = new List<string>();
                 if (r == 1 /*|| word.mean_rus == null*/)
-                { /*
-                    wrds.Add(word.eng);
-                    //if (word.mean_eng != null)
-                        foreach (var def in word.mean_eng.def)
-                            foreach (var tr in def.tr)
-                                //if (tr.syn != null)
-                                //wrds.AddRange(tr.syn.Select(x => x.text));
-                                wrds.Add(tr.text); */
+                {
                     wrds.Add(word.eng);
                     if (dictionary.rus_ids.ContainsKey(word.rus))
                         wrds.AddRange(dictionary.rus_ids[word.rus].Select(x => dictionary[x].eng));
@@ -239,23 +204,24 @@ namespace English_Bot
             users[userID].week_words += good_words;
 
             // Добавляем верные ответы в изученные слова и убираем из невыученных
-            foreach (var id in msgIDs.FindAll(x => x < 0))
-            {
-                try
+            if (!repeat)
+                foreach (var id in msgIDs.FindAll(x => x < 0))
                 {
-                    users[userID].learnedWords.Add(-id);
-                    users[userID].unLearnedWords.Remove(-id);
+                    try
+                    {
+                        users[userID].learnedWords.Add(-id);
+                        users[userID].unLearnedWords.Remove(-id);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Something wrong in removing unlearned or adding learned words");
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
+                    }
                 }
-                catch(Exception e)
-                {
-                    Console.WriteLine("Something wrong in removing unlearned or adding learned words");
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                }
-            }
 
             //исправление ошибок юзера
-            if (msgIDs.FindAll(x => x < 0).Count() < lastULW.Count())//если есть ошибки
+            if (msgIDs.FindAll(x => x < 0).Count() < lastULW.Count()) //если есть ошибки
             {
                 SendMessage(userID, "Вы ошиблись в следующем:");
                 /*
@@ -271,14 +237,19 @@ namespace English_Bot
                     {
                         var temp = dictionary.GetWord(pnt.B);
                         //aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
-                        SendMessage(userID, $"\n{temp.eng} - {(temp.rus == null ? "?" : temp.rus)}"/*, aError*/);
+                        SendMessage(userID, $"\n{temp.eng} - { Translation(temp.eng) /*(temp.rus == null ? "?" : temp.rus)*/}"/*, aError*/);
                     }
                 }
             }
             Console.WriteLine("Errata shown --------------------");
 
+            if (repeat)
+            {
+                goto End;
+            }
+
             // if first prob 
-            if (users[userID].userLevel == 0)
+            if (users[userID].tests_passed == 0)
             {
                 int lev = (int)Math.Floor((double)msgIDs.FindAll(x => x < 0).Select(x => dictionary[-x].level).Sum() / 9);
                 users[userID].userLevel = lev == 5 ? lev : lev + 1;
@@ -308,11 +279,11 @@ namespace English_Bot
                     SendMessage(userID, "Поздравляем, Вы перешли на уровень " + users[userID].userLevel);
                 }
                 Console.WriteLine("Level changed! ----------");
-            } 
+            }
             else { goto Next; }
 
         First:
-            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
+            words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null && dictionary[x].tags != null && !dictionary[x].tags.Contains("added")).ToList();
 
         Next:
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
@@ -324,6 +295,8 @@ namespace English_Bot
                 words_level.RemoveAt(value);
             }
             Console.WriteLine("Words added to 10 ---------------");
+
+        End:
             Fin(userID);
         }
 
@@ -331,19 +304,19 @@ namespace English_Bot
         {
             users[id].on_Test = false;
             users[id].tests_passed++;
-            // users.Save();
+            users.Save();
             users[id].keyb = User.Main_Keyboard;
             SendMessage(id, "Завтра продолжим :)", null, true);
         }
 
-        static void Testing_Start(long id)
+        static void Testing_Start(long id, bool repeat)
         {
             var user = users[id];
             user.on_Test = true;
             if (user.keyb == User.Main_Keyboard)
                 user.keyb = User.ReadyOrNot_Keyboard;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
-            testingThread.Start(id);
+            testingThread.Start((id, repeat));
         }
 
         static bool WaitAgreeFromUser_Timer(long userID, string[] agree, string[] deny, int wait_time, string wait_message, string wrong_ans = "Не понял")
