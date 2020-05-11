@@ -14,6 +14,7 @@ using NAudio;
 using Alvas.Audio;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 using System.Collections.Generic;
 using static System.Math;
 
@@ -494,6 +495,11 @@ namespace English_Bot
                         byte[] data = dr.ReadData();
                         ww.WriteData(data);
                     }
+                    Console.WriteLine("Audio created successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("No audio in this file");
                 }
             }
             return file + ".ogg";
@@ -510,6 +516,7 @@ namespace English_Bot
         {
             try
             {
+                /*
                 SpeechSynthesizer speechSynth = new SpeechSynthesizer();
                 string file_name = word + "_sound";
                 {
@@ -521,6 +528,7 @@ namespace English_Bot
                     p.AppendText((list != null && list.Count > 0) ? list[0] : (dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". ")));
                     speechSynth.Speak(p);
                 }
+                */
                 /*
                 using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
                 {
@@ -528,7 +536,16 @@ namespace English_Bot
                 }
                 */
 
-                file_name = ToOgg(file_name + ".wav");
+                Process sound = new Process();
+                Console.WriteLine(Environment.CurrentDirectory);
+                sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
+                sound.StartInfo.Arguments = word + " \"" + GetSentenceExemples(dictionary[word].eng)[0] + "\"";
+                sound.Start();
+
+                sound.WaitForExit(1000);
+
+                // string file_name = ToOgg(word + "_sound");
+                string file_name = word + "_sound.wav";
 
                 string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
 
@@ -537,14 +554,18 @@ namespace English_Bot
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
                 // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
                 // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-                var mess = (System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)bot.Api.Docs.Save(uploadResponseInString, "voice" + word).Select(x => x.Instance);
+                var mess = /* (System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>) */ bot.Api.Docs.Save(uploadResponseInString, "voice" + word); // .Select(x => x.Instance);
                 //(System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)
+
+                List<VkNet.Model.Attachments.MediaAttachment> atts = new List<VkNet.Model.Attachments.MediaAttachment>();
+                foreach (var a in mess)
+                    atts.Add(a.Instance);
 
                 bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
                 {
                     RandomId = Environment.TickCount64,
                     UserId = id,
-                    Attachments = mess
+                    Attachments = atts
                 });
             }
             catch (Exception e)
