@@ -258,7 +258,7 @@ namespace Crossword
             up_height = area_height / 2;
             border = block_sz;
             this.id = id;
-            
+
             var user = EngBot.users[id];
 
             //делаем списки выученных/невыученных слов
@@ -271,23 +271,30 @@ namespace Crossword
             randomize_list(learned);
             randomize_list(unlearned);
 
-            if (!init_main_word(learned, min_sz, max_sz)) //заполнение главного слова
-                if (!init_main_word(unlearned, min_sz, max_sz))
-                    init_main_word(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel),min_sz,max_sz);
-
-            words = new List<(string, long, int)>(main_word.Item1.Length);
-            is_answered = new List<bool>(main_word.Item1.Length);
-            legend = new List<string>(main_word.Item1.Length);
-            for (int i = 0; i < main_word.Item1.Length; i++)
+            int count = 0;
+            while (true)
             {
-                words.Add(("", -1, -1));
-                is_answered.Add(false);
-                legend.Add("");            
-            }
+                count++;
+                if (count > 2 || !init_main_word(learned, min_sz, max_sz)) //заполнение главного слова
+                    if (count > 4 || !init_main_word(unlearned, min_sz, max_sz))
+                        init_main_word(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), min_sz, max_sz);
 
-            if (!init_words(learned, area_height)) //заполнение главного слова
-                if (!init_words(unlearned, area_height))
-                    init_words(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), area_height);
+                words = new List<(string, long, int)>(main_word.Item1.Length);
+                is_answered = new List<bool>(main_word.Item1.Length);
+                legend = new List<string>(main_word.Item1.Length);
+                for (int i = 0; i < main_word.Item1.Length; i++)
+                {
+                    words.Add(("", -1, -1));
+                    is_answered.Add(false);
+                    legend.Add("");
+                }
+
+                if (!init_words(learned, area_height)) //заполнение главного слова
+                    if (!init_words(unlearned, area_height))
+                        if (!init_words(EngBot.dictionary.GetKeysByLevel_hash(user.userLevel), area_height))
+                            continue;
+                break;
+            }
 
             correct_height();
             try
@@ -324,7 +331,8 @@ namespace Crossword
         {
             for (int i=0;i<words.Count;i++)
             {
-                string w = char.ToUpper(EngBot.dictionary[words[i].Item2].rus[0]).ToString() + EngBot.dictionary[words[i].Item2].rus.Substring(1);
+                string x = EngBot.Translation(words[i].Item1);
+                string w = char.ToUpper(x[0]).ToString() + x.Substring(1);
                 legend[i] = (i+1).ToString() +") "+ w + "\n";
             }
         }

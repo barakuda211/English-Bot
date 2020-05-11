@@ -211,9 +211,11 @@ namespace English_Bot
             //return message; 
         } 
 
-        static string Translation(string word)
+        public static string Translation(string word)
         {
             word = GetFormatedWord(word); 
+
+            
 
             string no_word = "Я не знаю такого слова :(";
             string no_tr = "Перевод отсутствует";
