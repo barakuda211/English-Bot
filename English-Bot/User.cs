@@ -81,6 +81,7 @@ namespace English_Bot
             new Button[] { new Button("Моя статистика"), new Button("Добавить слова")},
             new Button[] { new Button("Сменить уровень"), new Button("Сменить сложность") },
             new Button[] { new Button("Хватит меня учить"), new Button("Нет, учи меня") },
+            new Button[] { new Button("Кол-во слов в день") },
             new Button[] { new Button("Вернуться назад", "negative") }}, false);
         public static Keyboard ChangingLevel_Keyboard = new Keyboard(new Button[][]{
             new Button[] { new Button("1"),new Button("2"), new Button("3")},
@@ -91,6 +92,30 @@ namespace English_Bot
         // public static Keyboard Gallows_KeyBoard2 = new Keyboard(new Button[] { new Button("Я сдаюсь", "negative")}, false);
         public static Keyboard Complexity_Keyboard = new Keyboard(new Button[] {new Button("Лёгкий","positive"), new Button("Сложный","negative")},false);
         public static Keyboard Back_Keyboard = new Keyboard(new Button[] { new Button("Вернуться назад", "negative") });
+
+        public static Keyboard DayWordsKeyb(int k)
+        {
+            var kb = new Keyboard(new Button[][]{
+            new Button[] { new Button("1"),new Button("2"), new Button("3"), new Button("4"), new Button("5")},
+            new Button[] { new Button("6"),new Button("7"), new Button("8"), new Button("9"), new Button("10")}}, false);
+            for (int i = 0; i < kb.buttons.Length; i++)
+                for (int j = 0; j < kb.buttons[i].Length; j++)
+                    if (kb.buttons[i][j].action.label == k.ToString())
+                        kb.buttons[i][j].color = "primary";
+            return kb;
+        }
+
+        public static Keyboard ChangingLevelKeyb(int k)
+        {
+            var kb = new Keyboard(new Button[][]{
+            new Button[] { new Button("1"),new Button("2"), new Button("3")},
+            new Button[] { new Button("4"), new Button("5"),new Button("-1") }}, false);
+            for (int i = 0; i < kb.buttons.Length; i++)
+                for (int j = 0; j < kb.buttons[i].Length; j++)
+                    if (kb.buttons[i][j].action.label == k.ToString())
+                        kb.buttons[i][j].color = "primary";
+            return kb;
+        }
 
         public User(VkUser vk_user, WordsDictionary dict)
         {
