@@ -544,7 +544,8 @@ namespace English_Bot
                 Process sound = new Process();
                 Console.WriteLine(Environment.CurrentDirectory);
                 sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
-                sound.StartInfo.Arguments = word + " \"" + GetSentenceExemples(dictionary[word].eng)[0] + "\"";
+                string mes = GetSentenceExemples(dictionary[word].eng)[0];
+                sound.StartInfo.Arguments = word + " \"" + mes + "\"";
                 sound.Start();
 
                 sound.WaitForExit();
@@ -566,7 +567,8 @@ namespace English_Bot
                 {
                     RandomId = Environment.TickCount64,
                     UserId = id,
-                    Attachments = atts
+                    Attachments = atts, 
+                    Message = mes
                 });
             }
             catch (Exception e)

@@ -304,7 +304,7 @@ namespace English_Bot
         {
             users[id].on_Test = false;
             users[id].tests_passed++;
-            // users.Save();
+            users.Save();
             users[id].keyb = User.Main_Keyboard;
             SendMessage(id, "Завтра продолжим :)", null, true);
         }
