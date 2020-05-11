@@ -237,7 +237,7 @@ namespace English_Bot
                     {
                         var temp = dictionary.GetWord(pnt.B);
                         //aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
-                        SendMessage(userID, $"\n{temp.eng} - {(temp.rus == null ? "?" : temp.rus)}"/*, aError*/);
+                        SendMessage(userID, $"\n{temp.eng} - { Translation(temp.eng) /*(temp.rus == null ? "?" : temp.rus)*/}"/*, aError*/);
                     }
                 }
             }
