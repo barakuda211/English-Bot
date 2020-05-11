@@ -87,7 +87,7 @@ namespace English_Bot
                     if (users.Dbase != null && users.Dbase.Count != 0)
                         foreach (var user in users.Dbase.Values)
                             if (!user.on_Test && !user.bot_muted)
-                                Testing_Start(user.userId);
+                                Testing_Start(user.userId, false);
                 }
                 /*
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday && Time == 21)

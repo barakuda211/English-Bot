@@ -81,6 +81,7 @@ namespace English_Bot
                                 "/description \'слово\' - описание слова\n" +
                                 "/mute - бот не будет присылать слова и проводить тесты\n" + 
                                 "/unmute - бот снова перейдёт в стандартный режим\n" +
+                                "/repeat - повторение изученных слов\n" +
                                 "\'слово на русском\' - перевод на английский\n" +
                                 "\'слово на английском\' - перевод на русский\n" + 
                                 "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -125,6 +126,10 @@ namespace English_Bot
                 case "/my_list":
                     AddingWords_Start(fromId);
                     return;
+                case "/repeat":
+                case "Повторить слова":
+                    Testing_Start(fromId, true);
+                    return; 
                 case "вернуться назад":
                 case "/back":
                     users[fromId].keyb = User.Main_Keyboard;
@@ -154,7 +159,7 @@ namespace English_Bot
                     if (adminIDs.Contains(fromId))
                     {
                         users[fromId].on_Test = true;
-                        Testing_Start(fromId);
+                        Testing_Start(fromId, false);
                         return;
                     }
                     else 
@@ -164,22 +169,10 @@ namespace English_Bot
                     if (ss.Length == 1)
                         answer = Translation(text);
                     else
-                        answer = MultipleTranslation(ss, users[fromId].mode);
-                    // answer = SendInfo(eventArgs.Message);
-                    // if (text[0] > 'A' && text[0] < 'z' && dictionary.GetEngWordId(text) != -1)
-                    //SendPicture(eventArgs.Message.PeerId.Value, dictionary.GetEngWordIds(text).ElementAt(0));
-                    //SendFullWordDescription(eventArgs.Message.PeerId.Value, text);
+                        answer = MultipleTranslation(ss, users[fromId].userLevel);
                     break;
             }  
-            /*
-            instanse.Api.Messages.Send(new MessagesSendParams()
-            {
-                RandomId = Environment.TickCount,
-                PeerId = eventArgs.Message.PeerId,
-                Message = answer,
-                Keyboard = users[fromId].keyb.ToMessageKeyboard()
-            });
-            */
+
             SendMessage(fromId, answer, null, true);
         }
 
