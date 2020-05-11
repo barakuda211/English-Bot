@@ -96,7 +96,7 @@ namespace English_Bot
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " + 
                                 "Переводите слова наиболее близким по вашему мнению словом. ");
-            if (users[userID].unLearnedWords.Count == 15)
+            if (users[userID].tests_passed == 0)
                 SendMessage(userID, "Жду вашей команды: \"Готов\". ", null, true);
             else
                 SendMessage(userID, "Жду вашей команды: \"Готов\" или \"Не готов\". ", null, true);
@@ -106,7 +106,7 @@ namespace English_Bot
             agree.Add("точно");
 
 
-            if (users[userID].unLearnedWords.Count == 15)
+            if (users[userID].tests_passed == 0 )
             {
                 if (!WaitAgreeFromUser_Timer(userID, agree.ToArray(), new string[] { }, 15, "Ладно, пиши, когда будешь готов."))
                 {
@@ -330,6 +330,7 @@ namespace English_Bot
         static void Fin(long id)
         {
             users[id].on_Test = false;
+            users[id].tests_passed++;
             // users.Save();
             users[id].keyb = User.Main_Keyboard;
             SendMessage(id, "Завтра продолжим :)", null, true);
