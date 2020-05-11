@@ -127,9 +127,17 @@ namespace English_Bot
                     AddingWords_Start(fromId);
                     return;
                 case "/repeat":
-                case "Повторить слова":
-                    Testing_Start(fromId, true);
-                    return; 
+                case "повторить слова":
+                    if (users[fromId].learnedWords.Count < users[fromId].day_words)
+                    {
+                        answer = "Вы изучили недостаточно слов для проверки";
+                        break;
+                    }
+                    else
+                    {
+                        Testing_Start(fromId, true);
+                        return;
+                    }
                 case "вернуться назад":
                 case "/back":
                     users[fromId].keyb = User.Main_Keyboard;

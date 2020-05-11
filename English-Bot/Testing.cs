@@ -129,7 +129,7 @@ namespace English_Bot
             HashSet<long> lastULW = new HashSet<long>();
 
             if (repeat)
-                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(10))
+                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(users[userID].day_words))
                     lastULW.Add(id);
             else
                 foreach (var word in users[userID].unLearnedWords)
