@@ -22,6 +22,23 @@ namespace English_Bot
 {
     partial class EngBot
     {
+        /// <summary>
+        /// Отправояет пользователю картинку, описание и примеры
+        /// </summary>
+        /// <param name="wordId">Идентификатор слова</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        public static void SendWord(long wordId, long userId)
+        {
+            SendPicture(userId, wordId);
+            SendFullWordDescription(userId, wordId);
+            SendExample(userId, wordId);
+        }
+
+        /// <summary>
+        /// Добавляет в словарь [русское слово, список переводов] ключи по данному слову
+        /// </summary>
+        /// <param name="word">Слово классо Word</param>
+        /// <returns>Возвращает true, если слова были добавлены</returns>
         private static bool AddRusIds(Word word)
         {
             try
@@ -61,6 +78,11 @@ namespace English_Bot
             }
         }
 
+        /// <summary>
+        /// Пробует добавить в словарь данное слово на английском
+        /// </summary>
+        /// <param name="word">Строка, содержащая слово</param>
+        /// <returns>Возвращает true, если слово было добавлено</returns>
         private static bool TryToAddEnglishWord(string word)
         {
             if (dictionary.eng_ids.ContainsKey(word))
@@ -85,23 +107,24 @@ namespace English_Bot
                 long add_id = dictionary.GetKeys().Max() + 1;
 
                 if (mean_rus.def.Count > 0 && mean_eng.def.Count == 0)
-                    add_word = new Word(add_id, word, mean_rus.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "rus_only" });
+                    add_word = new Word(add_id, word, mean_rus.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "rus_only", "added" });
                 else if (mean_rus.def.Count == 0 && mean_eng.def.Count > 0)
-                    add_word = new Word(add_id, word, mean_eng.def[0].ts, null, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "eng_only" });
-                else add_word = new Word(add_id, word, mean_eng.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, null);
+                    add_word = new Word(add_id, word, mean_eng.def[0].ts, null, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "eng_only", "added" });
+                else add_word = new Word(add_id, word, mean_eng.def[0].ts, mean_rus.def[0].tr[0].text, mean_eng, mean_rus, null, null, -1, new HashSet<string> { "added" });
 
                 bool add_good = dictionary.AddWord(add_word);
                 if (!add_good)
                     return false;
 
                 dictionary.eng_ids.Add(word, add_id);
-
+                
                 if (add_word.mean_rus != null)
                 {
                     bool b = AddRusIds(add_word);
                     if (!b)
                         add_word.tags.Add("no_in_rus_ids");
                 }
+                
                 return true; 
             }
             catch (Exception e)
@@ -113,6 +136,11 @@ namespace English_Bot
             }
         }
 
+        /// <summary>
+        /// Добавляет в список [русское слово, список переводов] ключ по заданниму слову
+        /// </summary>
+        /// <param name="word">Строка, содержащая русское слово</param>
+        /// <returns>Возвращает true, если слово было добавлено</returns>
         private static bool TryToAddRussianWord(string word)
         {
             try
@@ -166,7 +194,8 @@ namespace English_Bot
         /// <summary>
         /// Отправляет пользователю полную информацию о слове по его ID
         /// </summary>
-        /// <param name="wordId"></param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <param name="wordId">Идентификатор слова</param>
         static void SendFullWordDescription(long userId, long wordId)
         {
             string message = "";
@@ -211,11 +240,14 @@ namespace English_Bot
             //return message; 
         } 
 
+        /// <summary>
+        /// Краткий список слов, которыми данное словов можно прервести
+        /// </summary>
+        /// <param name="word">Строка, содержащая слово</param>
+        /// <returns>Список переводов</returns>
         public static string Translation(string word)
         {
             word = GetFormatedWord(word); 
-
-            
 
             string no_word = "Я не знаю такого слова :(";
             string no_tr = "Перевод отсутствует";
@@ -285,17 +317,29 @@ namespace English_Bot
             return no_word; 
         }
 
-        static string MultipleTranslation(string[] text, Users.Mode m)
+        /// <summary>
+        /// Перевод всех английских слов, найденных в тексте
+        /// </summary>
+        /// <param name="text">Массив слов</param>
+        /// <param name="level">Минимальный уровень слова</param>
+        /// <returns>Список переводов слов</returns>
+        static string MultipleTranslation(string[] text, int level = 1)
         {
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= (int)m || dictionary[dictionary.eng_ids[word]].level == -1))
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= level || dictionary[dictionary.eng_ids[word]].level == -1))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
             return answer == "" ? "Не было найдено английских слов для перевода" : answer;
         }
 
+        /// <summary>
+        /// Отправляет пользователю картинку со словом, транскрипцией и переводом
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <param name="word">Идентификатор слова</param>
+        /// <returns>Возвращает true, если отправка прошла успешно</returns>
         static bool SendPicture(long id, long word)
         {
             try
@@ -344,33 +388,6 @@ namespace English_Bot
                 stringFormat.Alignment = StringAlignment.Center;
                 stringFormat.LineAlignment = StringAlignment.Center;
                 stringFormat.FormatFlags = StringFormatFlags.FitBlackBox;
-
-                /*
-                HatchBrush hBrush = 
-                    new HatchBrush(
-                        HatchStyle.Trellis,
-                        Color.Red,
-                        Color.FromArgb(255, 128, 255, 255));
-   
-
-                var path = new GraphicsPath();
-                path.AddRectangle(new Rectangle(0, 0, 640, 480));
-                PathGradientBrush pthGrBrush = new PathGradientBrush(path);
-                Color[] colors = { Color.FromArgb(255, 0, 255, 255), Color.Black, Color.White };
-                pthGrBrush.SurroundColors = colors;
-
-                LinearGradientBrush brush =
-                    new LinearGradientBrush(
-                        new Point(0, 0),
-                        new Point(640, 480),
-                        Color.FromArgb(255, 0, 0),
-                        Color.FromArgb(0, 155, 255)
-                        );
-
-                var t = (Image)bitmap.Clone();
-                t.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                TextureBrush tBrush = new TextureBrush(t); 
-                */
 
                 // Размер текста
                 float emSize = Min(width * 125 / graphImage.DpiX, height * 125 / graphImage.DpiY);
@@ -466,7 +483,10 @@ namespace English_Bot
             return true;
         }
 
-        
+        /// <summary>
+        /// Вспомогательная функция преобразования Ogg в Wav
+        /// </summary>
+        /// <param name="file">Имя файла</param>
         static void ToWav(string file)
         {
             using (DsReader dr = new DsReader(file))
@@ -484,6 +504,11 @@ namespace English_Bot
             }
         }
 
+        /// <summary>
+        /// Вспомогательная функция преобразования Wav в Ogg
+        /// </summary>
+        /// <param name="file">Имя файла</param>
+        /// <returns>Новое имя файла</returns>
         static string ToOgg(string file)
         {
             using (DsReader dr = new DsReader(file))
@@ -507,46 +532,23 @@ namespace English_Bot
             return file + ".ogg";
         }
 
-        /*
-        static void ToOgg(string file)
-        {
-            Sox.Convert(@"c:\Program Files (x86)\sox-14-4-1\sox.exe", file, file + ".ogg");
-        }
-        */
-
+        /// <summary>
+        /// Отправляет пользователю аудиосообщение с примером на английском
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <param name="word">Идентификатор слова</param>
         static void SendSound(long id, long word)
         {
             try
             {
-                /*
-                SpeechSynthesizer speechSynth = new SpeechSynthesizer();
-                string file_name = word + "_sound";
-                {
-                    speechSynth.SetOutputToWaveFile(file_name + ".wav");
-                    speechSynth.Volume = 50;
-                    PromptBuilder p = new PromptBuilder(System.Globalization.CultureInfo.GetCultureInfo("en-IO"));
-                    // p.AppendText(dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". "));
-                    var list = GetSentenceExemples(dictionary[word].eng);
-                    p.AppendText((list != null && list.Count > 0) ? list[0] : (dictionary[word].eng + ". " + dictionary[word].mean_rus.def.Select(x => x.tr[0].ex[0].text + ". ")));
-                    speechSynth.Speak(p);
-                }
-                */
-                /*
-                using (NAudio.Wave.WaveFileReader reader = new NAudio.Wave.WaveFileReader(file_name))
-                {
-                    // :3
-                }
-                */
-
                 Process sound = new Process();
                 Console.WriteLine(Environment.CurrentDirectory);
                 sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
                 sound.StartInfo.Arguments = word + " \"" + GetSentenceExemples(dictionary[word].eng)[0] + "\"";
                 sound.Start();
 
-                sound.WaitForExit(1000);
+                sound.WaitForExit();
 
-                // string file_name = ToOgg(word + "_sound");
                 string file_name = word + "_sound.wav";
 
                 string url = bot.Api.Docs.GetMessagesUploadServer(id, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
@@ -554,10 +556,7 @@ namespace English_Bot
                 var uploader = new WebClient();
                 var uploadResponseInBytes = uploader.UploadFile(url, file_name);
                 var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-                // var voice = Methods.DeSerializationObjFromStr<VkVoice>(uploadResponseInString);
-                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-                var mess = /* (System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>) */ bot.Api.Docs.Save(uploadResponseInString, "voice" + word); // .Select(x => x.Instance);
-                //(System.Collections.ObjectModel.ReadOnlyCollection<VkNet.Model.Attachments.MediaAttachment>)
+                var mess =  bot.Api.Docs.Save(uploadResponseInString, "voice" + word); 
 
                 List<VkNet.Model.Attachments.MediaAttachment> atts = new List<VkNet.Model.Attachments.MediaAttachment>();
                 foreach (var a in mess)
@@ -578,43 +577,118 @@ namespace English_Bot
             }
         } 
 
+        /// <summary>
+        /// Отправляет пользователю текст по его голосовому сообщению
+        /// </summary>
+        /// <param name="message">Событие, содержащее звук</param>
         static void SendRecognition(EventArgs message)
         {
             SpeechRecognizer rec = new SpeechRecognizer(); 
             
         }
 
+        /// <summary>
+        /// Получает список примеров использования слова
+        /// </summary>
+        /// <param name="word">Само слово (Строка)</param>
+        /// <param name="cnt">Количество примеров</param>
+        /// <returns>Список примеров (Строк)</returns>
         static List<string> GetSentenceExemples(string word, int cnt = 5)
         {
             //HashSet<string> s_Exs = new HashSet<string>();
             List<string> s_Exs = new List<string>();
             //if (dictionary.GetRusWordIds(word).Count > 0)
 
-            if (word[0] >= 'а' && word[0] <= 'я')       //заглушка
+            if (!word.All(x => x >= 'a' && x <= 'z'))       // если слово не аннглийское
                 return new List<string>() { "Я ожидал английское слово." };
 
+            try
             {
-                try
+
+                WebClient webclient = new WebClient();
+                webclient.Headers.Add(HttpRequestHeader.UserAgent, "Only a test!");
+                string html = webclient.DownloadString("https://context.reverso.net/translation/english-russian/" + word);
+
+                Regex r_Exs = new Regex(@"(.+\W" + word + @"\W.+)<\/span>");
+
+                foreach (Match m in r_Exs.Matches(html))
                 {
-
-                    WebClient webclient = new WebClient();
-                    webclient.Headers.Add(HttpRequestHeader.UserAgent, "Only a test!");
-                    string html = webclient.DownloadString("https://context.reverso.net/translation/english-russian/" + word);
-
-                    Regex r_Exs = new Regex(@"(.+\W" + word + @"\W.+)<\/span>");
-
-                    foreach (Match m in r_Exs.Matches(html))
-                    {
-                        s_Exs.Add(m.Groups[1].Value.Replace("<em>", "").Replace("</em>", ""));
-                    }
-                    return s_Exs.Take(cnt).ToList();
+                    s_Exs.Add(m.Groups[1].Value.Replace("<em>", "").Replace("</em>", ""));
                 }
-                catch (WebException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                return s_Exs.Take(cnt).ToList();
             }
+            catch (WebException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             return s_Exs.ToList();
+        }
+
+        public static bool SendExample(long userId, long wordId)
+        {
+            // Получаем пример
+            List<string> exams = GetSentenceExemples(dictionary[wordId].eng, 1);
+            if (exams == null || exams.Count == 0)
+                return false; 
+            string ex = exams[0];
+
+            // Получаем перевод 
+            string translation = "";
+            try
+            {
+                string request = "https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20200331T105452Z.ece56d99f19664a4.384a062311e0d7549c5a10da8a9bd445752e64ab&text=" + ex;
+                YandexTranslation tr = Methods.DeSerializationObjFromStr<YandexTranslation>(Methods.Request(request));
+                translation = tr.text[0];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in gettting translation in SendExample: wordId = " + wordId + ", userId = " + userId);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
+
+            // Получаем звук 
+            try
+            {
+                Process sound = new Process();
+                Console.WriteLine(Environment.CurrentDirectory);
+                sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
+                sound.StartInfo.Arguments = wordId + " \"" + translation + "\"";
+                sound.Start();
+
+                sound.WaitForExit();
+
+                string file_name = wordId + "_sound.wav";
+
+                string url = bot.Api.Docs.GetMessagesUploadServer(userId, VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage).UploadUrl;
+
+                var uploader = new WebClient();
+                var uploadResponseInBytes = uploader.UploadFile(url, file_name);
+                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+                var mess = bot.Api.Docs.Save(uploadResponseInString, "voice" + wordId);
+
+                List<VkNet.Model.Attachments.MediaAttachment> atts = new List<VkNet.Model.Attachments.MediaAttachment>();
+                foreach (var a in mess)
+                    atts.Add(a.Instance);
+
+                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                {
+                    RandomId = Environment.TickCount64,
+                    UserId = userId,
+                    Message = "Пример использования " + dictionary[wordId].eng.ToUpper() + ":\n" +
+                    ex + "\n" + translation, 
+                    Attachments = atts
+                }) ;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something wrong in Sending Sound in SendExample");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return true; 
         }
     }
 }
