@@ -68,6 +68,7 @@ namespace English_Bot
                     }
                     else
                         answer = "Описание слова отсутствует";
+                    goto Answer;
                 }
                 else if (ss[0] == "/daywords")
                 {
@@ -79,6 +80,7 @@ namespace English_Bot
                     }
                     else
                         answer = "Можно задать кол-во слов от 1 до 10";
+                    goto Answer;
                 }
             }
             // ----------------------------------------------------------------------------
@@ -198,6 +200,7 @@ namespace English_Bot
                     break;
             }  
 
+            Answer:
             SendMessage(fromId, answer, null, true);
         }
 
