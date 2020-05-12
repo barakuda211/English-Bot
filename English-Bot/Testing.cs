@@ -227,7 +227,9 @@ namespace English_Bot
                 }
 
             //исправление ошибок юзера
-            if (msgIDs.FindAll(x => x < 0).Count() < lastULW.Count()) //если есть ошибки
+            int good_answers = msgIDs.FindAll(x => x < 0).Count();
+            int bad_answers = msgIDs.Count - good_answers; 
+            if (good_answers < lastULW.Count()) //если есть ошибки
             {
                 SendMessage(userID, "Вы ошиблись в следующем:");
                 /*
@@ -309,6 +311,8 @@ namespace English_Bot
 
             if (!repeat)
                 SendMessage(userID, "Завтра продолжим :)", null, true);
+            else
+                SendMessage(userID, (good_answers > bad_answers ? "Отлично! " : "Повторяйте слова чаще. ") + "Повторение - ключ к успеху :)", null, true);
         }
 
         static void Fin(long id)
