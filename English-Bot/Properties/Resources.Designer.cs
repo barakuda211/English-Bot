@@ -61,7 +61,7 @@ namespace English_Bot.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на c3eb5026b1cdc9945a97c2d6018d548a6f06c972eea55812b9b3df43efb9f749c93b7be5f1bb2573aaa44.
+        ///   Ищет локализованную строку, похожую на d607a1e5304fe84dfe3a3e626eef7b511285ba3b33cfd9c5d92747527c3ba3975bd1cc22fdad8b0b65628.
         /// </summary>
         internal static string AccessToken {
             get {
@@ -70,7 +70,7 @@ namespace English_Bot.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на 53d6c4cf69ffd56664091883ff4e5d9dcc46619fbaefa88cf38c7fcff21f7f3ba2eca0c54ab3091b9658c.
+        ///   Ищет локализованную строку, похожую на 9d6edea1300ede68613e684392fad0bc199d51ed757c981de6d0309bb40985fbe9475e076ee94042e6ca8.
         /// </summary>
         internal static string AccessToken2 {
             get {

@@ -20,8 +20,10 @@ namespace English_Bot
         public Gallows(long user_id)
         {
             this.user_id = user_id;
+            var user = EngBot.users[user_id];
             success = false; 
             var list = EngBot.users[user_id].learnedWords;
+
             long word_id; 
             do
             {

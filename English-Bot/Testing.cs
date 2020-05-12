@@ -298,6 +298,9 @@ namespace English_Bot
 
         End:
             Fin(userID);
+
+            if (!repeat)
+                SendMessage(userID, "Завтра продолжим :)", null, true);
         }
 
         static void Fin(long id)
@@ -306,7 +309,6 @@ namespace English_Bot
             users[id].tests_passed++;
             users.Save();
             users[id].keyb = User.Main_Keyboard;
-            SendMessage(id, "Завтра продолжим :)", null, true);
         }
 
         static void Testing_Start(long id, bool repeat)
