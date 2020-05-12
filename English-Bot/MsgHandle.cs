@@ -28,6 +28,11 @@ namespace English_Bot
                 Registration(eventArgs.Message);
                 return;
             }
+            
+            if (eventArgs.Message.Attachments.Any(x => x.Type.IsInstanceOfType(VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage)))
+            {
+                HandleAudioMessage(fromId, eventArgs.Message.Attachments[0]); 
+            }
 
             if (text == null && text.Length == 0)
             {

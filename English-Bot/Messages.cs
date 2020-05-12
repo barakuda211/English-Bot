@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Collections.Generic;
 using static System.Math;
+using VkNet.Enums;
 
 namespace English_Bot
 {
@@ -693,6 +694,23 @@ namespace English_Bot
 
             Console.WriteLine("Sound example send to " + userId);
             return true; 
+        }
+
+        public static void HandleAudioMessage(long userId, VkNet.Model.Attachments.Attachment message)
+        {
+            VkNet.Model.Attachments.AudioMessage mes = message.Instance as VkNet.Model.Attachments.AudioMessage; 
+            //bot.Api.Docs.Save(message.Type.);
+            WebClient web = new WebClient();
+            string file_sound = userId + "_audio.wav";
+            string file_text = userId + "_audio.txt"; 
+            web.DownloadFile(mes.LinkMp3, file_sound);
+            Process recognition = new Process();
+            recognition.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\Recognition.exe";
+            recognition.StartInfo.Arguments = file_sound + " " + file_text;
+            recognition.WaitForExit();
+            recognition.Start();
+
+            SendMessage(userId, File.ReadAllText(file_text));
         }
     }
 }
