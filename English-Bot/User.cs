@@ -103,7 +103,7 @@ namespace English_Bot
             Random r = new Random(); 
             for (int i = 1; i <= 5; ++i)
             {
-                var list = dict.GetKeysByLevel(i).Where(x => EngBot.dictionary[x].mean_rus != null && EngBot.dictionary[x].tags != null && !EngBot.dictionary[x].tags.Contains("added")).ToList();
+                var list = dict.GetKeysByLevelWithTr(i); //.Where(x => EngBot.dictionary[x].mean_rus != null && EngBot.dictionary[x].tags != null && !EngBot.dictionary[x].tags.Contains("added")).ToList();
                 for (int j = 1; j <= 3; ++j)
                 {
                     unLearnedWords.Add(list.ElementAt(r.Next(list.Count)));
