@@ -24,14 +24,14 @@ namespace English_Bot
             success = false; 
             var list = EngBot.users[user_id].learnedWords;
 
-            long word_id; 
-                if (list == null || list.Count == 0)
-                {
-                    var keys = EngBot.dictionary.GetKeysByLevelWithTr(EngBot.users[user_id].userLevel);
-                    word_id = keys.ElementAt(r.Next(keys.Count));
-                }
-                else
-                    word_id = list.ElementAt(r.Next(list.Count));
+            long word_id;
+            if (list == null || list.Count == 0)
+            {
+                var keys = EngBot.dictionary.GetKeysByLevelWithTr(EngBot.users[user_id].userLevel);
+                word_id = keys.ElementAt(r.Next(keys.Count));
+            }
+            else
+                word_id = list.ElementAt(r.Next(list.Count));
 
             // var def = EngBot.dictionary[word_id].mean_rus.def.ElementAt(r.Next(EngBot.dictionary[word_id].mean_rus.def.Count));
             // uint i = 0;
@@ -48,7 +48,7 @@ namespace English_Bot
             show = new List<char>(new string('?', word.Length));
             used = new List<char>(); 
             attempts_remain = word.Length / 2 + 2; 
-        }
+        Ъ
 
         public void OpenLetter(char c, bool hint = false)
         {
