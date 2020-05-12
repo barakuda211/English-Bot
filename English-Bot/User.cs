@@ -129,9 +129,12 @@ namespace English_Bot
             for (int i = 1; i <= 5; ++i)
             {
                 var list = dict.GetKeysByLevelWithTr(i); //.Where(x => EngBot.dictionary[x].mean_rus != null && EngBot.dictionary[x].tags != null && !EngBot.dictionary[x].tags.Contains("added")).ToList();
-                for (int j = 1; j <= 3; ++j)
+                while (unLearnedWords.Count != 3 * i)
                 {
-                    unLearnedWords.Add(list.ElementAt(r.Next(list.Count)));
+                    long word_id = list.ElementAt(r.Next(list.Count));
+                    if (unLearnedWords.Contains(word_id))
+                        continue; 
+                    unLearnedWords.Add(word_id);
                 }
             }
             unLearnedWords = unLearnedWords.Distinct().ToHashSet();
