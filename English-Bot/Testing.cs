@@ -268,6 +268,7 @@ namespace English_Bot
                 goto First;
             }
 
+            
             List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null).ToList();
 
             if (words_level.Count == 0 && users[userID].unLearnedWords.Count == 0)
@@ -294,12 +295,13 @@ namespace English_Bot
 
         First:
             words_level = dictionary.GetKeysByLevelWithTr(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
-
+            
         Next:
             while (users[userID].unLearnedWords.Count < Users.UNLearned)
             {
                 if (words_level.Count == 0)
                     break;
+                long wish = users[userID].words_to_learn.ElementAt(rand.Next(users[userID].words_to_learn.Count));
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
                 words_level.RemoveAt(value);
