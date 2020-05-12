@@ -132,18 +132,24 @@ namespace English_Bot
                 foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(users[userID].day_words))
                     lastULW.Add(id);
             else
-                foreach (var word in users[userID].unLearnedWords)
+                foreach (var word in users[userID].unLearnedWords.Take(users[userID].day_words))
                     lastULW.Add(word);
 
-            //лист для проверки ответов
+            // Лист для проверки ответов
             List<long> msgIDs = new List<long>();
 
-            foreach (long idx in lastULW)//присылает и ждет ответ на последние изученные слова
+            // Для последующего исправления ошибок в зависимости от языка слова
+            List<bool> rus_eng = new List<bool>(); 
+
+            foreach (long idx in lastULW) // Присылает и ждет ответ на последние изученные слова
             {
                 var word = dictionary.GetWord(idx);
                 // 0 - Английское слово 
                 // 1 - Русское слово 
                 int r = rand.Next(2);
+
+                // true - было отправленно английское слово
+                rus_eng.Add(r == 0);
 
                 if (users[userID].mode == Users.Mode.Easy)
                 {
@@ -231,14 +237,16 @@ namespace English_Bot
                     WriteLine(x);
                 */
                 // long[] aError = new long[1];
+                int i = 0; 
                 foreach (var pnt in msgIDs.Zip(lastULW, (x, y) => new { A = x, B = y }))
                 {
                     if (pnt.A > 0)//идет по ошибкам
                     {
                         var temp = dictionary.GetWord(pnt.B);
                         //aError[0] = pnt.A;//массив с 1 пересланным сообщением, где юзер сделал ошибку
-                        SendMessage(userID, $"\n{temp.eng} - { Translation(temp.eng) /*(temp.rus == null ? "?" : temp.rus)*/}"/*, aError*/);
+                        SendMessage(userID, $"\n{(rus_eng.ElementAt(i) ? temp.eng : temp.rus)} - { (rus_eng.ElementAt(i) ? GetEngTranslation(pnt.B) : GetRusTranslation(pnt.B)) /*(temp.rus == null ? "?" : temp.rus)*/}"/*, aError*/);
                     }
+                    ++i; 
                 }
             }
             Console.WriteLine("Errata shown --------------------");

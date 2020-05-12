@@ -318,6 +318,10 @@ namespace English_Bot
             return no_word; 
         }
 
+        public static string GetEngTranslation(long wordId) => string.Join(", ", from def in dictionary[wordId].mean_rus.def select def.tr[0].text);
+
+        public static string GetRusTranslation(long wordId) => string.Join(", ", dictionary.rus_ids[dictionary[wordId].rus].Select(x => dictionary[x].eng));
+
         /// <summary>
         /// Перевод всех английских слов, найденных в тексте
         /// </summary>
