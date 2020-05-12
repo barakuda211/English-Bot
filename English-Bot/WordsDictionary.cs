@@ -103,13 +103,23 @@ namespace English_Bot
         } 
 
         /// <summary>
-        /// Список слов определённого уровня
+        /// Список слов определённого уровня (deprecated)
         /// </summary>
-        /// <param name="level"></param>
+        /// <param name="level">Уровень слова</param>
         /// <returns></returns>
         public List<long> GetKeysByLevel(int level)
         {
             return dict.Values.Where(x => x.level == level).Select(x => x.id).ToList();
+        }
+
+        /// <summary>
+        /// Возвращает идентификаторы слов определенного уровня
+        /// </summary>
+        /// <param name="level">Уровень слова</param>
+        /// <returns></returns>
+        public List<long> GetKeysByLevelWithTr(int level)
+        {
+            return dict.Values.Where(x => x.level == level && x.mean_rus != null && (x.tags == null || !x.tags.Contains("added"))).Select(x => x.id).ToList();
         }
 
         /// <summary>
@@ -120,7 +130,7 @@ namespace English_Bot
         public HashSet<long> GetKeysByLevel_hash(int level)
         {
             HashSet<long> hs = new HashSet<long>();
-            foreach (var x in dict.Values.Where(x => x.level == level).Select(x => x.id))
+            foreach (var x in dict.Values.Where(x => x.level == level && x.mean_rus != null && (x.tags == null || !x.tags.Contains("added"))).Select(x => x.id))
                 hs.Add(x);
             return hs;
         }
