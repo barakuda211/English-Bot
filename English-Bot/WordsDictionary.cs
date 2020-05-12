@@ -130,7 +130,7 @@ namespace English_Bot
         public HashSet<long> GetKeysByLevel_hash(int level)
         {
             HashSet<long> hs = new HashSet<long>();
-            foreach (var x in dict.Values.Where(x => x.level == level).Select(x => x.id))
+            foreach (var x in dict.Values.Where(x => x.level == level && x.mean_rus != null && (x.tags == null || !x.tags.Contains("added"))).Select(x => x.id))
                 hs.Add(x);
             return hs;
         }
