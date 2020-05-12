@@ -10,7 +10,7 @@ using System.Text;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
-using NAudio;
+using NAudio.Wave;
 using Alvas.Audio;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -696,6 +696,17 @@ namespace English_Bot
             return true; 
         }
 
+        public static void ConvertMp3ToWav(string _inPath_, string _outPath_) 
+        { 
+            using (Mp3FileReader mp3 = new Mp3FileReader(_inPath_)) 
+            { 
+                using (WaveStream pcm = WaveFormatConversionStream.CreatePcmStream(mp3))
+                { 
+                    WaveFileWriter.CreateWaveFile(_outPath_, pcm); 
+                } 
+            } 
+        }
+
         public static void HandleAudioMessage(long userId, VkNet.Model.Attachments.Attachment message)
         {
             try
@@ -703,12 +714,13 @@ namespace English_Bot
                 VkNet.Model.Attachments.AudioMessage mes = message.Instance as VkNet.Model.Attachments.AudioMessage;
                 // bot.Api.Docs.Save(message.Type.);
                 WebClient web = new WebClient();
-                string file_sound = userId + "_audio.mp3";
-                
+                string file_sound_mp3 = userId + "_audio.mp3";
+                string file_sound_wav = userId + "_audio.wav";
                 
                 // string file_sound_wav = userId + "_audio.ogg.wav";
                 string file_text = userId + "_audio.txt";
-                web.DownloadFile(mes.LinkMp3, file_sound);
+                web.DownloadFile(mes.LinkMp3, file_sound_mp3);
+                ConvertMp3ToWav(file_sound_mp3, file_sound_wav);
 
                 // FileInfo f = new FileInfo(file_sound);
                 // f.Replace(f.FullName, f.FullName + ".wav");
@@ -716,11 +728,11 @@ namespace English_Bot
 
                 Process recognition = new Process();
                 recognition.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\Recognition.exe";
-                recognition.StartInfo.Arguments = file_sound + " " + file_text;
+                recognition.StartInfo.Arguments = file_sound_wav + " " + file_text;
                 recognition.Start();
                 recognition.WaitForExit();
 
-                SendMessage(userId, File.ReadAllText(file_text));
+                SendMessage(userId, "Вот, что я услышал: \n" + File.ReadAllText(file_text));
             }
             catch (Exception e)
             {
