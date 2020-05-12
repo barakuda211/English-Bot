@@ -22,10 +22,17 @@ namespace English_Bot
             this.user_id = user_id;
             success = false; 
             var list = EngBot.users[user_id].learnedWords;
+            long word_id; 
             do
             {
-                word_id = list == null ? EngBot.dictionary.GetKeysByLevel(3).ElementAt(r.Next(EngBot.dictionary.GetKeysByLevel(3).Count)) : list.ElementAt(r.Next(list.Count));
-            } 
+                if (list == null || list.Count == 0)
+                {
+                    var keys = EngBot.dictionary.GetKeysByLevelWithTr(EngBot.users[user_id].userLevel);
+                    word_id = keys.ElementAt(r.Next(keys.Count));
+                }
+                else
+                    word_id = list.ElementAt(r.Next(list.Count));
+            }
             while (EngBot.dictionary[word_id].mean_rus == null);
 
             var def = EngBot.dictionary[word_id].mean_rus.def.ElementAt(r.Next(EngBot.dictionary[word_id].mean_rus.def.Count));
