@@ -656,7 +656,7 @@ namespace English_Bot
             try
             {
                 Process sound = new Process();
-                Console.WriteLine(Environment.CurrentDirectory);
+                // Console.WriteLine(Environment.CurrentDirectory);
                 sound.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\SpeechSynthesis.exe";
                 sound.StartInfo.Arguments = wordId + " \"" + ex + "\"";
                 sound.Start();
@@ -698,19 +698,37 @@ namespace English_Bot
 
         public static void HandleAudioMessage(long userId, VkNet.Model.Attachments.Attachment message)
         {
-            VkNet.Model.Attachments.AudioMessage mes = message.Instance as VkNet.Model.Attachments.AudioMessage; 
-            //bot.Api.Docs.Save(message.Type.);
-            WebClient web = new WebClient();
-            string file_sound = userId + "_audio.wav";
-            string file_text = userId + "_audio.txt"; 
-            web.DownloadFile(mes.LinkMp3, file_sound);
-            Process recognition = new Process();
-            recognition.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\Recognition.exe";
-            recognition.StartInfo.Arguments = file_sound + " " + file_text;
-            recognition.WaitForExit();
-            recognition.Start();
+            try
+            {
+                VkNet.Model.Attachments.AudioMessage mes = message.Instance as VkNet.Model.Attachments.AudioMessage;
+                // bot.Api.Docs.Save(message.Type.);
+                WebClient web = new WebClient();
+                string file_sound = userId + "_audio.mp3";
+                
+                
+                // string file_sound_wav = userId + "_audio.ogg.wav";
+                string file_text = userId + "_audio.txt";
+                web.DownloadFile(mes.LinkMp3, file_sound);
 
-            SendMessage(userId, File.ReadAllText(file_text));
+                // FileInfo f = new FileInfo(file_sound);
+                // f.Replace(f.FullName, f.FullName + ".wav");
+                // ToWav(file_sound);
+
+                Process recognition = new Process();
+                recognition.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Speech\Recognition.exe";
+                recognition.StartInfo.Arguments = file_sound + " " + file_text;
+                recognition.Start();
+                recognition.WaitForExit();
+
+                SendMessage(userId, File.ReadAllText(file_text));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something happened with recognizing audiomessage");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace); 
+            }
+            Console.WriteLine("Send recognition to " + userId); 
         }
     }
 }

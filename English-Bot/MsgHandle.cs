@@ -29,9 +29,10 @@ namespace English_Bot
                 return;
             }
             
-            if (eventArgs.Message.Attachments.Any(x => x.Type.IsInstanceOfType(VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage)))
+            if (eventArgs.Message.Attachments != null && eventArgs.Message.Attachments.Count != 0 && eventArgs.Message.Attachments[0].Instance is VkNet.Model.Attachments.AudioMessage) // x.Type.IsInstanceOfType(VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage)))
             {
-                HandleAudioMessage(fromId, eventArgs.Message.Attachments[0]); 
+                HandleAudioMessage(fromId, eventArgs.Message.Attachments[0]);
+                return; 
             }
 
             if (text == null && text.Length == 0)
