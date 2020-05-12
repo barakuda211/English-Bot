@@ -7,7 +7,7 @@ using VkNet.Model.RequestParams;
 using VkNet.Model;
 using System.Collections.Generic;
 using System.Threading;
-using Crossword;
+using VkApi;
 
 namespace English_Bot
 {
@@ -73,8 +73,11 @@ namespace English_Bot
                     }
                     else
                         answer = "Описание слова отсутствует";
-                    goto Answer;
+
+                    SendMessage(fromId, answer, null, true);
+                    return;
                 }
+                /*
                 else if (ss[0] == "/daywords")
                 {
                     bool b = int.TryParse(ss[1], out int day_words);
@@ -87,6 +90,7 @@ namespace English_Bot
                         answer = "Можно задать кол-во слов от 1 до 10";
                     goto Answer;
                 }
+                */
             }
             // ----------------------------------------------------------------------------
             switch (text)
@@ -105,7 +109,7 @@ namespace English_Bot
                                 "/mute - бот не будет присылать слова и проводить тесты\n" + 
                                 "/unmute - бот снова перейдёт в стандартный режим\n" +
                                 "/repeat - повторение изученных слов\n" + 
-                                "/daywords \'кол-во слов от 1 до 10\' - смена кол-ва слов в день\n" +
+                                "/daywords - смена кол-ва слов в день\n" +
                                 "\'слово на русском\' - перевод на английский\n" +
                                 "\'слово на английском\' - перевод на русский\n" + 
                                 "\'текст на английском\' - перевод всех известных боту слов на русский\n";
@@ -167,6 +171,10 @@ namespace English_Bot
                     users[fromId].keyb = User.Main_Keyboard;
                     answer = "Теперь ты в главном меню";
                     break;
+                case "/daywords":
+                case "кол-во слов в день":
+                    DayWords_Start(fromId);
+                    return;
 
                 case "admin::getсommands":
                     if (adminIDs.Contains(fromId))
@@ -205,10 +213,31 @@ namespace English_Bot
                     break;
             }  
 
-            Answer:
             SendMessage(fromId, answer, null, true);
         }
 
+        static void DayWords_Start(long id)
+        {
+            users[id].on_Test = true;
+            users[id].keyb = User.DayWordsKeyb(users[id].day_words);
+            Thread DayWordsthread = new Thread(new ParameterizedThreadStart(DayWords));
+            DayWordsthread.Start(id);
+        }
+
+        static void DayWords(object obj)
+        {
+            long id = (long)obj;
+            var user = users[id];
+            SendMessage(id, "Выберите количество слов для изучения в день.", null, true);
+            var x = WaitWordFromUser_with_Comments(id, new string[] { "1", "2", "3", "4", "5", "6","7","8","9","10" }, 3);
+            user.keyb = User.Main_Keyboard;
+            user.on_Test = false;
+            if (x == "time")
+                return;
+            user.day_words = int.Parse(x);
+            SendMessage(id, "Готово!", null, true);
+            users.Save();
+        }
 
         static string GetStatics(long id)
         {
@@ -360,14 +389,14 @@ namespace English_Bot
         static void ChangingLevel_Start(long id)
         {
             users[id].on_Test = true;
-            users[id].keyb = User.ChangingLevel_Keyboard;
+            users[id].keyb = User.ChangingLevelKeyb(users[id].userLevel);
             Thread changing_thread = new Thread(new ParameterizedThreadStart(ChangeLevel));
             changing_thread.Start(id);
         }
 
         //ждет ответа !определенного! ответа от юзера, 
         //Просит повторить ввод
-        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Ладно, потом сменим уровень.",string error_msg = "Этого я не ждал!")
+        static string WaitWordFromUser_with_Comments(long userID, string[] words, int wait_time, string time_error_msg = "Ладно, давай потом.",string error_msg = "Этого я не ждал!")
         {
             var user = users.GetUser(userID);
             var ind = Timers.IndicatorTimer(wait_time);

@@ -337,17 +337,18 @@ namespace English_Bot
                 ind = IndicatorTimer(wait_time);
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
-                /*
-                if (text == "/help")
-                {
-                    EngBot.SendMessage(userID, "/give_up - сдаться\n");
-                    continue;
-                }
-                */
+
                 if (text == "/give_up" || text == "я сдаюсь")
                 {
                     user.keyb = User.Main_Keyboard;
-                    EngBot.SendMessage(userID, $"Стыдно не знать, это же \"{ans}\"");
+                    string s = $"Стыдно не знать, это же ";
+                    for (int i = 0; i < ans.Count;i++)
+                    {
+                        s += ans[i];
+                        if (i != ans.Count - 1)
+                            s += @"/";
+                    }
+                    EngBot.SendMessage(userID, s);
                     EngBot.SendMessage(userID, $"В следующий раз повтори слова тщательней)",null,true);
                     return false;
                 }
