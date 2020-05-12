@@ -269,7 +269,7 @@ namespace English_Bot
             }
 
             
-            List<long> words_level = dictionary.GetKeysByLevel(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && dictionary[x].mean_rus != null).ToList();
+            List<long> words_level = dictionary.GetKeysByLevelWithTr(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && !users[userID].words_to_learn.Contains(x)).ToList();
 
             if (words_level.Count == 0 && users[userID].unLearnedWords.Count == 0)
             {
@@ -294,14 +294,22 @@ namespace English_Bot
             else { goto Next; }
 
         First:
-            words_level = dictionary.GetKeysByLevelWithTr(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x)).ToList();
+            words_level = dictionary.GetKeysByLevelWithTr(users[userID].userLevel).Where(x => !users[userID].learnedWords.Contains(x) && !users[userID].unLearnedWords.Contains(x) && !users[userID].words_to_learn.Contains(x)).ToList();
             
         Next:
-            while (users[userID].unLearnedWords.Count < Users.UNLearned)
+            while (users[userID].unLearnedWords.Count < users[userID].day_words)
             {
+                if (users[userID].words_to_learn.Count != 0)
+                {
+                    long wish = users[userID].words_to_learn.ElementAt(rand.Next(users[userID].words_to_learn.Count));
+                    users[userID].unLearnedWords.Add(wish);
+                    users[userID].words_to_learn.Remove(wish);
+                    continue;
+                }
+
                 if (words_level.Count == 0)
                     break;
-                long wish = users[userID].words_to_learn.ElementAt(rand.Next(users[userID].words_to_learn.Count));
+
                 int value = rand.Next(words_level.Count);
                 users[userID].unLearnedWords.Add(words_level.ElementAt(value));
                 words_level.RemoveAt(value);
