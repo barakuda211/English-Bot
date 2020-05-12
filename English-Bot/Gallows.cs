@@ -25,8 +25,6 @@ namespace English_Bot
             var list = EngBot.users[user_id].learnedWords;
 
             long word_id; 
-            do
-            {
                 if (list == null || list.Count == 0)
                 {
                     var keys = EngBot.dictionary.GetKeysByLevelWithTr(EngBot.users[user_id].userLevel);
@@ -34,18 +32,16 @@ namespace English_Bot
                 }
                 else
                     word_id = list.ElementAt(r.Next(list.Count));
-            }
-            while (EngBot.dictionary[word_id].mean_rus == null);
 
-            var def = EngBot.dictionary[word_id].mean_rus.def.ElementAt(r.Next(EngBot.dictionary[word_id].mean_rus.def.Count));
-            uint i = 0;
+            // var def = EngBot.dictionary[word_id].mean_rus.def.ElementAt(r.Next(EngBot.dictionary[word_id].mean_rus.def.Count));
+            // uint i = 0;
             tr = new List<string>(); 
-            foreach (var tr in def.tr)
+            foreach (var def in EngBot.dictionary[word_id].mean_rus.def)
             {
-                this.tr.Add(tr.text);
-                ++i;
-                if (i == 5)
-                    break; 
+                foreach (var translation in def.tr)
+                {
+                    tr.Add(translation.text);
+                }
             }
 
             word = EngBot.dictionary[word_id].eng;
