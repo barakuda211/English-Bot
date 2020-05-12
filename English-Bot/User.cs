@@ -262,7 +262,10 @@ namespace English_Bot
             {
                 if (EngBot.dictionary.eng_ids.ContainsKey(x))
                 {
-                    words_to_learn.Add(EngBot.dictionary.GetEngWordId(x));
+                    long word_id = EngBot.dictionary.GetEngWordId(x);
+                    words_to_learn.Add(word_id);
+                    if (learnedWords.Contains(word_id))
+                        learnedWords.Remove(word_id);
                     added++;
                 }
                 else
