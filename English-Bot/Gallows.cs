@@ -20,11 +20,13 @@ namespace English_Bot
         public Gallows(long user_id)
         {
             this.user_id = user_id;
+            var user = EngBot.users[user_id];
             success = false; 
             var list = EngBot.users[user_id].learnedWords;
+            var level_words = EngBot.dictionary.GetKeysByLevel(3);
             do
             {
-                word_id = list == null ? EngBot.dictionary.GetKeysByLevel(3).ElementAt(r.Next(EngBot.dictionary.GetKeysByLevel(3).Count)) : list.ElementAt(r.Next(list.Count));
+                word_id = list == null ? level_words.ElementAt(r.Next(level_words.Count)) : list.ElementAt(r.Next(list.Count));
             } 
             while (EngBot.dictionary[word_id].mean_rus == null);
 
