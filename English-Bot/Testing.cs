@@ -13,23 +13,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
-        /*
-        static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
-        {
 
-            var fromId = eventArgs.Message.FromId;
-            var text = eventArgs.Message.Text;
-            var peerId = eventArgs.Message.PeerId;
-            VkBot instanse = sender as VkBot;
-
-            if (users.GetUser(fromId.Value) == null)
-                users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
-            
-            users.GetUser(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
-
-            WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
-        }
-        */
 
         //отправляет сообщение юзеру
         public static void SendMessage(long userID, string message, long[] msgIDs = null, bool need_kb = false)
@@ -352,7 +336,7 @@ namespace English_Bot
         {
             var user = users[id];
             user.on_Test = true;
-            if (user.keyb == User.Main_Keyboard)
+            if (user.tests_passed>0)
                 user.keyb = User.ReadyOrNot_Keyboard;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start((id, repeat));

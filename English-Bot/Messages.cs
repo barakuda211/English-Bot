@@ -343,7 +343,7 @@ namespace English_Bot
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= level || dictionary[dictionary.eng_ids[word]].level == -1))
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
             return answer == "" ? "Не было найдено английских слов для перевода" : answer;
