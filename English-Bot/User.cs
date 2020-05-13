@@ -129,9 +129,12 @@ namespace English_Bot
             for (int i = 1; i <= 5; ++i)
             {
                 var list = dict.GetKeysByLevelWithTr(i); //.Where(x => EngBot.dictionary[x].mean_rus != null && EngBot.dictionary[x].tags != null && !EngBot.dictionary[x].tags.Contains("added")).ToList();
-                for (int j = 1; j <= 3; ++j)
+                while (unLearnedWords.Count != 3 * i)
                 {
-                    unLearnedWords.Add(list.ElementAt(r.Next(list.Count)));
+                    long word_id = list.ElementAt(r.Next(list.Count));
+                    if (unLearnedWords.Contains(word_id))
+                        continue; 
+                    unLearnedWords.Add(word_id);
                 }
             }
             unLearnedWords = unLearnedWords.Distinct().ToHashSet();
@@ -259,7 +262,10 @@ namespace English_Bot
             {
                 if (EngBot.dictionary.eng_ids.ContainsKey(x))
                 {
-                    words_to_learn.Add(EngBot.dictionary.GetEngWordId(x));
+                    long word_id = EngBot.dictionary.GetEngWordId(x);
+                    words_to_learn.Add(word_id);
+                    if (learnedWords.Contains(word_id))
+                        learnedWords.Remove(word_id);
                     added++;
                 }
                 else
