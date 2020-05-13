@@ -94,6 +94,7 @@ namespace English_Bot
             (long, bool) val = ((long, bool))IDobj;
             long userID = val.Item1;
             bool repeat = val.Item2;
+            var user = users[userID];
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
@@ -128,12 +129,26 @@ namespace English_Bot
 
             HashSet<long> lastULW = new HashSet<long>();
 
+            int count_words = user.unLearnedWords.Count;
+            if (user.tests_passed != 0)
+                count_words = user.day_words;
+
             if (repeat)
-                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(users[userID].day_words))
+                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(count_words))
                     lastULW.Add(id);
             else
-                foreach (var word in users[userID].unLearnedWords.Take(users[userID].day_words))
-                    lastULW.Add(word);
+            {
+                List<long> lst = new List<long>();
+                foreach (var word in users[userID].unLearnedWords.Take(count_words))
+                    lst.Add(word);
+                for (int i = 0; i < lst.Count; i++)
+                {
+                    int n = rand.Next(lst.Count);
+                    (lst[i], lst[n]) = (lst[n], lst[i]);
+                }
+                foreach (var w in lst)
+                    lastULW.Add(w);
+            }
 
             // Лист для проверки ответов
             List<long> msgIDs = new List<long>();
