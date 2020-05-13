@@ -299,8 +299,10 @@ namespace English_Bot
         End:
             Fin(userID);
 
-            if (!repeat)
-                SendMessage(userID, "Завтра продолжим :)", null, true);
+            if (repeat)
+                SendMessage(userID, "Пробный тест пройден 😌", null, true);
+            else
+                SendMessage(userID, "Завтра продолжим 😌", null, true);
         }
 
         static void Fin(long id)
