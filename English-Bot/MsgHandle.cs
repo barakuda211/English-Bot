@@ -28,6 +28,12 @@ namespace English_Bot
                 Registration(eventArgs.Message);
                 return;
             }
+            
+            if (eventArgs.Message.Attachments != null && eventArgs.Message.Attachments.Count != 0 && eventArgs.Message.Attachments[0].Instance is VkNet.Model.Attachments.AudioMessage) // x.Type.IsInstanceOfType(VkNet.Enums.SafetyEnums.DocMessageType.AudioMessage)))
+            {
+                HandleAudioMessage(fromId, eventArgs.Message.Attachments[0]);
+                return; 
+            }
 
             if (text == null && text.Length == 0)
             {
@@ -95,7 +101,7 @@ namespace English_Bot
                     users[fromId].keyb = User.Help_Keyboard;
                     answer = "/change_level - сменить свой уровень\n" +
                                 "/my_level - мой уровень\n" +
-                                "/examples \'слово\'- примеры использования\n" +
+                                "/examples \'слово\'- примеры использования слова\n" +
                                 "/crossword - сыграть кроссворд\n" +
                                 "/gallows - сыграть в \"виселицу\"\n" +
                                 "/change_complexity - сменить сложность тестирования\n"+
@@ -104,9 +110,10 @@ namespace English_Bot
                                 "/mute - бот не будет присылать слова и проводить тесты\n" + 
                                 "/unmute - бот снова перейдёт в стандартный режим\n" +
                                 "/repeat - повторение изученных слов\n" + 
-                                "/daywords - смена кол-ва слов в день\n" +
+                                "/daywords - смена кол-ва слов в день\n" + 
                                 "\'слово на русском\' - перевод на английский\n" +
                                 "\'слово на английском\' - перевод на русский\n" + 
+                                "\'аудиосообщение на английском\' - распознавание речи\n" + 
                                 "\'текст на английском\' - перевод всех известных боту слов на русский\n";
                     break;
                 case "моя статистика":

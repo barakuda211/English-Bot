@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net;
 using English_Bot.Properties;
 using static English_Bot.Timers;
+using SpaceYandexEnRu;
 
 namespace English_Bot
 {
@@ -92,7 +93,9 @@ namespace English_Bot
             var user = EngBot.users[gal.user_id];
 
             string text = user.lastMsg.Item1.ToLower();
-            long ident_msg = user.lastMsg.Item3; 
+            long ident_msg = user.lastMsg.Item3;
+
+            bool exit_by_hint = false; 
 
             while (true)
             {
@@ -106,8 +109,8 @@ namespace English_Bot
                 if (gal.success)
                 {
                     user.keyb = User.Main_Keyboard; 
-                    EngBot.SendMessage(gal.user_id, "Поздравляю! Вы выйграли!", null, true);
-                    return true;
+                    EngBot.SendMessage(gal.user_id, exit_by_hint ? "Вы отгадали слово с помощью подсказки, так не честно :)" : "Поздравляю! Вы выйграли!", null, true);
+                    return exit_by_hint;
                 }
 
                 if (ind.x)
@@ -138,6 +141,7 @@ namespace English_Bot
                         {
                             gal.OpenLetter(gal.word[i], true);
                             SendMessage(gal);
+                            exit_by_hint = true; 
                             break;
                         }
                     continue;
