@@ -196,7 +196,7 @@ namespace English_Bot
                         }
                 }
                 // wrds.AddRange(wrds);
-                long id = WaitWordFromUser(userID, wrds.ToArray(), idx,1);
+                long id = WaitWordFromUser(userID, wrds.ToArray(), idx, 2);
                 if (id == -1)
                 {
                     if (user.tests_passed == 0)

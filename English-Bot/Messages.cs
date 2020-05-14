@@ -17,7 +17,8 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Collections.Generic;
 using static System.Math;
-using VkNet.Enums;
+using static System.Console;
+using VkNet.Exception;
 
 namespace English_Bot
 {
@@ -461,20 +462,34 @@ namespace English_Bot
 
                 // System.Threading.Thread.Sleep(100); 
 
-                // Отправляем сообщение пользователю
-                string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
-                var uploader = new WebClient();
-                var uploadResponseInBytes = uploader.UploadFile(url, text_name);
-                var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
-                // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
-                var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
-                bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                try
                 {
-                    RandomId = Environment.TickCount64,
-                    UserId = id,
-                    Attachments = photos
-                });
-
+                    // Отправляем сообщение пользователю
+                    string url = bot.Api.Photo.GetMessagesUploadServer(id).UploadUrl;
+                    var uploader = new WebClient();
+                    var uploadResponseInBytes = uploader.UploadFile(url, text_name);
+                    var uploadResponseInString = Encoding.UTF8.GetString(uploadResponseInBytes);
+                    // VKRootObject response = Methods.DeSerializationObjFromStr<VKRootObject>(uploadResponseInString);
+                    var photos = bot.Api.Photo.SaveMessagesPhoto(uploadResponseInString);
+                    bot.Api.Messages.Send(new VkNet.Model.RequestParams.MessagesSendParams()
+                    {
+                        RandomId = Environment.TickCount64,
+                        UserId = id,
+                        Attachments = photos
+                    });
+                }
+                catch (VkNet.Exception.TooMuchOfTheSameTypeOfActionException)
+                {
+                    WriteLine("VK poshel v zhopu");
+                }
+                catch (VkNet.Exception.PublicServerErrorException)
+                {
+                    WriteLine("Server error with sending message!");
+                }
+                catch (VkNet.Exception.CannotSendToUserFirstlyException)
+                {
+                    WriteLine("Server error with sending message!");
+                }
                 // Удаляем сохраненные фотографии
                 try
                 {
