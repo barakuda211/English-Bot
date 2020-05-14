@@ -13,23 +13,7 @@ namespace English_Bot
 {
     public partial class EngBot
     {
-        /*
-        static void NewMessageHandler(object sender, MessageReceivedEventArgs eventArgs)
-        {
 
-            var fromId = eventArgs.Message.FromId;
-            var text = eventArgs.Message.Text;
-            var peerId = eventArgs.Message.PeerId;
-            VkBot instanse = sender as VkBot;
-
-            if (users.GetUser(fromId.Value) == null)
-                users.AddUser(new User(fromId.Value, 0, new HashSet<string>(), new HashSet<long>(), new HashSet<long>()));//добавляет пользователя, если его не было в users
-            
-            users.GetUser(fromId.Value).lastMsg = (text.ToLower(), false, eventArgs.Message.ConversationMessageId.Value);
-
-            WriteLine($"new message captured. peerId: {peerId},userId: {fromId}, text: {text}");
-        }
-        */
 
         //отправляет сообщение юзеру
         public static void SendMessage(long userID, string message, long[] msgIDs = null, bool need_kb = false)
@@ -94,6 +78,7 @@ namespace English_Bot
             (long, bool) val = ((long, bool))IDobj;
             long userID = val.Item1;
             bool repeat = val.Item2;
+            var user = users[userID];
             //Console.WriteLine("Number of words = " + users.GetUser(userID).unLearnedWords.Count);
             SendMessage(userID, "Вам будет предложен тест на знание английских слов. " +
                                 "Не стоит подсматривать, от результатов теста зависит ваша дальнейшая программа обучения. " +
@@ -128,12 +113,26 @@ namespace English_Bot
 
             HashSet<long> lastULW = new HashSet<long>();
 
+            int count_words = user.unLearnedWords.Count;
+            if (user.tests_passed != 0)
+                count_words = user.day_words;
+
             if (repeat)
-                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(users[userID].day_words))
+                foreach (var id in users[userID].learnedWords.OrderBy(x => rand.Next(users[userID].learnedWords.Count)).Take(count_words))
                     lastULW.Add(id);
             else
-                foreach (var word in users[userID].unLearnedWords.Take(users[userID].day_words))
-                    lastULW.Add(word);
+            {
+                List<long> lst = new List<long>();
+                foreach (var word in users[userID].unLearnedWords.Take(count_words))
+                    lst.Add(word);
+                for (int i = 0; i < lst.Count; i++)
+                {
+                    int n = rand.Next(lst.Count);
+                    (lst[i], lst[n]) = (lst[n], lst[i]);
+                }
+                foreach (var w in lst)
+                    lastULW.Add(w);
+            }
 
             // Лист для проверки ответов
             List<long> msgIDs = new List<long>();
@@ -337,7 +336,7 @@ namespace English_Bot
         {
             var user = users[id];
             user.on_Test = true;
-            if (user.keyb == User.Main_Keyboard)
+            if (user.tests_passed>0)
                 user.keyb = User.ReadyOrNot_Keyboard;
             Thread testingThread = new Thread(new ParameterizedThreadStart(Testing));
             testingThread.Start((id, repeat));

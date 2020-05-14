@@ -320,7 +320,17 @@ namespace English_Bot
 
         public static string GetEngTranslation(long wordId) => string.Join(", ", from def in dictionary[wordId].mean_rus.def select def.tr[0].text);
 
-        public static string GetRusTranslation(long wordId) => string.Join(", ", dictionary.rus_ids[dictionary[wordId].rus].Select(x => dictionary[x].eng));
+        public static string GetRusTranslation(long wordId) 
+        {
+            List<long> rus = null;
+            if (dictionary.rus_ids.ContainsKey(dictionary[wordId].rus))
+                rus = dictionary.rus_ids[dictionary[wordId].rus];
+
+            if (rus == null)
+                return dictionary[wordId].eng;
+            else
+            return string.Join(", ", rus.Select(x => dictionary[x].eng)); 
+        }
 
         /// <summary>
         /// Перевод всех английских слов, найденных в тексте
@@ -333,7 +343,7 @@ namespace English_Bot
             string answer = "";
             foreach (var word in text)
             {
-                if (dictionary.eng_ids.ContainsKey(word.ToLower()) && (dictionary[dictionary.eng_ids[word]].level >= level || dictionary[dictionary.eng_ids[word]].level == -1))
+                if (dictionary.eng_ids.ContainsKey(word.ToLower()))
                     answer += word + " -> " + Translation(word.ToLower()) + "\n";
             }
             return answer == "" ? "Не было найдено английских слов для перевода" : answer;
