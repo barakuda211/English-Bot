@@ -85,9 +85,12 @@ namespace English_Bot
             if (Dbase != null)
             {
                 foreach (var key in Dbase.Keys)
+                {
                     Dbase[key].on_Test = false;
-                foreach (var key in Dbase.Keys)
                     Dbase[key].keyb = User.Main_Keyboard;
+                    if (Dbase[key].tests_passed == 0)
+                        DeleteUser(key);
+                }
             }
         }
 

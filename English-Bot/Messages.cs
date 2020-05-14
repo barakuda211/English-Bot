@@ -490,6 +490,12 @@ namespace English_Bot
                 {
                     WriteLine("Server error with sending message!");
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Something wrong in Sending Picture in SendPicture");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                }
                 // Удаляем сохраненные фотографии
                 try
                 {

@@ -159,14 +159,26 @@ namespace English_Bot
                     DayWords_Start(fromId);
                     return;
 
+                case "admin::getpicture":
+                    if (adminIDs.Contains(fromId))
+                    {
+                        foreach (var x in users[fromId].unLearnedWords)
+                            SendPicture(fromId, x);
+                    }
+                    else answer = ACCESS_IS_DENIED;
+                    return;
                 case "admin::getсommands":
                     if (adminIDs.Contains(fromId))
-                        answer = "getId, wantTest, getCommands, usersCount, forget_me";
+                        answer = "getId, wantTest, getCommands, usersCount, forget_me, getpicture";
                     else answer = ACCESS_IS_DENIED;
                     break;
                 case "admin::forget_me":
-                    SendMessage(fromId, "Я тебя забыл.");
-                    users.DeleteUser(fromId);
+                    if (adminIDs.Contains(fromId))
+                    {
+                        SendMessage(fromId, "Я тебя забыл.");
+                        users.DeleteUser(fromId);
+                    }
+                    else answer = ACCESS_IS_DENIED;
                     return;
                 case "admin::getid":
                     if (adminIDs.Contains(fromId))
