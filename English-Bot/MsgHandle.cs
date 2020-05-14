@@ -85,20 +85,7 @@ namespace English_Bot
                     SendMessage(fromId, answer, null, true);
                     return;
                 }
-                /*
-                else if (ss[0] == "/daywords")
-                {
-                    bool b = int.TryParse(ss[1], out int day_words);
-                    if (b && day_words > 0 && day_words < 11)
-                    {
-                        users[fromId].day_words = day_words;
-                        answer = "Количество слов изучаемых в день изменено";
-                    }
-                    else
-                        answer = "Можно задать кол-во слов от 1 до 10";
-                    goto Answer;
-                }
-                */
+
             }
             // ----------------------------------------------------------------------------
             switch (text)
@@ -106,18 +93,10 @@ namespace English_Bot
                 case "команды бота":
                 case "/help":
                     users[fromId].keyb = User.Help_Keyboard;
-                    answer = "/change_level - сменить свой уровень\n" +
-                                "/my_level - мой уровень\n" +
+                    answer = 
                                 "/examples \'слово\'- примеры использования слова\n" +
-                                "/crossword - сыграть кроссворд\n" +
-                                "/gallows - сыграть в \"виселицу\"\n" +
-                                "/change_complexity - сменить сложность тестирования\n"+
                                 "/description \'слово\' - описание слова\n" + 
                                 "/sound \'слово\' - пример с озвучиванием\n" +
-                                "/mute - бот не будет присылать слова и проводить тесты\n" + 
-                                "/unmute - бот снова перейдёт в стандартный режим\n" +
-                                "/repeat - повторение изученных слов\n" + 
-                                "/daywords - смена кол-ва слов в день\n" + 
                                 "\'слово на русском\' - перевод на английский\n" +
                                 "\'слово на английском\' - перевод на русский\n" + 
                                 "\'аудиосообщение на английском\' - распознавание речи\n" + 
