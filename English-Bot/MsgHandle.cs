@@ -336,8 +336,8 @@ namespace English_Bot
         {
             long id = (long)Idobj;
             var user = users[id];
-            SendMessage(id, "Выберите один из вариантов:",null, true);
-            SendMessage(id, "Лёгкий - выбор из предложенных вариантов ответов на тестировании.", null, true);
+            SendMessage(id, "Выберите один из вариантов:");
+            SendMessage(id, "Лёгкий - выбор из предложенных вариантов ответов на тестировании.");
             SendMessage(id, "Сложный - полностью самостоятельный перевод слов на тестировании.", null, true);
             var x = WaitWordFromUser_with_Comments(id, new string[] { "легкий", "сложный" }, 2,"Ладно, потом...");
             user.keyb = User.Main_Keyboard;
