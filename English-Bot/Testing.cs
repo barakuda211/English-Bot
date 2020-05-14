@@ -41,6 +41,12 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with SendMessage");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
             WriteLine("Message sent to " + userID);
         }
 
