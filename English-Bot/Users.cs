@@ -73,50 +73,49 @@ namespace English_Bot
 
         public void Load()
         {
-            // JsonSerializer serializer = new JsonSerializer();
-            // StreamReader sr = new StreamReader("UserData.json");
-            string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
-            if (File.Exists(path))
+            try
             {
-                string temp = File.ReadAllText(path);
-                Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
-            }
-
-            if (Dbase != null)
-            {
-                foreach (var key in Dbase.Keys)
+                string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
+                if (File.Exists(path))
                 {
-                    Dbase[key].on_Test = false;
-                    Dbase[key].keyb = User.Main_Keyboard;
-                    if (Dbase[key].tests_passed == 0)
-                        DeleteUser(key);
+                    string temp = File.ReadAllText(path);
+                    Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
                 }
+
+                if (Dbase != null)
+                {
+                    foreach (var key in Dbase.Keys)
+                    {
+                        Dbase[key].on_Test = false;
+                        Dbase[key].keyb = User.Main_Keyboard;
+                        if (Dbase[key].tests_passed == 0)
+                            DeleteUser(key);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Load problem!!!   " + e.Message);
             }
         }
 
         public void Save()
         {
 
-
-
-            string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamWriter sw = new StreamWriter(path))
-            using (JsonWriter writer = new JsonTextWriter(sw))
+            try
             {
-                serializer.Serialize(writer, Dbase);
+                string path = GetPathOfFile(Environment.CurrentDirectory) + "UsersData.txt";
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamWriter sw = new StreamWriter(path))
+                using (JsonWriter writer = new JsonTextWriter(sw))
+                {
+                    serializer.Serialize(writer, Dbase);
+                }
             }
-
-
-            /*  тоже рабочий варик 
-             *  
-            string path = Environment.CurrentDirectory+@"\UsersData.txt";
-           StreamWriter sw = new StreamWriter(path,false);
-                string s = JsonConvert.SerializeObject(Dbase);
-            sw.WriteLine(s);
-            sw.Close();
-            */
-
+            catch (Exception e)
+            {
+                Console.WriteLine("Save problem!!!   " + e.Message);
+            }
         }
 
         public static string GetPathOfFile(string path)
