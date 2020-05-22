@@ -8,11 +8,13 @@ using System.Threading;
 using English_Bot.Properties;
 using static System.Console;
 using System.Diagnostics;
+using System.IO;
 
 namespace English_Bot
 {
     public partial class EngBot
     {
+        
         //не обращайте внимания, я это забыл удалить
         public const string token_dima_test = @"302865fe4032238938c1bb36476fe443ada8fb8ce1010880635e6fb1ce0ba6da8d0e34357fa3086360109";
         public const string url_dima_test = @"https://vk.com/ewb_test";
@@ -35,18 +37,25 @@ namespace English_Bot
 
         static void Main(string[] args)
         {
-            ///Выполняется после закрытия программы 
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            try
+            {
+                ///Выполняется после закрытия программы 
+                AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-            bot.OnMessageReceived += NewMessageHandler;
+                bot.OnMessageReceived += NewMessageHandler;
 
-            Thread botStart = new Thread(new ThreadStart(bot.Start));
-            botStart.Start();
+                Thread botStart = new Thread(new ThreadStart(bot.Start));
+                botStart.Start();
 
-            DailyEvent_start();         //Старт ежедневных событий
+                DailyEvent_start();         //Старт ежедневных событий
 
-            WriteLine("Bot started!");
-
+                WriteLine("Bot started!");
+            }
+            catch (Exception e)
+            {
+                string message = "Бот упал\n" + e.Message + "\n" + e.StackTrace;
+                SaveFailure(message);
+            }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -72,5 +81,16 @@ namespace English_Bot
             }
         }
 
+        public static void SaveFailure(string message)
+        {
+            try
+            {
+                File.WriteAllText("bot_error.txt", message);
+            }
+            catch(Exception e)
+            {
+                WriteLine("Не удалось сохранить сообщение об ошибке"); 
+            }
+        }
     } 
 }
