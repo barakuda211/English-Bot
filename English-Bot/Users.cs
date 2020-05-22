@@ -80,6 +80,11 @@ namespace English_Bot
                 {
                     string temp = File.ReadAllText(path);
                     Dbase = JsonConvert.DeserializeObject<Dictionary<long, User>>(temp);
+                    foreach(var user in Dbase.Values)
+                    {
+                        if (user.on_Test)
+                            user.on_Test = false; 
+                    }
                 }
 
                 if (Dbase != null)
