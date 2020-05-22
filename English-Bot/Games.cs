@@ -403,6 +403,12 @@ namespace English_Bot
             {
                 Console.WriteLine("Server error with sending message!");
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with sending cross");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
             Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }
 
@@ -448,6 +454,12 @@ namespace English_Bot
             catch (VkNet.Exception.CannotSendToUserFirstlyException)
             {
                 Console.WriteLine("Server error with sending message!");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with sending gallow");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
             Console.WriteLine("Elapsed for sending: " + stp.ElapsedMilliseconds);
         }

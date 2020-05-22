@@ -41,6 +41,12 @@ namespace English_Bot
             {
                 WriteLine("Server error with sending message!");
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Some error with SendMessage");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
             WriteLine("Message sent to " + userID);
         }
 
@@ -49,25 +55,24 @@ namespace English_Bot
 
         //ждет ответа !определенного! ответа от юзера, 
         //always отвечает за время ожидания(false - 1 попытка, true - ждет, пока юзер не напишет нужное)
-        static long WaitWordFromUser(long userID, string[] word, bool always, long word_id)
+        static long WaitWordFromUser(long userID, string[] word,  long word_id, int wait_time = 5)
         {
+            var ind = Timers.IndicatorTimer(wait_time);
             var user = users.GetUser(userID);
-            if (always)
+        
+            while (user.lastMsg.Item2 != false)
             {
-                while (word.All(x => x.ToLower() != user.lastMsg.Item1.ToLower()) || user.lastMsg.Item2) Thread.Sleep(100);  //ожидание согласия
-                WriteLine("Get \"Ready\"");
-                user.lastMsg.Item2 = true;
+                if (ind.x)
+                    return -1;
+                Thread.Sleep(100);
             }
-            if (!always)
-            {
-                while (user.lastMsg.Item2 != false) Thread.Sleep(100);
-                WriteLine("get word");
-                WriteLine(user.lastMsg.Item3);
-                user.lastMsg.Item2 = true;
-                user.lastMsg.Item1 = GetFormatedWord(user.lastMsg.Item1);
-                return (word.Any(x => x == user.lastMsg.Item1) ? -word_id : user.lastMsg.Item3);
-            }
-            return 0;//заглушка
+            WriteLine("get word");
+            WriteLine(user.lastMsg.Item3);
+            user.lastMsg.Item2 = true;
+            user.lastMsg.Item1 = GetFormatedWord(user.lastMsg.Item1);
+            return (word.Any(x => x == user.lastMsg.Item1) ? -word_id : user.lastMsg.Item3);
+        
+
         }
 
         // static int TEST_Words = 5; 
@@ -197,7 +202,25 @@ namespace English_Bot
                         }
                 }
                 // wrds.AddRange(wrds);
-                msgIDs.Add(WaitWordFromUser(userID, wrds.ToArray(), false, idx));
+                long id = WaitWordFromUser(userID, wrds.ToArray(), idx, 2);
+                if (id == -1)
+                {
+                    if (user.tests_passed == 0)
+                    {
+                        SendMessage(userID, "Ладно, пиши, когда будешь готов.");
+                        users.DeleteUser(userID);
+                        users.Save();
+                        return;
+                    }
+                    else
+                    {
+                        user.keyb = User.Main_Keyboard;
+                        SendMessage(userID, "Ладно, протестируемся потом.",null,true);
+                        users[userID].on_Test = false;
+                        return;
+                    }
+                }
+                msgIDs.Add(id);
             }
 
             if (users[userID].learnedWords == null && msgIDs.Any(x => x < 0))
@@ -352,7 +375,7 @@ namespace English_Bot
             {
                 if (ind.x)
                 {
-                    if (user.unLearnedWords.Count != 15)
+                    if (user.tests_passed > 0)
                         user.keyb = User.Main_Keyboard;
                     SendMessage(userID, wait_message,null,true);
                     return false;
