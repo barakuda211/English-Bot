@@ -54,13 +54,14 @@ namespace English_Bot
             catch (Exception e)
             {
                 string message = "Бот упал\n" + e.Message + "\n" + e.StackTrace;
-                SaveFailure(message);
+                SaveFailureMain(message);
             }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             users.Save();
+            SaveFailureVk("Бот упал\n" + e.ToString());
             SendFailure();
         }
 
@@ -81,11 +82,23 @@ namespace English_Bot
             }
         }
 
-        public static void SaveFailure(string message)
+        public static void SaveFailureVk(string message)
         {
             try
             {
-                File.WriteAllText("bot_error.txt", message);
+                File.WriteAllText("bot_error_vk.txt", message);
+            }
+            catch (Exception e)
+            {
+                WriteLine("Не удалось сохранить сообщение об ошибке");
+            }
+        }
+
+        public static void SaveFailureMain(string message)
+        {
+            try
+            {
+                File.WriteAllText("bot_error_main.txt", message);
             }
             catch(Exception e)
             {
