@@ -54,7 +54,9 @@ namespace English_Bot
             catch (Exception e)
             {
                 string message = "Бот упал\n" + e.Message + "\n" + e.StackTrace;
+                users.Save();
                 SaveFailureMain(message);
+                SendFailure();
             }
         }
 
