@@ -7,7 +7,7 @@ using VkNet.Model.RequestParams;
 using System.Threading;
 using English_Bot.Properties;
 using static System.Console;
-
+using System.Diagnostics;
 
 namespace English_Bot
 {
@@ -31,40 +31,97 @@ namespace English_Bot
         public static VkBot bot = new VkBot(Token, Url, longPollTimeoutWaitSeconds: 0);
         public static HashSet<long> adminIDs = new HashSet<long> { 122402184, 203654426, 210036813 };
 
+        public static string reboot_argument = "not_force"; 
+
         static void Main(string[] args)
         {
-            //users.Load();
+            try
+            {
+                //users.Load();
 
-            ///Выполняется после закрытия программы 
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+                ///Выполняется после закрытия программы 
+                AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-            //dictionary.Init_dict();  //заполнение словаря из 5000.txt
+                //dictionary.Init_dict();  //заполнение словаря из 5000.txt
 
-            //Testing_Start();     //Запуск тестирования
+                //Testing_Start();     //Запуск тестирования
 
-            bot.OnMessageReceived += NewMessageHandler;
+                bot.OnMessageReceived += NewMessageHandler;
 
-            Thread botStart = new Thread(new ThreadStart(bot.Start));
-            botStart.Start();
+                Thread botStart = new Thread(new ThreadStart(bot.Start));
+                botStart.Start();
 
-            DailyEvent_start();         //Старт ежедневных событий
+                DailyEvent_start();         //Старт ежедневных событий
 
-            //SendPicture(210036813, dictionary.GetEngWordId("inspector"));
-            //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
-            //SendPicture(210036813, dictionary.GetEngWordId("car"));
+                //SendPicture(210036813, dictionary.GetEngWordId("inspector"));
+                //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
+                //SendPicture(210036813, dictionary.GetEngWordId("car"));
 
-            /*
-            SendSound(203654426, dictionary.eng_ids["working"]);
-            SendSound(203654426, dictionary.eng_ids["good"]);
-            SendSound(203654426, dictionary.eng_ids["staff"]);
-            */
+                /*
+                SendSound(203654426, dictionary.eng_ids["working"]);
+                SendSound(203654426, dictionary.eng_ids["good"]);
+                SendSound(203654426, dictionary.eng_ids["staff"]);
+                */
 
-            WriteLine("Bot started!");
+                WriteLine("Bot started!");
+            }
+            catch(Exception e)
+            {
+                WriteLine("Бот упал");
+                WriteLine(e.Message);
+                WriteLine(e.StackTrace);
+                SendFailure();
+                // GracefulShutDown(); 
+            }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             users.Save();
         }
-    }
+
+        public static void GracefulShutDown()
+        {
+            try
+            {
+                SendFailure();
+                Process restart = new Process();
+                restart.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Reboot\Restart.exe";
+                restart.StartInfo.Arguments = reboot_argument;
+                restart.Start();
+            }
+            catch (Exception e)
+            {
+                WriteLine("Бота перезапустить не удалось");
+                WriteLine(e.Message);
+                WriteLine(e.StackTrace);
+            }
+
+        }
+
+        public static void SendFailure()
+        {
+            try
+            {
+                foreach (var admin in adminIDs)
+                {
+                    SendMessage(admin, "Я упал, начинаю перезагрузку");
+                }
+            }
+            catch (Exception e)
+            {
+                WriteLine("Не удалось отправить сообщения об ошибке");
+                WriteLine(e.Message);
+                WriteLine(e.StackTrace);
+            }
+        }
+
+        public static void SendGreetings()
+        {
+            foreach (var user in users.Dbase.Keys)
+            {
+                SendMessage(user, "Бот был перезапущен. Не волнуйтесь, Ваш прогресс сохранен!");
+            }
+        }
+    } 
 }

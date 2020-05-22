@@ -1,0 +1,5 @@
+Бота запустить не удалось
+Не удается найти указанный файл
+   в System.Diagnostics.Process.StartWithShellExecuteEx(ProcessStartInfo startInfo)
+   в System.Diagnostics.Process.Start()
+   в Restart.Program.Main(String[] args)

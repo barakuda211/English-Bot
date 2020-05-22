@@ -1,0 +1,1 @@
+start Restart2.exe "English-Bot.exe"
