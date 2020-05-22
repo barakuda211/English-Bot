@@ -47,11 +47,12 @@ namespace English_Bot
                 Thread botStart = new Thread(new ThreadStart(bot.Start));
                 botStart.Start();
 
+                SendRestart();
+
                 DailyEvent_start();         //Старт ежедневных событий
 
                 WriteLine("Bot started!");
 
-                SendRestart(); 
             }
             catch (Exception e)
             {
