@@ -50,6 +50,8 @@ namespace English_Bot
                 DailyEvent_start();         //Старт ежедневных событий
 
                 WriteLine("Bot started!");
+
+                SendRestart(); 
             }
             catch (Exception e)
             {
