@@ -62,10 +62,15 @@ namespace English_Bot
                 else if (ss[0] == "/sound")
                 {
                     if (dictionary.eng_ids.ContainsKey(ss[1]))
+                    {
                         SendExample(fromId, dictionary.eng_ids[ss[1]]);
+                        return; 
+                    }
                     else
-                        SendMessage(fromId, "Не знаю такого слова 😔");
-                    return;
+                    {
+                        answer = "Я не знаю такого слова"; 
+                        goto Answer; 
+                    }
                 }
                 else if (ss[0] == "/description")
                 {
@@ -207,7 +212,7 @@ namespace English_Bot
                         answer = MultipleTranslation(ss, users[fromId].userLevel);
                     break;
             }  
-
+            Answer:
             SendMessage(fromId, answer, null, true);
         }
 

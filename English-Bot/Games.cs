@@ -131,8 +131,11 @@ namespace English_Bot
 
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
-                if (text == "")
+                if (text == null || text.Length == 0)
+                {
+                    EngBot.SendMessage(gal.user_id, "Я жду текстовые ответы");
                     continue;
+                }
                 var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 if (text == "/hint" || text == "подсказать букву")
@@ -237,8 +240,11 @@ namespace English_Bot
 
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
-                if (text == "")
+                if (text == null || text.Length == 0)
+                {
+                    EngBot.SendMessage(userID, "Я жду текстовые ответы");
                     continue;
+                }
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (text == "/hint" || text == "подсказать слово")
