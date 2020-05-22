@@ -65,6 +65,23 @@ namespace English_Bot
             SendFailure();
         }
 
+        public static void SendRestart()
+        {
+            try
+            {
+                foreach (var user in adminIDs)
+                {
+                    SendMessage(user, "Я успешно перезагрузился");
+                }
+            }
+            catch(Exception e)
+            {
+                WriteLine("Не удалось отправить сообщение о перезагрузке");
+                WriteLine(e.Message);
+                WriteLine(e.StackTrace);
+            }
+        }
+
         public static void SendFailure()
         {
             try
