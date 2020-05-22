@@ -500,7 +500,7 @@ namespace English_Bot
                 try
                 {
                     File.Delete(text_name);
-                    // File.Delete(word + "_picture.jpg");
+                    // File.Move(name, @"foto\" + name);
                 }
                 catch (DirectoryNotFoundException ex)
                 {
@@ -606,6 +606,9 @@ namespace English_Bot
                     Attachments = atts, 
                     Message = mes
                 });
+
+                // File.Move(file_name, @"sound\" + file_name);
+                File.Delete(file_name);
             }
             catch (Exception e)
             {
