@@ -119,7 +119,7 @@ namespace English_Bot
         /// <returns></returns>
         public List<long> GetKeysByLevelWithTr(int level)
         {
-            return dict.Values.Where(x => x.level == level && x.mean_rus != null && (x.tags == null || !x.tags.Contains("added"))).Select(x => x.id).ToList();
+            return dict.Values.Where(x => x.level == level && x.mean_rus != null && x.mean_rus.def.Count !=0 && (x.tags == null || !x.tags.Contains("added"))).Select(x => x.id).ToList();
         }
 
         /// <summary>

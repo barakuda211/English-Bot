@@ -254,15 +254,27 @@ namespace English_Bot
             string[] words = text.Split(new char[] { ',',' ' },StringSplitOptions.RemoveEmptyEntries);
             int added = 0;
             List<string> error_words = new List<string>();
+            var eng_ids = EngBot.dictionary.eng_ids;
 
             if (words_to_learn == null)
                 words_to_learn = new List<long>();
 
             foreach (var x in words)
             {
-                if (EngBot.dictionary.eng_ids.ContainsKey(x))
+                if (eng_ids.ContainsKey(x))
                 {
                     long word_id = EngBot.dictionary.GetEngWordId(x);
+                    var w = EngBot.dictionary[word_id].mean_rus;
+                    if (w == null || w.def.Count == 0)
+                    {
+                        error_words.Add(x);
+                        continue;
+                    }
+                    if (unLearnedWords.Contains(word_id) || words_to_learn.Contains(word_id))
+                    {
+                        added++;
+                        continue;
+                    }
                     words_to_learn.Add(word_id);
                     if (learnedWords.Contains(word_id))
                         learnedWords.Remove(word_id);

@@ -131,6 +131,8 @@ namespace English_Bot
 
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
+                if (text == "")
+                    continue;
                 var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 if (text == "/hint" || text == "подсказать букву")
@@ -235,6 +237,8 @@ namespace English_Bot
 
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
+                if (text == "")
+                    continue;
                 var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (text == "/hint" || text == "подсказать слово")
