@@ -23,80 +23,36 @@ namespace English_Bot
         //public const string Token = "41df7d2e30314de0f847a51c4f8beaaf8d287eda3e31527d44a3d7aa17dac4928b9dc16be8ee476c64916";
 
         //менять только для смены паблика
-        public static string Token = Resources.AccessToken;
-        public static string Url = Resources.groupUrl;
+        public static string Token = Resources.AccessToken2;
+        public static string Url = Resources.groupUrl2;
 
         public static WordsDictionary dictionary = new WordsDictionary();
         public static Users users = new Users();//подгрузку из файла нужно сделать(или из Resources)
         public static VkBot bot = new VkBot(Token, Url, longPollTimeoutWaitSeconds: 0);
         public static HashSet<long> adminIDs = new HashSet<long> { 122402184, 203654426, 210036813 };
 
-        public static string reboot_argument = "not_force"; 
+        public static string reboot_argument = "not_force";
 
         static void Main(string[] args)
         {
-            try
-            {
-                //users.Load();
+            ///Выполняется после закрытия программы 
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-                ///Выполняется после закрытия программы 
-                AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            bot.OnMessageReceived += NewMessageHandler;
 
-                //dictionary.Init_dict();  //заполнение словаря из 5000.txt
+            Thread botStart = new Thread(new ThreadStart(bot.Start));
+            botStart.Start();
 
-                //Testing_Start();     //Запуск тестирования
+            DailyEvent_start();         //Старт ежедневных событий
 
-                bot.OnMessageReceived += NewMessageHandler;
+            WriteLine("Bot started!");
 
-                Thread botStart = new Thread(new ThreadStart(bot.Start));
-                botStart.Start();
-
-                DailyEvent_start();         //Старт ежедневных событий
-
-                //SendPicture(210036813, dictionary.GetEngWordId("inspector"));
-                //SendPicture(210036813, dictionary.GetEngWordId("beautiful"));
-                //SendPicture(210036813, dictionary.GetEngWordId("car"));
-
-                /*
-                SendSound(203654426, dictionary.eng_ids["working"]);
-                SendSound(203654426, dictionary.eng_ids["good"]);
-                SendSound(203654426, dictionary.eng_ids["staff"]);
-                */
-
-                WriteLine("Bot started!");
-            }
-            catch(Exception e)
-            {
-                WriteLine("Бот упал");
-                WriteLine(e.Message);
-                WriteLine(e.StackTrace);
-                SendFailure();
-                // GracefulShutDown(); 
-            }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             users.Save();
-        }
-
-        public static void GracefulShutDown()
-        {
-            try
-            {
-                SendFailure();
-                Process restart = new Process();
-                restart.StartInfo.FileName = Users.GetPathOfFile(Environment.CurrentDirectory) + @"..\Reboot\Restart.exe";
-                restart.StartInfo.Arguments = reboot_argument;
-                restart.Start();
-            }
-            catch (Exception e)
-            {
-                WriteLine("Бота перезапустить не удалось");
-                WriteLine(e.Message);
-                WriteLine(e.StackTrace);
-            }
-
+            SendFailure();
         }
 
         public static void SendFailure()
@@ -116,12 +72,5 @@ namespace English_Bot
             }
         }
 
-        public static void SendGreetings()
-        {
-            foreach (var user in users.Dbase.Keys)
-            {
-                SendMessage(user, "Бот был перезапущен. Не волнуйтесь, Ваш прогресс сохранен!");
-            }
-        }
     } 
 }
