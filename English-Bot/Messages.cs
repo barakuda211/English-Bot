@@ -650,7 +650,7 @@ namespace English_Bot
                 webclient.Headers.Add(HttpRequestHeader.UserAgent, "Only a test!");
                 string html = webclient.DownloadString("https://context.reverso.net/translation/english-russian/" + word);
 
-                Regex r_Exs = new Regex(@"(.+\W" + word + @"\W.+)<\/span>");
+                Regex r_Exs = new Regex(@"(.+<em>" + word + @"</em>.+)<\/span>");
 
                 foreach (Match m in r_Exs.Matches(html))
                 {
