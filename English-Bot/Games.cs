@@ -351,7 +351,11 @@ namespace English_Bot
                 ind = IndicatorTimer(wait_time);
                 ident_msg = user.lastMsg.Item3;
                 text = EngBot.GetFormatedWord(user.lastMsg.Item1);
-
+                if (text == null || text.Length == 0)
+                {
+                    EngBot.SendMessage(userID, "Я жду текстовые ответы");
+                    continue;
+                }
                 if (text == "/give_up" || text == "я сдаюсь")
                 {
                     user.keyb = User.Main_Keyboard;

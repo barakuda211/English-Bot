@@ -1,5 +1,3 @@
 Бота запустить не удалось
-Не удается найти указанный файл
-   в System.Diagnostics.Process.StartWithShellExecuteEx(ProcessStartInfo startInfo)
-   в System.Diagnostics.Process.Start()
+Индекс находился вне границ массива.
    в Restart.Program.Main(String[] args)
